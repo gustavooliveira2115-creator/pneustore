@@ -1,0 +1,328 @@
+@import "tailwindcss";
+
+/* Design Tokens / CSS Custom Properties */
+:root {
+  --color-primary: rgb(78, 0, 142);
+  --color-primaryHover: rgb(62, 0, 117);
+  --color-primaryPressed: rgb(118, 59, 166);
+  --color-primaryLight: rgb(154, 102, 196);
+  --color-primaryLightest: rgb(229, 217, 238);
+  --color-primaryTextButton: #FFFFFF;
+  --color-secondary: rgb(104, 220, 250);
+  --color-secondaryDarkest: rgb(30, 135, 163);
+  --color-secondaryDark: rgb(55, 165, 197);
+  --color-secondaryLight: rgb(166, 237, 252);
+  --color-secondaryLightest: rgb(223, 248, 254);
+  --color-secondaryTextButton: rgb(78, 0, 142);
+  --color-textBase: rgb(0, 0, 0);
+  --color-textSecondary: rgba(0, 0, 0, 0.65);
+  --color-textDisabled: rgba(0, 0, 0, 0.25);
+  --color-textLink: rgb(78, 0, 142);
+  --color-background: #ffffff;
+  --color-success: #52c41a;
+  --color-error: #ff4d4f;
+  --color-fillSecondary: rgba(0, 0, 0, 0.06);
+  --color-header-bg: #FFFFFF;
+  --color-header-logo-bg: #FFFFFF;
+  --color-header-badge: #68dcfa;
+  --color-header-text: #4e008e;
+  --color-header-icon: #4e008e;
+  --color-header-selected: #4e008e;
+  --color-drawer-handle: #D9D9D9;
+  --color-drawer-user-card-bg: #F9F9F9;
+  --color-drawer-user-card-text: #000000;
+  --color-pdp-price: #4e008e;
+  --color-footerBackground: #4e008e;
+  --color-footerLogoBackground: #4e008e;
+  --color-footerTextPrimary: #FFFFFF;
+  --color-footerTextSecondary: #FFFFFF;
+  --color-footerIcon: #00000073;
+  --color-footerBottomBg: #FFFFFF;
+  --color-footerBottomText: rgb(0, 0, 0);
+  --color-cepBg: #4e008e;
+  --color-cepText: #FFFFFF;
+  --color-cartIcon: #FFFFFF;
+  --color-cartBadgeBg: rgb(78, 0, 142);
+  --color-cartBadgeText: #FFFFFF;
+  --color-cartTotalText: rgb(0, 0, 0);
+  --color-neutralWhite: #fff;
+  --color-neutralBgLayout: #f5f5f5;
+  --color-neutralFillTertiary: rgba(0, 0, 0, 0.04);
+  --color-neutralTextSecondary: rgba(0, 0, 0, 0.65);
+  --color-neutralTextTertiary: rgba(0, 0, 0, 0.45);
+  --color-primaryPurpleBase: #4e008e;
+  --color-primaryPurpleDarkest: #320061;
+  --color-primaryYellowTertiaryBase: #ffe959;
+  --color-primaryBlueSecondaryBase: #68dcfa;
+  --color-inputGlobalBorder: #d9d9d9;
+  --color-inputGlobalTextPlaceholder: rgba(0, 0, 0, 0.45);
+  --color-dividerGlobalSplit: rgba(0, 0, 0, 0.06);
+  --font-arial: Arial, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: Arial, sans-serif;
+  background: var(--color-background);
+  color: var(--color-textBase);
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Utility: hidden on desktop, visible on mobile */
+@media (min-width: 1025px) {
+  .desktop\:hidden {
+    display: none !important;
+  }
+}
+@media (max-width: 1024px) {
+  .desktop\:flex {
+    display: none !important;
+  }
+  .desktop\:flex-col {
+    display: none !important;
+  }
+}
+
+/* Button base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 15px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--color-primaryPurpleDarkest);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--color-primaryHover);
+}
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-primaryPurpleBase);
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--color-inputGlobalBorder);
+  color: var(--color-textBase);
+}
+.btn-ghost {
+  background: transparent;
+  color: inherit;
+}
+.btn-ghost:hover {
+  background: var(--color-primaryPurpleDarkest);
+  color: white;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 8px;
+  background: white;
+}
+
+/* Carousel */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+.carousel-slide {
+  min-width: 100%;
+  flex-shrink: 0;
+}
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s;
+}
+.carousel-arrow:hover {
+  background: white;
+}
+.carousel-arrow-left {
+  left: 16px;
+}
+.carousel-arrow-right {
+  right: 16px;
+}
+.carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.carousel-dot.active {
+  background: white;
+}
+
+/* Product Card */
+.product-card {
+  background: white;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 260px;
+  max-width: 300px;
+  flex-shrink: 0;
+  transition: box-shadow 0.2s;
+}
+.product-card:hover {
+  box-shadow: 0 4px 16px rgba(78, 0, 142, 0.12);
+}
+
+/* Star rating */
+.star {
+  color: #f5a623;
+  font-size: 14px;
+}
+.star-empty {
+  color: #ddd;
+  font-size: 14px;
+}
+.star-half {
+  position: relative;
+  color: #ddd;
+  font-size: 14px;
+}
+.star-half::before {
+  content: "★";
+  position: absolute;
+  left: 0;
+  color: #f5a623;
+  overflow: hidden;
+  width: 50%;
+}
+
+/* Brand strip scroll */
+.brand-strip-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+.brand-strip-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.brand-strip-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* Zebra sections */
+.zebra-white {
+  background: #ffffff;
+}
+.zebra-gray {
+  background: #f7f7f7;
+}
+
+/* Cookie drawer */
+.cookie-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* WhatsApp float */
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  border: none;
+}
+
+/* Tab system */
+.tab-active {
+  background: var(--color-primaryPurpleBase);
+  color: white;
+}
+.tab-inactive {
+  background: transparent;
+  color: var(--color-primaryPurpleBase);
+  border: 1px solid var(--color-primaryPurpleBase);
+}
+
+/* Trusted badge section */
+.footer-badges {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.footer-badge-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
