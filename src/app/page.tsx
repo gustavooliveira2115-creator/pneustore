@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 
 /* ═══════════════════════════════════════════════════════════════════
    DATA
@@ -535,32 +536,36 @@ export default function HomePage() {
             <div ref={productScrollRef} style={{ display: "flex", gap: 16, overflowX: "auto", scrollBehavior: "smooth", paddingBottom: 8, scrollbarWidth: "thin" }}>
               {products.map((p) => (
                 <div key={p.id} className="product-card" style={{ minWidth: 260, maxWidth: 280 }}>
-                  {/* Image */}
-                  <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: 8, background: "#fafafa" }}>
-                    <img src={`/${p.img2x}`} alt={p.title} style={{ maxWidth: "85%", maxHeight: "85%", objectFit: "contain" }} />
-                    {p.badge && (
-                      <img src={`/${p.badge}`} alt="" style={{ position: "absolute", top: 0, left: 0, maxWidth: 80, maxHeight: 80, objectFit: "contain" }} />
-                    )}
-                  </div>
-                  {/* Frete grátis */}
-                  {p.freteGratis && (
-                    <span style={{ display: "inline-block", background: "var(--color-primaryYellowTertiaryBase)", color: "var(--color-primaryPurpleBase)", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, alignSelf: "flex-start" }}>
-                      Frete grátis
-                    </span>
-                  )}
-                  {/* Brand logo */}
-                  {p.brand && (
-                    <img src={`/${p.brand}`} alt="" style={{ height: 20, width: "auto", objectFit: "contain", alignSelf: "flex-start" }} />
-                  )}
-                  {/* Stars + Reviews */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <Stars count={p.stars} />
-                    <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
-                  </div>
-                  {/* Title */}
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#4b4b4b", lineHeight: "1.4", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 54 }}>
-                    {p.title}
-                  </p>
+                   {/* Image */}
+                   <Link href="/produto" style={{ textDecoration: "none", color: "inherit" }}>
+                     <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: 8, background: "#fafafa", cursor: "pointer" }}>
+                       <img src={`/${p.img2x}`} alt={p.title} style={{ maxWidth: "85%", maxHeight: "85%", objectFit: "contain" }} />
+                       {p.badge && (
+                         <img src={`/${p.badge}`} alt="" style={{ position: "absolute", top: 0, left: 0, maxWidth: 80, maxHeight: 80, objectFit: "contain" }} />
+                       )}
+                     </div>
+                   </Link>
+                   {/* Frete grátis */}
+                   {p.freteGratis && (
+                     <span style={{ display: "inline-block", background: "var(--color-primaryYellowTertiaryBase)", color: "var(--color-primaryPurpleBase)", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, alignSelf: "flex-start" }}>
+                       Frete grátis
+                     </span>
+                   )}
+                   {/* Brand logo */}
+                   {p.brand && (
+                     <img src={`/${p.brand}`} alt="" style={{ height: 20, width: "auto", objectFit: "contain", alignSelf: "flex-start" }} />
+                   )}
+                   {/* Stars + Reviews */}
+                   <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                     <Stars count={p.stars} />
+                     <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
+                   </div>
+                   {/* Title */}
+                   <Link href="/produto" style={{ textDecoration: "none", color: "inherit" }}>
+                     <p style={{ fontSize: 13, fontWeight: 600, color: "#4b4b4b", lineHeight: "1.4", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 54, cursor: "pointer" }}>
+                       {p.title}
+                     </p>
+                   </Link>
                   {/* Prices */}
                   <div>
                     <p style={{ fontSize: 12, color: "#8c8c8c", textDecoration: "line-through" }}>R$ {p.origPrice}</p>
