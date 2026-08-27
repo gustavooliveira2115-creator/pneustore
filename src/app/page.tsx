@@ -38,8 +38,8 @@ const heroSlides = [
 ];
 
 const products = [
-  { id: 1, img: "ad3934dd692d3fc98e39.webp", img2x: "ad3934dd692d3fc98e39-1.webp", brand: "ITARO-2-1-.png", title: "Pneu Itaro Aro 17.5 IT01 215/75R17.5 135/133J 16 Lonas TL", origPrice: "633,23", curPrice: "569,90", installment: "63,32", stars: 4.5, reviews: 13, freteGratis: false, badge: null },
-  { id: 2, img: "9b5df45b1454befcdc9a.webp", img2x: "9b5df45b1454befcdc9a-1.webp", brand: "Continental_banner_teste.webp", title: "Pneu Continental Aro 16 PowerContact 2 195/55R16 87H", origPrice: "622,12", curPrice: "559,90", installment: "62,21", stars: 4.5, reviews: 24, freteGratis: false, badge: "SELO_DESCONTO NO CARRINHO (1).gif" },
+  { id: 1, slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "ad3934dd692d3fc98e39.webp", img2x: "ad3934dd692d3fc98e39-1.webp", brand: "ITARO-2-1-.png", title: "Pneu Itaro Aro 17.5 IT01 215/75R17.5 135/133J 16 Lonas TL", origPrice: "633,23", curPrice: "569,90", installment: "63,32", stars: 4.5, reviews: 13, freteGratis: false, badge: null },
+  { id: 2, slug: "pneu-continental-aro-16-powercontact-2-195-55r16-87h-10120084", img: "9b5df45b1454befcdc9a.webp", img2x: "9b5df45b1454befcdc9a-1.webp", brand: "Continental_banner_teste.webp", title: "Pneu Continental Aro 16 PowerContact 2 195/55R16 87H", origPrice: "622,12", curPrice: "559,90", installment: "62,21", stars: 4.5, reviews: 24, freteGratis: false, badge: "SELO_DESCONTO NO CARRINHO (1).gif" },
   { id: 3, img: "410e0c51717b0e53b244.webp", img2x: "410e0c51717b0e53b244-1.webp", brand: "mini-banner-pneustore-maggion.png", title: "Pneu Moto Maggion Aro 18 Winner 90/90-18 57P TT - Traseiro", origPrice: "183,23", curPrice: "164,90", installment: "18,32", stars: 4.5, reviews: 207, freteGratis: false, badge: null },
   { id: 4, img: "a323d9adb006c0471594.webp", img2x: "a323d9adb006c0471594-1.webp", brand: "Bfgoodrich_banner.webp", title: "Pneu BFGoodrich Aro 17 All Terrain KO3 265/65R17 116/113S", origPrice: "1.743,79", curPrice: "1.429,90", installment: "174,38", stars: 5, reviews: 6, freteGratis: false, badge: "SELO 7 - 18_ OFF.gif" },
   { id: 5, img: "4962a99b1d28118b3811.webp", img2x: "4962a99b1d28118b3811-1.webp", brand: null, title: "Pneu Michelin Aro 18 Primacy 5 225/55R18 102V XL", origPrice: "966,56", curPrice: "869,90", installment: "96,66", stars: 4.5, reviews: 14, freteGratis: false, badge: null },
@@ -278,8 +278,8 @@ export default function HomePage() {
             <div ref={productScrollRef} style={{ display: "flex", gap: 16, overflowX: "auto", scrollBehavior: "smooth", paddingBottom: 8, scrollbarWidth: "thin" }}>
               {products.map((p) => (
                 <div key={p.id} className="product-card" style={{ minWidth: 260, maxWidth: 280 }}>
-                   {/* Image */}
-                      <Link href={`/produto/${PRODUCT_SLUG}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    {/* Image */}
+                      <Link href={`/produto/${(p as any).slug || PRODUCT_SLUG}`} style={{ textDecoration: "none", color: "inherit" }}>
                      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: 8, background: "#fafafa", cursor: "pointer" }}>
                        <img src={`/${p.img2x}`} alt={p.title} style={{ maxWidth: "85%", maxHeight: "85%", objectFit: "contain" }} />
                        {p.badge && (
@@ -302,8 +302,8 @@ export default function HomePage() {
                      <Stars count={p.stars} />
                      <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
                    </div>
-                   {/* Title */}
-                      <Link href={`/produto/${PRODUCT_SLUG}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    {/* Title */}
+                      <Link href={`/produto/${(p as any).slug || PRODUCT_SLUG}`} style={{ textDecoration: "none", color: "inherit" }}>
                      <p style={{ fontSize: 13, fontWeight: 600, color: "#4b4b4b", lineHeight: "1.4", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 54, cursor: "pointer" }}>
                        {p.title}
                      </p>

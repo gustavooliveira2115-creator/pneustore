@@ -1,52 +1,28 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { WhatsAppIcon, ChevronLeft, ChevronRight, Stars, CartIcon } from "@/components/icons";
-import { PRODUCT_SLUG } from "@/lib/slug";
+import { getProductBySlug } from "@/lib/products";
 
 const STATIC_BASE = "https://static.verumcommerce.com.br/product/Pneustore";
 
 /* ═══════════════════════════════════════════════════════════════════
-   PRODUCT DATA
+   RELATED + Q&A (shared)
    ═══════════════════════════════════════════════════════════════════ */
 
-const product = {
-  name: "Pneu Itaro Aro 17.5 IT01 215/75R17.5 135/133J 16 Lonas TL",
-  id: "16000356",
-  brand: "Itaro",
-  brandLogo: "ITARO-2-1--1.png",
-  brandLogo2x: "ITARO-2-1--2.png",
-  origPrice: "633,23",
-  pixPrice: "569,90",
-  installmentTotal: "633,23",
-  installmentValue: "63,32",
-  installmentCount: 10,
-  stars: 4.5,
-  reviews: 13,
-  images: [
-    "ad3934dd692d3fc98e39.webp",
-    "7511f693be07e9958cae.webp",
-    "ac18ab0ab5a16a74a0b9.webp",
-  ],
-  inmetro: {
-    rollingResistance: "C",
-    wetGrip: "C",
-    noise: "71 dB",
-  },
-};
-
 const relatedProducts = [
-  { img: "bc833bd47d1eb07f3a43.webp", img2x: "bc833bd47d1eb07f3a43-1.webp", title: "Pneu Westlake Aro 17.5 CM986 215/75R17.5 135/133J 16 Lonas TL", origPrice: "799,89", curPrice: "719,90", installment: "79,99", stars: 4.5, reviews: 8, brand: "Westlake_banner_1.webp", rr: "D", wg: "C", noise: "72" },
-  { img: "ccdac76cd9248bd45280.webp", img2x: "ccdac76cd9248bd45280-1.webp", title: "Pneu Westlake Aro 17.5 CR960A 215/75R17.5 135/133J 16 Lonas TL", origPrice: "822,12", curPrice: "739,90", installment: "82,21", stars: 4, reviews: 5, brand: "Westlake_banner_1.webp", rr: "C", wg: "B", noise: "70" },
-  { img: "cc3ef30f33ac7c28018d.webp", img2x: "cc3ef30f33ac7c28018d-1.webp", title: "Pneu Westlake Aro 17.5 CM986 215/75R17.5 136/134K 18 Lonas TL", origPrice: "955,45", curPrice: "859,90", installment: "95,55", stars: 4.5, reviews: 3, brand: "Westlake_banner_1.webp", rr: "D", wg: "C", noise: "72" },
-  { img: "bfc10d0ef0e933bd9203.webp", img2x: "bfc10d0ef0e933bd9203-1.webp", title: "Pneu Westlake Aro 17.5 CR960A 215/75R17.5 136/134K 18 Lonas TL", origPrice: "933,23", curPrice: "839,90", installment: "93,32", stars: 4, reviews: 2, brand: "Westlake_banner_1.webp", rr: "C", wg: "B", noise: "70" },
-  { img: "b008510702b224d2c3f3.webp", img2x: "b008510702b224d2c3f3-1.webp", title: "Pneu Speedmax Aro 17.5 FACTORMAX-MD 215/75R17.5 135/133J 16 Lonas TL", origPrice: "666,56", curPrice: "599,90", installment: "66,66", stars: 5, reviews: 11, brand: "MINI-BANNER-SPEEDMAX-NOVO.png", rr: "C", wg: "C", noise: "71" },
-  { img: "d1a75f4fb5197084b466.webp", img2x: "d1a75f4fb5197084b466-1.webp", title: "Pneu Itaro Aro 17.5 IT01 215/75R17.5 136/134K 18 Lonas TL", origPrice: "622,12", curPrice: "559,90", installment: "62,21", stars: 4.5, reviews: 7, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "71" },
-  { img: "d4cb2e20d0accbce337b.webp", img2x: "d4cb2e20d0accbce337b-1.webp", title: "Pneu Itaro Aro 17.5 IT01 225/75R17.5 140/138M 18 Lonas TL", origPrice: "711,00", curPrice: "639,90", installment: "71,10", stars: 4, reviews: 4, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "72" },
-  { img: "e67f454502c229412897.webp", img2x: "e67f454502c229412897-1.webp", title: "Pneu Itaro Aro 17.5 IT01 225/75R17.5 135/133J 16 Lonas TL", origPrice: "688,78", curPrice: "619,90", installment: "68,88", stars: 4.5, reviews: 9, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "71" },
+  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "bc833bd47d1eb07f3a43.webp", img2x: "bc833bd47d1eb07f3a43-1.webp", title: "Pneu Westlake Aro 17.5 CM986 215/75R17.5 135/133J 16 Lonas TL", origPrice: "799,89", curPrice: "719,90", installment: "79,99", stars: 4.5, reviews: 8, brand: "Westlake_banner_1.webp", rr: "D", wg: "C", noise: "72" },
+  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "ccdac76cd9248bd45280.webp", img2x: "ccdac76cd9248bd45280-1.webp", title: "Pneu Westlake Aro 17.5 CR960A 215/75R17.5 135/133J 16 Lonas TL", origPrice: "822,12", curPrice: "739,90", installment: "82,21", stars: 4, reviews: 5, brand: "Westlake_banner_1.webp", rr: "C", wg: "B", noise: "70" },
+  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "cc3ef30f33ac7c28018d.webp", img2x: "cc3ef30f33ac7c28018d-1.webp", title: "Pneu Westlake Aro 17.5 CM986 215/75R17.5 136/134K 18 Lonas TL", origPrice: "955,45", curPrice: "859,90", installment: "95,55", stars: 4.5, reviews: 3, brand: "Westlake_banner_1.webp", rr: "D", wg: "C", noise: "72" },
+  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "bfc10d0ef0e933bd9203.webp", img2x: "bfc10d0ef0e933bd9203-1.webp", title: "Pneu Westlake Aro 17.5 CR960A 215/75R17.5 136/134K 18 Lonas TL", origPrice: "933,23", curPrice: "839,90", installment: "93,32", stars: 4, reviews: 2, brand: "Westlake_banner_1.webp", rr: "C", wg: "B", noise: "70" },
+  { slug: "pneu-continental-aro-16-powercontact-2-195-55r16-87h-10120084", img: "b008510702b224d2c3f3.webp", img2x: "b008510702b224d2c3f3-1.webp", title: "Pneu Speedmax Aro 17.5 FACTORMAX-MD 215/75R17.5 135/133J 16 Lonas TL", origPrice: "666,56", curPrice: "599,90", installment: "66,66", stars: 5, reviews: 11, brand: "MINI-BANNER-SPEEDMAX-NOVO.png", rr: "C", wg: "C", noise: "71" },
+  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "d1a75f4fb5197084b466.webp", img2x: "d1a75f4fb5197084b466-1.webp", title: "Pneu Itaro Aro 17.5 IT01 215/75R17.5 136/134K 18 Lonas TL", origPrice: "622,12", curPrice: "559,90", installment: "62,21", stars: 4.5, reviews: 7, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "71" },
+  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "d4cb2e20d0accbce337b.webp", img2x: "d4cb2e20d0accbce337b-1.webp", title: "Pneu Itaro Aro 17.5 IT01 225/75R17.5 140/138M 18 Lonas TL", origPrice: "711,00", curPrice: "639,90", installment: "71,10", stars: 4, reviews: 4, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "72" },
+  { slug: "pneu-continental-aro-16-powercontact-2-195-55r16-87h-10120084", img: "e67f454502c229412897.webp", img2x: "e67f454502c229412897-1.webp", title: "Pneu Itaro Aro 17.5 IT01 225/75R17.5 135/133J 16 Lonas TL", origPrice: "688,78", curPrice: "619,90", installment: "68,88", stars: 4.5, reviews: 9, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "71" },
 ];
 
 const qaQuestions = [
@@ -81,11 +57,20 @@ const PlusIcon = () => (
    ═══════════════════════════════════════════════════════════════════ */
 
 export default function ProductPage() {
+  const params = useParams();
+  const slugParam = params?.slug as string | string[] | undefined;
+  const slug = Array.isArray(slugParam) ? slugParam[0] : (slugParam as string);
+  const product = getProductBySlug(slug || "");
+
   const [currentImage, setCurrentImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState(0);
   const relatedScrollRef = useRef<HTMLDivElement>(null);
   const [qaPage, setQaPage] = useState(0);
+
+  useEffect(() => {
+    setCurrentImage(0);
+  }, [slug]);
 
   const scrollRelated = (dir: "left" | "right") => {
     if (!relatedScrollRef.current) return;
@@ -93,42 +78,43 @@ export default function ProductPage() {
     relatedScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
   };
 
+  if (!product) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--color-background)" }}>
+        <Header />
+        <main style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 50px", width: "100%", textAlign: "center" }}>
+          <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 12 }}>Produto não encontrado</h1>
+          <p style={{ color: "var(--color-textSecondary)", marginBottom: 24 }}>O produto "{slug}" não existe. Verifique o link ou volte para a página inicial.</p>
+          <Link href="/" style={{ color: "var(--color-primary)", textDecoration: "underline" }}>Voltar para a home</Link>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--color-background)" }}>
-      {/* ═══════════════════════════════════════════════════════════
-          SKIP LINK
-          ═══════════════════════════════════════════════════════════ */}
       <a href="#main-content" className="skip-link">Pular para o conteudo principal</a>
 
       <Header />
 
-      {/* ═══════════════════════════════════════════════════════════
-          BREADCRUMB
-          ═══════════════════════════════════════════════════════════ */}
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "12px 50px", width: "100%" }}>
         <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: "var(--color-textSecondary)", fontFamily: "Arial, sans-serif" }}>
           <ol style={{ display: "flex", gap: 8, listStyle: "none", margin: 0, padding: 0, flexWrap: "wrap" }}>
             <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>Pneus</button></li>
             <li style={{ color: "#999" }}>/</li>
-            <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>Pneus de caminhao e onibus</button></li>
-            <li style={{ color: "#999" }}>/</li>
-            <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>Regional</button></li>
+            <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>{product.brand}</button></li>
             <li style={{ color: "#999" }}>/</li>
             <li style={{ color: "#666" }}>{product.name}</li>
           </ol>
         </nav>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════
-          MAIN PRODUCT SECTION (2-column layout)
-          ═══════════════════════════════════════════════════════════ */}
       <main id="main-content" style={{ maxWidth: 1240, margin: "0 auto", padding: "0 50px 40px", width: "100%" }}>
         <div className="product_container_product__Yi9Lf" style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
-          {/* ─── LEFT COLUMN: Gallery ─── */}
           <div className="product_product_left_column__BRpbr" style={{ flex: "1 1 480px", minWidth: 320, maxWidth: 560 }}>
             <div style={{ position: "relative" }}>
               <div style={{ display: "flex", gap: 12 }}>
-                {/* Vertical Thumbnails */}
                 <div className="product_thumbnails__SHRvn" style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
                   {product.images.map((img, i) => (
                     <button
@@ -146,7 +132,6 @@ export default function ProductPage() {
                     </button>
                   ))}
 
-                  {/* INMETRO Stamps */}
                   <div className="product_selo_inmetro____W_B" style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
                     <div className="product_all_stamps__onSMZ" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -184,7 +169,6 @@ export default function ProductPage() {
                   </div>
                 </div>
 
-                {/* Main Image Carousel */}
                 <div className="product_main_carousel__zKHVJ" style={{ flex: 1, position: "relative" }}>
                   <div style={{ position: "relative", aspectRatio: "1/1", background: "#fafafa", borderRadius: 12, overflow: "hidden" }}>
                     <img
@@ -195,7 +179,6 @@ export default function ProductPage() {
                     />
                   </div>
 
-                  {/* Prev/Next arrows */}
                   <button
                     onClick={() => setCurrentImage(Math.max(0, currentImage - 1))}
                     disabled={currentImage === 0}
@@ -230,7 +213,6 @@ export default function ProductPage() {
                 </div>
               </div>
 
-              {/* Dot Indicators */}
               <div className="product_dotGroup__m7O1k" style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 12, height: 50, alignItems: "center" }}>
                 {product.images.map((_, i) => (
                   <button
@@ -249,9 +231,7 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {/* ─── RIGHT COLUMN: Product Info ─── */}
           <div className="product_container_info__o42_9" style={{ flex: "1 1 480px", minWidth: 320 }}>
-            {/* Brand Logo */}
             <div style={{ marginBottom: 12 }}>
               <img
                 src={`/${product.brandLogo}`}
@@ -261,14 +241,12 @@ export default function ProductPage() {
               />
             </div>
 
-            {/* Title */}
             <div className="product_title_and_subtitle__KY7xd">
               <h1 style={{ fontSize: 22, fontWeight: 400, color: "var(--color-textBase)", margin: "0 0 12px", lineHeight: 1.4, fontFamily: "Arial, sans-serif" }}>
                 {product.name}
               </h1>
             </div>
 
-            {/* ID + Rating */}
             <div className="product_id_and_rating__i6LqA" style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
               <span style={{ fontSize: 14, color: "var(--color-textSecondary)" }}>ID: {product.id}</span>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -277,7 +255,6 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Informacoes button */}
             <div className="product_buttons_info__7aTna" style={{ marginBottom: 16 }}>
               <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 16px", border: "1px solid var(--color-primary)", borderRadius: 6, background: "transparent", color: "var(--color-primary)", cursor: "pointer", fontSize: 14 }}>
                 <svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -285,14 +262,11 @@ export default function ProductPage() {
               </button>
             </div>
 
-            {/* Price Section — matching original exactly */}
             <div className="product_prices__sV_aS" style={{ marginBottom: 20 }}>
-              {/* Original price strikethrough */}
               <p style={{ margin: "0 0 4px", fontSize: 14, color: "var(--color-textSecondary)" }}>
                 <s>R$&nbsp;{product.origPrice}</s>
               </p>
 
-              {/* PIX Price — big + badge inline */}
               <div className="product_in_cash__FuouE" style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
                 <h2 style={{ margin: 0, fontSize: 36, fontWeight: 700, color: "var(--color-pdp-price, var(--color-primary))", lineHeight: 1.1 }}>
                   R$ {product.pixPrice.split(",")[0]}<span style={{ fontSize: 22 }}>,{product.pixPrice.split(",")[1]}</span>
@@ -302,7 +276,6 @@ export default function ProductPage() {
                 </span>
               </div>
 
-              {/* Installments */}
               <div className="product_in_installments__mpOM0">
                 <p style={{ margin: "4px 0", fontSize: 14, color: "var(--color-textSecondary)" }}>
                   ou R$&nbsp;{product.installmentTotal} em ate {product.installmentCount}x de R$&nbsp;{product.installmentValue} sem juros.
@@ -313,9 +286,7 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Quantity + Buy Button — matching original */}
             <div className="product_btn_buy_and_shipping__Dv8_J" style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
-              {/* Quantity Selector — Ant Design style */}
               <div className="counter_counter_container__jFi8Q" style={{ display: "flex", alignItems: "center" }}>
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -353,7 +324,6 @@ export default function ProductPage() {
                 </button>
               </div>
 
-              {/* Buy Button — ghost/outlined, full width up to 300px */}
               <button
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
@@ -371,7 +341,6 @@ export default function ProductPage() {
               </button>
             </div>
 
-            {/* Compare */}
             <button style={{ background: "none", border: "1px solid #d9d9d9", borderRadius: 8, padding: "8px 16px", fontSize: 13, color: "var(--color-textSecondary)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
               <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
               Comparar produto
@@ -379,9 +348,6 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-            TABS: Sobre o produto + Informacoes tecnicas
-            ═══════════════════════════════════════════════════════════ */}
         <div style={{ marginTop: 48 }}>
           <div className="ant-tabs ant-tabs-top ant-tabs-centered" style={{ position: "relative" }}>
             <div role="tablist" className="ant-tabs-nav" style={{ display: "flex", justifyContent: "center", borderBottom: "1px solid #e8e8e8" }}>
@@ -419,10 +385,8 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Tab Panels */}
             <div className="ant-tabs-content-holder">
               <div className="ant-tabs-content ant-tabs-content-top">
-                {/* Tab 0: Sobre o produto */}
                 {activeTab === 0 && (
                   <div role="tabpanel" className="ant-tabs-tabpane ant-tabs-tabpane-active">
                     <div className="tabs-product_about_tire__RmDXf" style={{ display: "flex", justifyContent: "center", alignItems: "center", maxWidth: 860, margin: "70px auto", padding: "0 20px" }}>
@@ -432,36 +396,25 @@ export default function ProductPage() {
                           *Nossas vendas sao realizadas apenas para consumidor final, sendo vetada a comercializacao para CNPJ de revendedores.
                         </p>
                         <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)", marginBottom: 8, fontWeight: 600 }}>
-                          Sobre a marca Itaro
+                          {product.aboutBrandTitle}
                         </p>
                         <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)", marginBottom: 16 }}>
-                          A Itaro nasceu para motoristas viverem novas historias - em duas ou quatro rodas. Desenvolvida nas grandes fabricas asiaticas, a marca e homologada nos principais mercados da Europa e America, como o Brasil. Seus pneus foram pensados em centros de pesquisa e desenvolvimento de paises como China, Paquista e Tailandia, que estao entre os maiores do mundo.
+                          {product.aboutBrandText}
                         </p>
                         <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)" }}>
-                          Com presenca exclusiva na PneuStore, a Itaro oferece solucoes para carros de passeio, SUVs, caminhonetes, motos e caminhoes, com excelente qualidade e custo que ajudam motoristas a viverem novos capitulos todos os dias.
+                          {product.aboutProductText}
                         </p>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Tab 1: Informacoes tecnicas */}
                 {activeTab === 1 && (
                   <div role="tabpanel" className="ant-tabs-tabpane ant-tabs-tabpane-active">
                     <div style={{ maxWidth: 860, margin: "40px auto", padding: "0 20px" }}>
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, fontFamily: "Arial, sans-serif" }}>
                         <tbody>
-                          {[
-                            ["Medida", "215/75R17.5"],
-                            ["Aro", '17.5"'],
-                            ["Indice de carga", "135/133"],
-                            ["Indice de velocidade", "J (100 km/h)"],
-                            ["Lonas", "16"],
-                            ["Tipo", "TL (Tubeless)"],
-                            ["Resistencia a rolamento", product.inmetro.rollingResistance],
-                            ["Aderencia em pista molhada", product.inmetro.wetGrip],
-                            ["Ruido externo", product.inmetro.noise],
-                          ].map(([label, value], i) => (
+                          {product.technical.map(([label, value], i) => (
                             <tr key={i} style={{ borderBottom: "1px solid #e8e8e8" }}>
                               <td style={{ padding: "12px 16px", fontWeight: 600, color: "var(--color-textBase)", background: i % 2 === 0 ? "#fafafa" : "white", width: "40%" }}>{label}</td>
                               <td style={{ padding: "12px 16px", color: "var(--color-textSecondary)", background: i % 2 === 0 ? "#fafafa" : "white" }}>{value}</td>
@@ -477,18 +430,13 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-            Q&A SECTION (Perguntas e Respostas)
-            ═══════════════════════════════════════════════════════════ */}
         <div style={{ marginTop: 48, borderTop: "1px solid #e8e8e8", paddingTop: 32 }}>
           <div style={{ maxWidth: 860, margin: "0 auto" }}>
-            {/* Header */}
             <div style={{ marginBottom: 20 }}>
               <p style={{ color: "var(--color-primary)", fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Perguntas e Respostas</p>
               <p style={{ color: "var(--color-primary)", fontSize: 14, margin: 0 }}>Tem alguma duvida sobre esse produto? Envie-nos.</p>
             </div>
 
-            {/* Form */}
             <div style={{ marginBottom: 24 }}>
               <textarea
                 placeholder="Digite sua pergunta"
@@ -509,7 +457,6 @@ export default function ProductPage() {
               </button>
             </div>
 
-            {/* Questions */}
             {qaQuestions.map((qa, i) => (
               <div key={i} style={{ marginBottom: 20 }}>
                 <div style={{ borderRadius: 10, padding: 16, background: "#f9f9f9" }}>
@@ -527,7 +474,6 @@ export default function ProductPage() {
               </div>
             ))}
 
-            {/* Pagination */}
             <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, alignItems: "center" }}>
               <button disabled style={{ color: "var(--color-primary)", opacity: 0.3, background: "none", border: "none", fontSize: 16, cursor: "not-allowed" }}>&lt;</button>
               {[1, 2, 3, 4, 5].map((page) => (
@@ -549,9 +495,6 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-            RELATED PRODUCTS
-            ═══════════════════════════════════════════════════════════ */}
         <div style={{ marginTop: 48 }}>
           <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 20, color: "var(--color-textBase)" }}>
             Confira outros produtos
@@ -564,13 +507,12 @@ export default function ProductPage() {
 
             <div ref={relatedScrollRef} style={{ display: "flex", gap: 16, overflowX: "auto", scrollBehavior: "smooth", scrollbarWidth: "none", msOverflowStyle: "none", padding: "4px 0" }} className="hide-scrollbar">
               {relatedProducts.map((p, i) => (
-                <Link href={`/produto/${PRODUCT_SLUG}`} key={i} style={{ textDecoration: "none", color: "inherit" }}>
+                <Link href={`/produto/${p.slug}`} key={i} style={{ textDecoration: "none", color: "inherit" }}>
                   <div style={{ minWidth: 260, maxWidth: 260, border: "1px solid #e8e8e8", borderRadius: 12, overflow: "hidden", background: "white", cursor: "pointer", transition: "box-shadow 0.2s", flexShrink: 0 }}
                     onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
                   >
                     <div style={{ padding: 16 }}>
-                      {/* Inmetro mini badges */}
                       <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
                           <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
@@ -629,9 +571,6 @@ export default function ProductPage() {
         </div>
       </main>
 
-      {/* ═══════════════════════════════════════════════════════════
-          NEWSLETTER
-          ═══════════════════════════════════════════════════════════ */}
       <section className="product_container_newsletter__ZmXX_" style={{ background: "var(--color-secondary)" }}>
         <section className="newsletter_newsletter_container_home__4T9VZ">
           <form className="flex flex-col desktop:flex-row h-full">
@@ -659,7 +598,6 @@ export default function ProductPage() {
 
       <Footer />
 
-      {/* ─── WHATSAPP FLOAT ─── */}
       <button
         style={{
           position: "fixed", bottom: 24, right: 24, width: 56, height: 56,
