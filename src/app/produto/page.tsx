@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 /* ═══════════════════════════════════════════════════════════════════
    PRODUCT DATA
@@ -14,6 +13,7 @@ const product = {
   brand: "Itaro",
   brandLogo: "ITARO-2-1--1.png",
   brandLogo2x: "ITARO-2-1--2.png",
+  origPrice: "633,23",
   pixPrice: "569,90",
   installmentTotal: "633,23",
   installmentValue: "63,32",
@@ -33,7 +33,7 @@ const product = {
   inmetro: {
     rollingResistance: "C",
     wetGrip: "C",
-    noise: "71 db",
+    noise: "71 dB",
   },
 };
 
@@ -48,8 +48,27 @@ const relatedProducts = [
   { img: "e67f454502c229412897.webp", img2x: "e67f454502c229412897-1.webp", title: "Pneu Itaro Aro 17.5 IT01 225/75R17.5 135/133J 16 Lonas TL", origPrice: "688,78", curPrice: "619,90", installment: "68,88", stars: 4.5, reviews: 9, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "71" },
 ];
 
+const qaQuestions = [
+  {
+    question: "O pneu de voces tem garantia",
+    author: "ANDRE FRANCISCO PESSANHA",
+    date: "11/08/2026",
+    answer: "Ola! Bom dia. Agradecemos o contato. Sim, os pneus possuem cinco anos de garantia contra defeitos de fabricacao, contados a partir da emissao da nota fiscal.",
+    answerBy: "PneuStore",
+    answerDate: "11/08/2026",
+  },
+  {
+    question: "Preciso de pneus para caminhao Ford F 4000. Seria 7-50-16 ?",
+    author: "Diac. Jose Maria Pinheiro Furtado",
+    date: "10/06/2026",
+    answer: "Ola, tudo bem? Espero que sim!\n\nSugerimos que confira no manual do seu veiculo ou nos pneus ja existentes nele se essas medidas correspondem aos mesmos.\n\nInformacoes importantes que podem ser analisadas: largura, perfil, aro, indice de peso e indice de velocidade; todas essas informacoes podem ser encontradas na lateral externa do pneu.\n\nCaso o pneu desejado siga as mesmas caracteristicas pode ficar tranquilo que o pneu sera otimo para voce!\n\nSe precisar de algo mais e so chamar!",
+    answerBy: "PneuStore",
+    answerDate: "12/06/2026",
+  },
+];
+
 const bannerSlides = [
-  { img: "a9c181e7594016ab63d3.webp", alt: "Compre pneus com 5 anos de garantia de fábrica | 10% OFF pagando no PIX" },
+  { img: "a9c181e7594016ab63d3.webp", alt: "Compre pneus com 5 anos de garantia de fabrica | 10% OFF pagando no PIX" },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -68,9 +87,9 @@ const UserIcon = () => (
   </svg>
 );
 
-const CartIcon = () => (
-  <svg width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 16">
-    <path d="M0.866577 1.36719H2.19991L3.97324 9.64719C4.0383 9.95043 4.20702 10.2215 4.45038 10.4138C4.69375 10.606 4.99651 10.7074 5.30658 10.7005H11.8266C12.13 10.7 12.4242 10.596 12.6606 10.4057C12.897 10.2154 13.0613 9.95021 13.1266 9.65385L14.2266 4.70052H2.91324M5.50004 14.0005C5.50004 14.3687 5.20156 14.6672 4.83337 14.6672C4.46518 14.6672 4.16671 14.3687 4.16671 14.0005C4.16671 13.6323 4.46518 13.3338 4.83337 13.3338C5.20156 13.3338 5.50004 13.6323 5.50004 14.0005ZM12.8334 14.0005C12.8334 14.3687 12.5349 14.6672 12.1667 14.6672C11.7985 14.6672 11.5 14.3687 11.5 14.0005C11.5 13.6323 11.7985 13.3338 12.1667 13.3338C12.5349 13.3338 12.8334 13.6323 12.8334 14.0005Z" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
+const CartIcon = ({ size = 22 }: { size?: number }) => (
+  <svg width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <path d="M2.73303 2.7334H5.3997L8.94637 19.2934C9.07647 19.8999 9.41393 20.442 9.90065 20.8265C10.3874 21.2111 10.9929 21.4139 11.613 21.4H22.2797C22.8864 21.4083 23.4791 21.2064 23.9613 20.8301C24.4435 20.4538 24.7879 19.9258 24.9364 19.3334L27.4697 9.3334H7.13303M13.0664 28.0667C13.0664 28.7931 12.4794 29.3801 11.753 29.3801C11.0266 29.3801 10.4397 28.7931 10.4397 28.0667C10.4397 27.3403 11.0266 26.7534 11.753 26.7534C12.4794 26.7534 13.0664 27.3403 13.0664 28.0667ZM25.4397 28.0667C25.4397 28.7931 24.8527 29.3801 24.1264 29.3801C23.4 29.3801 22.813 28.7931 22.813 28.0667C22.813 27.3403 23.4 26.7534 24.1264 26.7534C24.8527 26.7534 25.4397 27.3403 25.4397 28.0667Z" stroke="currentColor" strokeWidth="2.13333" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -87,6 +106,28 @@ const LocationPin = () => (
   </svg>
 );
 
+const ChevronLeft = () => (
+  <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
+
+const ChevronRight = () => (
+  <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
+
+const MinusIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor"><path d="M872 474H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h720c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z" /></svg>
+);
+
+const PlusIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor"><path d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8Z" /><path d="M192 474h672q8 0 8 8v60q0 8-8 8H160q-8 0-8-8v-60q0-8 8-8Z" /></svg>
+);
+
+const WhatsAppIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 32 32" fill="white">
+    <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.054 9.374L1.054 31.25l6.114-1.988A15.91 15.91 0 0016.004 32C24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.33 22.608c-.39 1.096-1.932 2.006-3.158 2.27-.836.18-1.93.322-5.626-1.21-4.734-1.962-7.778-6.79-8.012-7.104-.226-.314-1.896-2.52-1.896-4.808s1.2-3.41 1.628-3.874c.39-.42.92-.56 1.226-.56.302 0 .606.002.87.016.28.012.654-.106 1.014.774.39.96 1.336 3.25 1.452 3.486.116.236.194.51.038.824-.158.314-.236.51-.47.786-.236.276-.494.616-.706.826-.236.236-.48.49-.204.962.276.472 1.224 2.02 2.626 3.274 1.804 1.614 3.324 2.114 3.796 2.35.472.236.748.196 1.024-.118.276-.314 1.178-1.374 1.49-1.844.314-.472.628-.39 1.064-.234.436.156 2.772 1.308 3.246 1.544.472.236.788.354.906.55.118.196.118 1.14-.272 2.238z" />
+  </svg>
+);
+
 const StarIcon = ({ filled, half }: { filled: boolean; half?: boolean }) => (
   <span style={{ color: filled || half ? "#f5a623" : "#ddd", fontSize: 14, position: "relative", display: "inline-block" }}>
     {half ? (
@@ -95,186 +136,185 @@ const StarIcon = ({ filled, half }: { filled: boolean; half?: boolean }) => (
         <span style={{ position: "absolute", left: 0, overflow: "hidden", width: "50%", color: "#f5a623" }}>&#9733;</span>
       </>
     ) : (
-      <span>{filled ? "\u2605" : "\u2605"}</span>
+      <span>&#9733;</span>
     )}
   </span>
 );
 
-const WhatsAppIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-  </svg>
+const Stars = ({ count }: { count: number }) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(count)) stars.push(<StarIcon key={i} filled />);
+    else if (i - 0.5 <= count) stars.push(<StarIcon key={i} filled half />);
+    else stars.push(<StarIcon key={i} filled={false} />);
+  }
+  return <span style={{ display: "inline-flex", gap: 1 }}>{stars}</span>;
+};
+
+const MenuIcon = () => (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
 );
 
 /* ═══════════════════════════════════════════════════════════════════
-   HELPER COMPONENTS
-   ═══════════════════════════════════════════════════════════════════ */
-
-function Stars({ count }: { count: number }) {
-  const full = Math.floor(count);
-  const half = count % 1 >= 0.5;
-  const empty = 5 - full - (half ? 1 : 0);
-  return (
-    <span className="flex items-center gap-[1px]">
-      {Array.from({ length: full }).map((_, i) => (
-        <StarIcon key={`f${i}`} filled />
-      ))}
-      {half && <StarIcon filled half />}
-      {Array.from({ length: empty }).map((_, i) => (
-        <StarIcon key={`e${i}`} filled={false} />
-      ))}
-    </span>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   MAIN PAGE
+   COMPONENT
    ═══════════════════════════════════════════════════════════════════ */
 
 export default function ProductPage() {
-  const [cookieOpen, setCookieOpen] = useState(true);
   const [currentImage, setCurrentImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState(0);
+  const [cookieOpen, setCookieOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const relatedScrollRef = useRef<HTMLDivElement>(null);
+  const [qaPage, setQaPage] = useState(0);
 
-  const scrollRelated = useCallback((dir: "left" | "right") => {
+  const scrollRelated = (dir: "left" | "right") => {
     if (!relatedScrollRef.current) return;
-    relatedScrollRef.current.scrollBy({ left: dir === "right" ? 300 : -300, behavior: "smooth" });
-  }, []);
+    const amount = dir === "left" ? -280 : 280;
+    relatedScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
+  };
+
+  const navItems = [
+    { label: "Pneus", hasChevron: true },
+    { label: "Acessorios", hasChevron: true },
+    { label: "Rodas", hasChevron: true },
+    { label: "Marcas", hasChevron: false },
+    { label: "Promocoes", hasChevron: false },
+    { label: "Revenda", hasChevron: false },
+    { label: "Seja um parceiro", hasChevron: false },
+    { label: "Nossas lojas", hasChevron: false },
+  ];
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", minHeight: "100vh" }}>
-      {/* ─── SKIP LINK ─── */}
-      <a href="#main-content" className="skip-link">Pular para o conteúdo principal</a>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--color-background)" }}>
+      {/* ═══════════════════════════════════════════════════════════
+          SKIP LINK
+          ═══════════════════════════════════════════════════════════ */}
+      <a href="#main-content" className="skip-link">Pular para o conteudo principal</a>
 
-      {/* ─── COOKIE DRAWER ─── */}
+      {/* ═══════════════════════════════════════════════════════════
+          COOKIE BANNER
+          ═══════════════════════════════════════════════════════════ */}
       {cookieOpen && (
-        <div className="cookie-drawer" style={{ flexDirection: "column", height: "auto", padding: "16px 24px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", gap: 16, flexWrap: "wrap" }}>
-            <p style={{ fontSize: 14, color: "#333", margin: 0 }}>
-              Usamos cookies para melhorar sua experiência em nosso site.
-              Ao continuar navegando você concorda com a nossa <span style={{ color: "var(--color-primary)", textDecoration: "underline", cursor: "pointer" }}>política de privacidade.</span>
-            </p>
-            <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-              <button className="btn btn-outline" style={{ height: 32, fontSize: 12 }} onClick={() => setCookieOpen(false)}>Configurar cookies</button>
-              <button className="btn btn-outline" style={{ height: 32, fontSize: 12 }} onClick={() => setCookieOpen(false)}>Rejeitar</button>
-              <button className="btn btn-primary" style={{ height: 32, fontSize: 12 }} onClick={() => setCookieOpen(false)}>Aceitar</button>
-            </div>
+        <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#333", color: "white", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", zIndex: 100, flexWrap: "wrap", gap: 12 }}>
+          <p style={{ margin: 0, fontSize: 13, flex: 1 }}>
+            Utilizamos cookies para melhorar sua experiencia. Ao continuar navegando, voce concorda com nossaPolitica de Privacidade.
+          </p>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => setCookieOpen(false)} style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "var(--color-primary)", color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>Aceitar todos</button>
+            <button onClick={() => setCookieOpen(false)} style={{ padding: "6px 16px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.3)", background: "transparent", color: "white", cursor: "pointer", fontSize: 13 }}>Rejeitar</button>
           </div>
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════
-          HEADER
+          HEADER - DESKTOP
           ═══════════════════════════════════════════════════════════ */}
-      <div id="header-items">
-        <div style={{ fontFamily: "Arial, sans-serif" }}>
-          {/* Desktop Top Bar */}
-          <div className="hidden desktop:flex" style={{ flexDirection: "column" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "8px 20px", height: 30, color: "var(--color-primary)", background: "var(--color-neutralBgLayout)", fontSize: 12, whiteSpace: "nowrap" }}>
-              <div style={{ display: "flex", height: "100%", gap: 7 }}>
-                <button type="button" style={{ display: "flex", alignItems: "center", height: "100%", padding: "0 12px", cursor: "pointer", background: "none", border: "none", color: "inherit", fontSize: 12 }}>Quero revender</button>
-                <div style={{ display: "flex", margin: "0 8px", borderRight: "1px solid var(--color-dividerGlobalSplit)", height: "100%" }} />
-                <button type="button" style={{ display: "flex", alignItems: "center", height: "100%", padding: "0 12px", cursor: "pointer", background: "none", border: "none", color: "inherit", fontSize: 12 }}>Blog</button>
-                <div style={{ display: "flex", margin: "0 8px", borderRight: "1px solid var(--color-dividerGlobalSplit)", height: "100%" }} />
+      <div id="header-items" className="pneustore_header_header_container__ioqCn">
+        <div className="text-[14px]">
+          {/* Desktop Header */}
+          <div className="hidden desktop:flex flex-col">
+            {/* Tier 1: Top utility bar */}
+            <div className="flex justify-between items-center w-full !px-[20px] !py-[8px] h-[30px] text-[var(--color-primary)] bg-neutralBgLayout whitespace-nowrap text-xs" style={{ fontFamily: "Arial, sans-serif" }}>
+              <div className="flex h-full gap-[7px]">
+                <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors hover:opacity-70">Quero revender</button>
+                <div className="flex !mx-[8px] border-l border-[var(--color-primary)] opacity-30 h-full"></div>
+                <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors hover:opacity-70">Blog</button>
               </div>
-              <div style={{ display: "flex", height: "100%", gap: 7 }}>
-                <div style={{ display: "flex", margin: "0 8px", borderRight: "1px solid var(--color-dividerGlobalSplit)", height: "100%" }} />
-                <button type="button" style={{ display: "flex", alignItems: "center", height: "100%", padding: "0 12px", cursor: "pointer", background: "none", border: "none", color: "inherit", fontSize: 12 }}>Whatsapp (16) 99764-8401</button>
-                <div style={{ display: "flex", margin: "0 8px", borderRight: "1px solid var(--color-dividerGlobalSplit)", height: "100%" }} />
-                <span style={{ display: "flex", alignItems: "center", height: "100%", padding: "0 12px" }}>Televendas (47) 3046-2551</span>
+              <div className="flex h-full gap-[7px] items-center">
+                <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors hover:opacity-70">Whatsapp (16) 99764-8401</button>
+                <span className="px-[12px]">Televendas (47) 3046-2551</span>
               </div>
             </div>
 
-            {/* Promo Banner */}
-            <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-              <button type="button" style={{ display: "block", width: "100%", maxWidth: 1240, height: 58, background: "transparent", padding: 0, border: 0, cursor: "pointer" }}>
-                <img src="/a9c181e7594016ab63d3.webp" alt="Compre pneus com 5 anos de garantia de fábrica | 10% OFF pagando no PIX" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            {/* Tier 2: Promo banner */}
+            <div className="w-full flex justify-center">
+              <button type="button" className="block w-full max-w-[1240px] h-[58px] bg-transparent p-0 border-0 cursor-pointer">
+                <img src={`/${bannerSlides[0].img}`} alt={bannerSlides[0].alt} style={{ width: "100%", height: 58, objectFit: "cover" }} />
               </button>
             </div>
 
-            {/* Main Header: Logo + Search + Cart */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", maxWidth: 1240, padding: "16px 50px", margin: "0 auto" }}>
-              <Link href="/">
-                <img src="/0e22de206c8bff4b6700ad14924492a518cca03a.png" alt="logo" style={{ height: 30, cursor: "pointer" }} />
-              </Link>
-              <div style={{ width: "40%", margin: "0 25px", position: "relative" }}>
-                <div style={{ display: "flex", width: "100%", alignItems: "center", overflow: "hidden", borderRadius: "50px" }}>
-                  <input
-                    style={{ width: "100%", background: "#f4f4f4", outline: "none", border: "none", height: 50, borderRadius: "50px 0 0 50px", padding: "0 20px", fontSize: 14 }}
-                    placeholder="O que estou buscando hoje?"
-                    aria-label="campo de busca"
-                  />
-                  <button style={{ background: "#f4f4f4", display: "flex", justifyContent: "center", alignItems: "center", border: "none", borderRadius: "0 50px 50px 0", height: 50, width: 60, cursor: "pointer" }} aria-label="buscar">
-                    <SearchIcon />
+            {/* Tier 3: Logo + Search + Icons */}
+            <div className="w-full flex justify-center">
+              <div className="flex items-center justify-between w-full max-w-[1240px] !px-[50px] !py-[16px]">
+                <Link href="/">
+                  <img className="h-[30px] cursor-pointer" src="/reverseLogo.png" alt="Pneustore" style={{ height: 30, filter: "brightness(0) invert(1)" }} />
+                </Link>
+                <div className="w-[40%] !mx-[25px] relative">
+                  <div className="relative flex w-full items-center overflow-hidden rounded-md">
+                    <input className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:opacity-50 h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!" placeholder="O que esta buscando hoje?" style={{ fontFamily: "Arial, sans-serif" }} />
+                    <button className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]" aria-label="buscar">
+                      <SearchIcon />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex gap-[16px] text-[var(--color-primary)] whitespace-nowrap">
+                  <button className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer items-center" style={{ color: "var(--color-primary)" }}>
+                    <UserIcon />
+                    <span className="text-[14px] font-semibold hidden lg:inline">Entrar</span>
+                  </button>
+                  <button className="btn btn-ghost flex cursor-pointer h-auto gap-[8px] items-center relative" style={{ color: "var(--color-primary)" }}>
+                    <CartIcon />
+                    <span className="absolute -top-2 -right-2 bg-[var(--color-primary)] text-white text-[10px] font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center">0</span>
                   </button>
                 </div>
-              </div>
-              <div style={{ display: "flex", gap: 16, color: "var(--color-primaryPurpleBase)", whiteSpace: "nowrap" }}>
-                <button style={{ display: "flex", gap: 8, cursor: "pointer", background: "none", border: "none", color: "inherit", alignItems: "center" }} aria-label="Entrar">
-                  <UserIcon />
-                  <span>Entrar</span>
-                </button>
-                <button style={{ display: "flex", gap: 8, cursor: "pointer", background: "none", border: "none", color: "inherit", alignItems: "center" }} aria-label="Carrinho">
-                  <CartIcon />
-                  <span style={{ background: "var(--color-primaryBlueSecondaryBase)", borderRadius: "full", padding: "2px 7px", fontSize: 12, color: "var(--color-primaryPurpleBase)" }}>0</span>
-                </button>
               </div>
             </div>
           </div>
 
-          {/* Navigation Bar */}
-          <nav style={{ position: "relative", zIndex: 30, width: "100%", background: "var(--color-primaryPurpleBase)", color: "white" }}>
-            <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-              <div style={{ display: "flex", height: 48, width: "100%", maxWidth: 1240, alignItems: "center", justifyContent: "space-between", padding: "0 50px", gap: 32 }}>
-                <div style={{ display: "flex", gap: 16 }}>
-                  {["Pneus", "Acessórios", "Rodas"].map((item) => (
-                    <div key={item} style={{ display: "flex", alignItems: "center" }}>
-                      <button style={{ display: "flex", gap: 8, alignItems: "center", height: 32, padding: "0 15px", fontSize: 14, cursor: "pointer", background: "none", border: "none", color: "white", borderRadius: 6, margin: "10px 0", whiteSpace: "nowrap" }}>
-                        {item}
-                        <ChevronDown />
-                      </button>
-                    </div>
-                  ))}
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <button style={{ display: "flex", gap: 8, alignItems: "center", height: 32, padding: "0 15px", fontSize: 14, cursor: "pointer", background: "none", border: "none", color: "white", borderRadius: 6, margin: "10px 0", whiteSpace: "nowrap" }}>
-                      Marcas
-                      <ChevronDown />
-                    </button>
+          {/* ─── NAVIGATION BAR ─── */}
+          <div className="flex flex-col" style={{ background: "var(--color-primary)" }}>
+            <nav className="relative z-30 w-full" style={{ background: "var(--color-primary)", color: "white" }}>
+              <div className="w-full flex justify-center">
+                <div className="hidden desktop:flex h-[48px] w-full max-w-[1240px] items-center justify-between !px-[50px] gap-[32px]">
+                  <div className="flex gap-[16px]">
+                    {navItems.map((item) => (
+                      <div key={item.label} className="flex items-center">
+                        <button className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:opacity-80 rounded-[6px] !my-[10px] whitespace-nowrap text-white" style={{ background: "transparent", border: "none" }}>
+                          {item.label}
+                          {item.hasChevron && (
+                            <span className="transition-transform duration-200 ease-in-out"><ChevronDown /></span>
+                          )}
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                  {["Promoções", "Revenda", "Seja um parceiro", "Nossas lojas"].map((item) => (
-                    <div key={item} style={{ display: "flex", alignItems: "center" }}>
-                      <button style={{ display: "flex", alignItems: "center", height: 32, padding: "0 15px", fontSize: 14, cursor: "pointer", background: "none", border: "none", color: "white", borderRadius: 6, margin: "10px 0", whiteSpace: "nowrap" }}>
-                        {item}
-                      </button>
-                    </div>
-                  ))}
+                  <button className="flex items-center justify-center text-white gap-[8px] !px-[15px] h-[32px] rounded-[8px] text-[14px]" style={{ background: "rgba(0,0,0,0.2)", border: "none", cursor: "pointer" }}>
+                    <LocationPin />
+                    <span className="max-w-[150px] truncate">Insira seu CEP</span>
+                  </button>
                 </div>
-                <button style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--color-primaryPurpleDark, #3e0075)", color: "white", padding: "6px 16px", borderRadius: 20, border: "none", fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>
-                  <LocationPin />
-                  Insira seu CEP
-                </button>
               </div>
-            </div>
-          </nav>
+            </nav>
+          </div>
+        </div>
 
-          {/* Mobile Header */}
-          <div className="desktop:hidden" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", gap: 12 }}>
-            <button style={{ background: "none", border: "none", color: "var(--color-primary)", padding: 4 }} aria-label="Menu">
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M3.33 10h13.34M3.33 5h13.34M3.33 15h13.34" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" /></svg>
-            </button>
-            <Link href="/" style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-              <img src="/0e22de206c8bff4b6700ad14924492a518cca03a.png" alt="logo" style={{ height: 24 }} />
-            </Link>
-            <div style={{ display: "flex", gap: 12, color: "var(--color-primary)" }}>
-              <button style={{ background: "none", border: "none", color: "inherit", padding: 4 }} aria-label="Buscar">
-                <SearchIcon />
-              </button>
-              <button style={{ background: "none", border: "none", color: "inherit", padding: 4, position: "relative" }} aria-label="Carrinho">
+        {/* ─── MOBILE HEADER ─── */}
+        <div className="flex desktop:hidden flex-col !p-[16px] !gap-[16px]">
+          <button type="button" className="block w-full h-[50px] bg-transparent p-0 border-0 cursor-pointer">
+            <img src={`/${bannerSlides[0].img}`} alt={bannerSlides[0].alt} style={{ width: "100%", height: 50, objectFit: "cover", borderRadius: 8 }} />
+          </button>
+          <div className="flex items-center justify-between" style={{ color: "var(--color-primary)" }}>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }}><MenuIcon /></button>
+            <Link href="/"><img className="h-[14px]" src="/reverseLogo.png" alt="Pneustore" style={{ height: 14, filter: "brightness(0) invert(1)" }} /></Link>
+            <div className="flex gap-[8px]" style={{ color: "var(--color-primary)" }}>
+              <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }}><UserIcon /></button>
+              <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)", position: "relative" }}>
                 <CartIcon />
-                <span style={{ position: "absolute", top: -2, right: -4, background: "var(--color-primaryBlueSecondaryBase)", borderRadius: "50%", width: 16, height: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "var(--color-primary)", fontWeight: 700 }}>0</span>
+                <span className="absolute -top-2 -right-2 bg-[var(--color-primary)] text-white text-[10px] font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center">0</span>
               </button>
+            </div>
+          </div>
+          <div className="w-[100%] relative">
+            <div className="relative flex w-full items-center overflow-hidden rounded-md">
+              <input className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:opacity-50 h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!" placeholder="O que esta buscando hoje?" style={{ fontFamily: "Arial, sans-serif" }} />
+              <button className="flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]" aria-label="buscar"><SearchIcon /></button>
+            </div>
+          </div>
+          <div className="flex" style={{ background: "var(--color-primary)" }}>
+            <div className="flex gap-[8px] z-30 !px-[15px] h-[32px] items-center text-white text-[14px] w-full" style={{ background: "var(--color-primary)", opacity: 0.9 }}>
+              <LocationPin />
+              <span>Insira seu CEP</span>
             </div>
           </div>
         </div>
@@ -283,12 +323,12 @@ export default function ProductPage() {
       {/* ═══════════════════════════════════════════════════════════
           BREADCRUMB
           ═══════════════════════════════════════════════════════════ */}
-      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "12px 50px" }}>
-        <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: "var(--color-textSecondary)" }}>
+      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "12px 50px", width: "100%" }}>
+        <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: "var(--color-textSecondary)", fontFamily: "Arial, sans-serif" }}>
           <ol style={{ display: "flex", gap: 8, listStyle: "none", margin: 0, padding: 0, flexWrap: "wrap" }}>
             <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>Pneus</button></li>
             <li style={{ color: "#999" }}>/</li>
-            <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>Pneus de caminhão e ônibus</button></li>
+            <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>Pneus de caminhao e onibus</button></li>
             <li style={{ color: "#999" }}>/</li>
             <li><button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13 }}>Regional</button></li>
             <li style={{ color: "#999" }}>/</li>
@@ -298,79 +338,138 @@ export default function ProductPage() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          MAIN PRODUCT SECTION
+          MAIN PRODUCT SECTION (2-column layout)
           ═══════════════════════════════════════════════════════════ */}
-      <main id="main-content" style={{ maxWidth: 1240, margin: "0 auto", padding: "0 50px 40px" }}>
-        <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+      <main id="main-content" style={{ maxWidth: 1240, margin: "0 auto", padding: "0 50px 40px", width: "100%" }}>
+        <div className="product_container_product__Yi9Lf" style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
           {/* ─── LEFT COLUMN: Gallery ─── */}
-          <div style={{ flex: "1 1 480px", minWidth: 320, maxWidth: 560 }}>
-            {/* Inmetro Stamps */}
-            <div style={{ display: "flex", gap: 12, marginBottom: 12, alignItems: "center" }}>
-              <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#FFED00", borderRadius: 4, padding: "2px 6px" }}>
-                  <img src="/resistencia-ao-rolamento.svg" alt="" width={16} height={16} />
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>{product.inmetro.rollingResistance}</span>
+          <div className="product_product_left_column__BRpbr" style={{ flex: "1 1 480px", minWidth: 320, maxWidth: 560 }}>
+            <div style={{ position: "relative" }}>
+              <div style={{ display: "flex", gap: 12 }}>
+                {/* Vertical Thumbnails */}
+                <div className="product_thumbnails__SHRvn" style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
+                  {product.thumbnails.map((thumb, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentImage(i)}
+                      className={`product_thumbnails_img__z1Dr2 ${currentImage === i ? "product_active_thumbnail__icgqh" : ""}`}
+                      style={{
+                        width: 80, height: 80,
+                        border: currentImage === i ? "2px solid var(--color-primary)" : "2px solid #e0e0e0",
+                        borderRadius: 8, overflow: "hidden", cursor: "pointer", background: "white", padding: 2, flexShrink: 0,
+                      }}
+                      aria-label={`Imagem ${i + 1}`}
+                    >
+                      <img src={`/${thumb}`} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                    </button>
+                  ))}
+
+                  {/* INMETRO Stamps */}
+                  <div className="product_selo_inmetro____W_B" style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                    <div className="product_all_stamps__onSMZ" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, borderRadius: 4, overflow: "hidden" }}>
+                          <div style={{ width: 22, height: 22, background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px 0 0 4px" }}>
+                            <img src="/resistencia-ao-rolamento.svg" alt="" width={14} height={14} />
+                          </div>
+                          <div style={{ width: 22, height: 22, background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "0 4px 4px 0", fontSize: 11, fontWeight: 700 }}>
+                            {product.inmetro.rollingResistance}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, borderRadius: 4, overflow: "hidden" }}>
+                          <div style={{ width: 22, height: 22, background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px 0 0 4px" }}>
+                            <img src="/aderencia-pista-molhada.svg" alt="" width={14} height={14} />
+                          </div>
+                          <div style={{ width: 22, height: 22, background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "0 4px 4px 0", fontSize: 11, fontWeight: 700 }}>
+                            {product.inmetro.wetGrip}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, borderRadius: 4, overflow: "hidden" }}>
+                          <div style={{ width: 22, height: 22, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px 0 0 4px" }}>
+                            <img src="/ruido-externo-2.png" alt="" width={14} height={14} />
+                          </div>
+                          <div style={{ width: 22, height: 22, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "0 4px 4px 0", fontSize: 9, fontWeight: 700, color: "white" }}>
+                            {product.inmetro.noise}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 12, textDecoration: "underline", padding: 0, marginTop: 4 }}>Inmetro</button>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#C8D400", borderRadius: 4, padding: "2px 6px" }}>
-                  <img src="/aderencia-pista-molhada.svg" alt="" width={16} height={16} />
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>{product.inmetro.wetGrip}</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(0,0,0,0.45)", borderRadius: 4, padding: "2px 6px", color: "white" }}>
-                  <img src="/ruido-externo-2.png" alt="" width={16} height={16} />
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>{product.inmetro.noise}</span>
+
+                {/* Main Image Carousel */}
+                <div className="product_main_carousel__zKHVJ" style={{ flex: 1, position: "relative" }}>
+                  <div style={{ position: "relative", aspectRatio: "1/1", background: "#fafafa", borderRadius: 12, overflow: "hidden" }}>
+                    <img
+                      src={`/${product.images[currentImage].src}`}
+                      srcSet={product.images[currentImage].srcset}
+                      alt={product.name}
+                      fetchPriority="high"
+                      style={{ position: "absolute", height: "100%", width: "100%", left: 0, top: 0, right: 0, bottom: 0, objectFit: "contain" }}
+                    />
+                  </div>
+
+                  {/* Prev/Next arrows */}
+                  <button
+                    onClick={() => setCurrentImage(Math.max(0, currentImage - 1))}
+                    disabled={currentImage === 0}
+                    className="product_buttonBack__0KLTL"
+                    style={{
+                      position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)",
+                      width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.9)",
+                      border: "1px solid #e0e0e0", display: "flex", alignItems: "center", justifyContent: "center",
+                      cursor: currentImage === 0 ? "not-allowed" : "pointer", opacity: currentImage === 0 ? 0.4 : 1,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)", color: "var(--color-primary)",
+                    }}
+                    aria-label="Imagem anterior"
+                  >
+                    <ChevronLeft />
+                  </button>
+                  <button
+                    onClick={() => setCurrentImage(Math.min(product.images.length - 1, currentImage + 1))}
+                    disabled={currentImage === product.images.length - 1}
+                    className="product_buttonNext__bXWuP"
+                    style={{
+                      position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+                      width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.9)",
+                      border: "1px solid #e0e0e0", display: "flex", alignItems: "center", justifyContent: "center",
+                      cursor: currentImage === product.images.length - 1 ? "not-allowed" : "pointer",
+                      opacity: currentImage === product.images.length - 1 ? 0.4 : 1,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)", color: "var(--color-primary)",
+                    }}
+                    aria-label="Proxima imagem"
+                  >
+                    <ChevronRight />
+                  </button>
                 </div>
               </div>
-              <button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13, textDecoration: "underline" }}>Inmetro</button>
-            </div>
 
-            {/* Thumbnails + Main Image */}
-            <div style={{ display: "flex", gap: 12 }}>
-              {/* Vertical Thumbnails */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
-                {product.thumbnails.map((thumb, i) => (
+              {/* Dot Indicators */}
+              <div className="product_dotGroup__m7O1k" style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 12, height: 50, alignItems: "center" }}>
+                {product.images.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentImage(i)}
+                    className={`dot___3c3SI ${currentImage === i ? "carousel__dot--selected" : ""}`}
                     style={{
-                      width: 80, height: 80, border: currentImage === i ? "2px solid var(--color-primary)" : "2px solid #e0e0e0",
-                      borderRadius: 8, overflow: "hidden", cursor: "pointer", background: "white", padding: 2, flexShrink: 0,
+                      width: currentImage === i ? 24 : 8, height: 8, borderRadius: 4, border: "none",
+                      background: currentImage === i ? "var(--color-primary)" : "#d0d0d0", cursor: "pointer",
+                      transition: "all 0.2s", padding: 0,
                     }}
                     aria-label={`Imagem ${i + 1}`}
-                  >
-                    <img src={`/${thumb}`} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                  </button>
+                  />
                 ))}
               </div>
-
-              {/* Main Image */}
-              <div style={{ flex: 1, position: "relative", aspectRatio: "1/1", background: "#fafafa", borderRadius: 12, overflow: "hidden" }}>
-                <img
-                  src={`/${product.images[currentImage].src}`}
-                  alt={product.name}
-                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                />
-              </div>
-            </div>
-
-            {/* Dot Indicators */}
-            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 12 }}>
-              {product.images.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentImage(i)}
-                  style={{
-                    width: currentImage === i ? 24 : 8, height: 8, borderRadius: 4, border: "none",
-                    background: currentImage === i ? "var(--color-primary)" : "#d0d0d0", cursor: "pointer",
-                    transition: "all 0.2s",
-                  }}
-                  aria-label={`Imagem ${i + 1}`}
-                />
-              ))}
             </div>
           </div>
 
           {/* ─── RIGHT COLUMN: Product Info ─── */}
-          <div style={{ flex: "1 1 480px", minWidth: 320 }}>
+          <div className="product_container_info__o42_9" style={{ flex: "1 1 480px", minWidth: 320 }}>
             {/* Brand Logo */}
             <div style={{ marginBottom: 12 }}>
               <img
@@ -382,12 +481,14 @@ export default function ProductPage() {
             </div>
 
             {/* Title */}
-            <h1 style={{ fontSize: 22, fontWeight: 400, color: "var(--color-textBase)", margin: "0 0 12px", lineHeight: 1.4 }}>
-              {product.name}
-            </h1>
+            <div className="product_title_and_subtitle__KY7xd">
+              <h1 style={{ fontSize: 22, fontWeight: 400, color: "var(--color-textBase)", margin: "0 0 12px", lineHeight: 1.4, fontFamily: "Arial, sans-serif" }}>
+                {product.name}
+              </h1>
+            </div>
 
             {/* ID + Rating */}
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
+            <div className="product_id_and_rating__i6LqA" style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
               <span style={{ fontSize: 14, color: "var(--color-textSecondary)" }}>ID: {product.id}</span>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <Stars count={product.stars} />
@@ -395,53 +496,66 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Price Section */}
-            <div style={{ background: "#f9f9f9", borderRadius: 12, padding: "20px 24px", marginBottom: 20 }}>
-              {/* PIX Price */}
-              <div style={{ marginBottom: 8 }}>
-                <span style={{ fontSize: 14, color: "var(--color-textSecondary)" }}>por</span>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                  <span style={{ fontSize: 36, fontWeight: 700, color: "var(--color-pdp-price, var(--color-primary))" }}>
-                    R$ {product.pixPrice}
-                  </span>
-                  <span style={{ display: "inline-block", background: "var(--color-primary)", color: "white", padding: "2px 10px", borderRadius: 4, fontSize: 12, fontWeight: 600 }}>
-                    no PIX
-                  </span>
-                </div>
-              </div>
-
-              {/* Installment */}
-              <div style={{ fontSize: 14, color: "var(--color-textSecondary)", marginBottom: 4 }}>
-                ou R$ {product.installmentTotal} em até {product.installmentCount}x de R$ {product.installmentValue} sem juros.
-              </div>
-              <button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13, textDecoration: "underline" }}>
-                Veja mais formas de pagamento
+            {/* Informacoes button */}
+            <div className="product_buttons_info__7aTna" style={{ marginBottom: 16 }}>
+              <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 16px", border: "1px solid var(--color-primary)", borderRadius: 6, background: "transparent", color: "var(--color-primary)", cursor: "pointer", fontSize: 14 }}>
+                <svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                Informacoes
               </button>
             </div>
 
-            {/* Quantity + Buy */}
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
-              {/* Quantity Selector */}
-              <div style={{ display: "flex", alignItems: "center", border: "1px solid #d9d9d9", borderRadius: 8, overflow: "hidden" }}>
+            {/* Price Section — matching original exactly */}
+            <div className="product_prices__sV_aS" style={{ marginBottom: 20 }}>
+              {/* Original price strikethrough */}
+              <p style={{ margin: "0 0 4px", fontSize: 14, color: "var(--color-textSecondary)" }}>
+                <s>R$&nbsp;{product.origPrice}</s>
+              </p>
+
+              {/* PIX Price — big + badge inline */}
+              <div className="product_in_cash__FuouE" style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
+                <h2 style={{ margin: 0, fontSize: 36, fontWeight: 700, color: "var(--color-pdp-price, var(--color-primary))", lineHeight: 1.1 }}>
+                  R$ {product.pixPrice.split(",")[0]}<span style={{ fontSize: 22 }}>,{product.pixPrice.split(",")[1]}</span>
+                </h2>
+                <span style={{ display: "inline-block", background: "var(--color-primary)", color: "white", padding: "3px 12px", borderRadius: 4, fontSize: 13, fontWeight: 600, whiteSpace: "nowrap" }}>
+                  no PIX
+                </span>
+              </div>
+
+              {/* Installments */}
+              <div className="product_in_installments__mpOM0">
+                <p style={{ margin: "4px 0", fontSize: 14, color: "var(--color-textSecondary)" }}>
+                  ou R$&nbsp;{product.installmentTotal} em ate {product.installmentCount}x de R$&nbsp;{product.installmentValue} sem juros.
+                </p>
+                <button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13, textDecoration: "underline", padding: 0 }}>
+                  <span>Veja mais formas de pagamento</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quantity + Buy Button — matching original */}
+            <div className="product_btn_buy_and_shipping__Dv8_J" style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
+              {/* Quantity Selector — Ant Design style */}
+              <div className="counter_counter_container__jFi8Q" style={{ display: "flex", alignItems: "center" }}>
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
                   style={{
                     width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
-                    background: "white", border: "none", cursor: quantity <= 1 ? "not-allowed" : "pointer",
-                    color: quantity <= 1 ? "#ccc" : "var(--color-primary)", fontSize: 18,
+                    background: "white", border: "1px solid #d9d9d9", borderRadius: "6px 0 0 6px",
+                    cursor: quantity <= 1 ? "not-allowed" : "pointer",
+                    color: quantity <= 1 ? "#ccc" : "var(--color-primary)", fontSize: 16,
                   }}
                   aria-label="Diminuir quantidade"
                 >
-                  &#8722;
+                  <MinusIcon />
                 </button>
                 <input
                   type="text"
                   value={quantity}
                   readOnly
                   style={{
-                    width: 50, height: 40, textAlign: "center", border: "none", borderLeft: "1px solid #d9d9d9",
-                    borderRight: "1px solid #d9d9d9", outline: "none", fontSize: 14,
+                    width: 50, height: 40, textAlign: "center", border: "1px solid #d9d9d9",
+                    borderLeft: "none", borderRight: "none", outline: "none", fontSize: 14,
                   }}
                   aria-label="Quantidade"
                 />
@@ -449,30 +563,30 @@ export default function ProductPage() {
                   onClick={() => setQuantity(quantity + 1)}
                   style={{
                     width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
-                    background: "white", border: "none", cursor: "pointer",
-                    color: "var(--color-primary)", fontSize: 18,
+                    background: "white", border: "1px solid #d9d9d9", borderRadius: "0 6px 6px 0",
+                    cursor: "pointer", color: "var(--color-primary)", fontSize: 16,
                   }}
                   aria-label="Aumentar quantidade"
                 >
-                  +
+                  <PlusIcon />
                 </button>
               </div>
 
-              {/* Buy Button */}
+              {/* Buy Button — ghost/outlined, full width up to 300px */}
               <button
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  flex: 1, minWidth: 200, maxWidth: 300, height: 48,
-                  border: "2px solid var(--color-primary)", borderRadius: 8,
-                  background: "white", color: "var(--color-primary)",
-                  fontSize: 16, fontWeight: 600, cursor: "pointer",
+                  width: "100%", maxWidth: 300, height: 48,
+                  border: "1px solid #d9d9d9", borderRadius: 8,
+                  background: "transparent", color: "var(--color-textBase)",
+                  fontSize: 16, fontWeight: 500, cursor: "pointer",
                   transition: "all 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-primary)"; e.currentTarget.style.color = "white"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "white"; e.currentTarget.style.color = "var(--color-primary)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--color-primary)"; e.currentTarget.style.color = "var(--color-primary)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#d9d9d9"; e.currentTarget.style.color = "var(--color-textBase)"; }}
               >
-                <CartIcon />
-                Comprar
+                <CartIcon size={20} />
+                <span>Comprar</span>
               </button>
             </div>
 
@@ -485,46 +599,173 @@ export default function ProductPage() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-            TABS: Sobre o produto
+            TABS: Sobre o produto + Informacoes tecnicas
             ═══════════════════════════════════════════════════════════ */}
-        <div style={{ marginTop: 48, borderTop: "1px solid #e8e8e8" }}>
-          <div style={{ display: "flex", borderBottom: "1px solid #e8e8e8" }}>
-            <button
-              onClick={() => setActiveTab(0)}
-              style={{
-                padding: "16px 24px", fontSize: 15, fontWeight: activeTab === 0 ? 600 : 400,
-                color: activeTab === 0 ? "var(--color-primary)" : "var(--color-textSecondary)",
-                background: "none", border: "none", borderBottom: activeTab === 0 ? "2px solid var(--color-primary)" : "2px solid transparent",
-                cursor: "pointer", transition: "all 0.2s",
-              }}
-            >
-              Sobre o produto
-            </button>
-          </div>
-
-          {activeTab === 0 && (
-            <div style={{ padding: "24px 0", maxWidth: 800 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 16, color: "var(--color-textBase)" }}>
-                Informações técnicas
-              </h2>
-              <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--color-textSecondary)", marginBottom: 20 }}>
-                {product.name}
-              </p>
-              <p style={{ fontSize: 13, color: "var(--color-textSecondary)", marginBottom: 24, fontStyle: "italic" }}>
-                *Nossas vendas são realizadas apenas para consumidor final, sendo vetada a comercialização para CNPJ de revendedores.
-              </p>
-
-              <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: "var(--color-textBase)" }}>
-                Sobre a marca Itaro
-              </h3>
-              <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)", marginBottom: 16 }}>
-                A Itaro nasceu para motoristas viverem novas histórias - em duas ou quatro rodas. Desenvolvida nas grandes fábricas asiáticas, a marca é homologada nos principais mercados da Europa e América, como o Brasil. Seus pneus foram pensados em centros de pesquisa e desenvolvimento de países como China, Paquistão e Tailândia, que estão entre os maiores do mundo.
-              </p>
-              <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)" }}>
-                Com presença exclusiva na PneuStore, a Itaro oferece soluções para carros de passeio, SUVs, caminhonetes, motos e caminhões, com excelente qualidade e custo que ajudam motoristas a viverem novos capítulos todos os dias.
-              </p>
+        <div style={{ marginTop: 48 }}>
+          <div className="ant-tabs ant-tabs-top ant-tabs-centered" style={{ position: "relative" }}>
+            <div role="tablist" className="ant-tabs-nav" style={{ display: "flex", justifyContent: "center", borderBottom: "1px solid #e8e8e8" }}>
+              <div className="ant-tabs-nav-wrap">
+                <div className="ant-tabs-nav-list" style={{ display: "flex", position: "relative" }}>
+                  <button
+                    role="tab"
+                    onClick={() => setActiveTab(0)}
+                    className={`ant-tabs-tab ${activeTab === 0 ? "ant-tabs-tab-active" : ""}`}
+                    style={{
+                      padding: "16px 24px", fontSize: 15, fontWeight: activeTab === 0 ? 600 : 400,
+                      color: activeTab === 0 ? "var(--color-primary)" : "var(--color-textSecondary)",
+                      background: "none", border: "none", cursor: "pointer",
+                      borderBottom: activeTab === 0 ? "2px solid var(--color-primary)" : "2px solid transparent",
+                      transition: "all 0.2s", position: "relative",
+                    }}
+                  >
+                    Sobre o produto
+                  </button>
+                  <button
+                    role="tab"
+                    onClick={() => setActiveTab(1)}
+                    className={`ant-tabs-tab ${activeTab === 1 ? "ant-tabs-tab-active" : ""}`}
+                    style={{
+                      padding: "16px 24px", fontSize: 15, fontWeight: activeTab === 1 ? 600 : 400,
+                      color: activeTab === 1 ? "var(--color-primary)" : "var(--color-textSecondary)",
+                      background: "none", border: "none", cursor: "pointer",
+                      borderBottom: activeTab === 1 ? "2px solid var(--color-primary)" : "2px solid transparent",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    Informacoes tecnicas
+                  </button>
+                </div>
+              </div>
             </div>
-          )}
+
+            {/* Tab Panels */}
+            <div className="ant-tabs-content-holder">
+              <div className="ant-tabs-content ant-tabs-content-top">
+                {/* Tab 0: Sobre o produto */}
+                {activeTab === 0 && (
+                  <div role="tabpanel" className="ant-tabs-tabpane ant-tabs-tabpane-active">
+                    <div className="tabs-product_about_tire__RmDXf" style={{ display: "flex", justifyContent: "center", alignItems: "center", maxWidth: 860, margin: "70px auto", padding: "0 20px" }}>
+                      <div>
+                        <h3 style={{ fontSize: "1.5rem", marginBottom: 20 }}>{product.name}</h3>
+                        <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)", marginBottom: 20 }}>
+                          *Nossas vendas sao realizadas apenas para consumidor final, sendo vetada a comercializacao para CNPJ de revendedores.
+                        </p>
+                        <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)", marginBottom: 8, fontWeight: 600 }}>
+                          Sobre a marca Itaro
+                        </p>
+                        <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)", marginBottom: 16 }}>
+                          A Itaro nasceu para motoristas viverem novas historias - em duas ou quatro rodas. Desenvolvida nas grandes fabricas asiaticas, a marca e homologada nos principais mercados da Europa e America, como o Brasil. Seus pneus foram pensados em centros de pesquisa e desenvolvimento de paises como China, Paquista e Tailandia, que estao entre os maiores do mundo.
+                        </p>
+                        <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--color-textSecondary)" }}>
+                          Com presenca exclusiva na PneuStore, a Itaro oferece solucoes para carros de passeio, SUVs, caminhonetes, motos e caminhoes, com excelente qualidade e custo que ajudam motoristas a viverem novos capitulos todos os dias.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab 1: Informacoes tecnicas */}
+                {activeTab === 1 && (
+                  <div role="tabpanel" className="ant-tabs-tabpane ant-tabs-tabpane-active">
+                    <div style={{ maxWidth: 860, margin: "40px auto", padding: "0 20px" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, fontFamily: "Arial, sans-serif" }}>
+                        <tbody>
+                          {[
+                            ["Medida", "215/75R17.5"],
+                            ["Aro", '17.5"'],
+                            ["Indice de carga", "135/133"],
+                            ["Indice de velocidade", "J (100 km/h)"],
+                            ["Lonas", "16"],
+                            ["Tipo", "TL (Tubeless)"],
+                            ["Resistencia a rolamento", product.inmetro.rollingResistance],
+                            ["Aderencia em pista molhada", product.inmetro.wetGrip],
+                            ["Ruido externo", product.inmetro.noise],
+                          ].map(([label, value], i) => (
+                            <tr key={i} style={{ borderBottom: "1px solid #e8e8e8" }}>
+                              <td style={{ padding: "12px 16px", fontWeight: 600, color: "var(--color-textBase)", background: i % 2 === 0 ? "#fafafa" : "white", width: "40%" }}>{label}</td>
+                              <td style={{ padding: "12px 16px", color: "var(--color-textSecondary)", background: i % 2 === 0 ? "#fafafa" : "white" }}>{value}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+            Q&A SECTION (Perguntas e Respostas)
+            ═══════════════════════════════════════════════════════════ */}
+        <div style={{ marginTop: 48, borderTop: "1px solid #e8e8e8", paddingTop: 32 }}>
+          <div style={{ maxWidth: 860, margin: "0 auto" }}>
+            {/* Header */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ color: "var(--color-primary)", fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Perguntas e Respostas</p>
+              <p style={{ color: "var(--color-primary)", fontSize: 14, margin: 0 }}>Tem alguma duvida sobre esse produto? Envie-nos.</p>
+            </div>
+
+            {/* Form */}
+            <div style={{ marginBottom: 24 }}>
+              <textarea
+                placeholder="Digite sua pergunta"
+                style={{
+                  width: "100%", minHeight: 80, padding: 12, borderRadius: 8,
+                  border: "2px solid #dfe1e6", fontSize: 14, fontFamily: "Arial, sans-serif",
+                  resize: "vertical", outline: "none",
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "#4c9aff"; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "#dfe1e6"; }}
+              />
+              <button style={{
+                marginTop: 8, padding: "8px 24px", borderRadius: 8,
+                background: "var(--color-primary)", color: "white", border: "none",
+                fontSize: 14, fontWeight: 600, cursor: "pointer",
+              }}>
+                Enviar pergunta
+              </button>
+            </div>
+
+            {/* Questions */}
+            {qaQuestions.map((qa, i) => (
+              <div key={i} style={{ marginBottom: 20 }}>
+                <div style={{ borderRadius: 10, padding: 16, background: "#f9f9f9" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 500, color: "var(--color-textBase)" }}>{qa.question}</p>
+                  <p style={{ margin: 0, fontSize: 12, color: "var(--color-textSecondary)" }}>
+                    por <b>{qa.author}</b> em {qa.date}
+                  </p>
+                </div>
+                <div style={{ marginLeft: 24, marginTop: 8, padding: "12px 16px", borderLeft: "3px solid var(--color-primary)", background: "#fafafa", borderRadius: "0 8px 8px 0" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 14, color: "var(--color-textBase)", lineHeight: 1.6, whiteSpace: "pre-line" }}>{qa.answer}</p>
+                  <p style={{ margin: 0, fontSize: 12, color: "var(--color-textSecondary)" }}>
+                    por <b>{qa.answerBy}</b> em {qa.answerDate}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {/* Pagination */}
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, alignItems: "center" }}>
+              <button disabled style={{ color: "var(--color-primary)", opacity: 0.3, background: "none", border: "none", fontSize: 16, cursor: "not-allowed" }}>&lt;</button>
+              {[1, 2, 3, 4, 5].map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setQaPage(page - 1)}
+                  style={{
+                    width: 32, height: 32, borderRadius: "50%", border: "none",
+                    background: qaPage === page - 1 ? "var(--color-primary)" : "transparent",
+                    color: qaPage === page - 1 ? "white" : "var(--color-primary)",
+                    cursor: "pointer", fontSize: 13, fontWeight: 600,
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+              <button style={{ color: "var(--color-primary)", background: "none", border: "none", fontSize: 16, cursor: "pointer" }}>&gt;</button>
+            </div>
+          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
@@ -536,115 +777,72 @@ export default function ProductPage() {
           </h2>
 
           <div style={{ position: "relative" }}>
-            {/* Arrow Left */}
-            <button
-              onClick={() => scrollRelated("left")}
-              style={{
-                position: "absolute", left: -16, top: "50%", transform: "translateY(-50%)", zIndex: 10,
-                width: 36, height: 36, borderRadius: "50%", background: "white", border: "1px solid #e0e0e0",
-                display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)", color: "var(--color-primary)",
-              }}
-              aria-label="Anterior"
-            >
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <button onClick={() => scrollRelated("left")} style={{ position: "absolute", left: -16, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: 36, height: 36, borderRadius: "50%", background: "white", border: "1px solid #e0e0e0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", color: "var(--color-primary)" }} aria-label="Anterior">
+              <ChevronLeft />
             </button>
 
-            {/* Products Scroll */}
-            <div
-              ref={relatedScrollRef}
-              style={{
-                display: "flex", gap: 16, overflowX: "auto", scrollBehavior: "smooth",
-                scrollbarWidth: "none", msOverflowStyle: "none", padding: "4px 0",
-              }}
-              className="hide-scrollbar"
-            >
+            <div ref={relatedScrollRef} style={{ display: "flex", gap: 16, overflowX: "auto", scrollBehavior: "smooth", scrollbarWidth: "none", msOverflowStyle: "none", padding: "4px 0" }} className="hide-scrollbar">
               {relatedProducts.map((p, i) => (
-                <div
-                  key={i}
-                  style={{
-                    minWidth: 260, maxWidth: 260, border: "1px solid #e8e8e8", borderRadius: 12,
-                    overflow: "hidden", background: "white", cursor: "pointer",
-                    transition: "box-shadow 0.2s", flexShrink: 0,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
-                >
-                  <div style={{ padding: 16 }}>
-                    {/* Inmetro mini badges */}
-                    <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                          <img src="/858188e454f29bd80bfe9090e2d077acc45f5ee7.png" alt="" width={12} height={12} />
+                <Link href="/produto" key={i} style={{ textDecoration: "none", color: "inherit" }}>
+                  <div style={{ minWidth: 260, maxWidth: 260, border: "1px solid #e8e8e8", borderRadius: 12, overflow: "hidden", background: "white", cursor: "pointer", transition: "box-shadow 0.2s", flexShrink: 0 }}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    <div style={{ padding: 16 }}>
+                      {/* Inmetro mini badges */}
+                      <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
+                          <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                            <img src="/858188e454f29bd80bfe9090e2d077acc45f5ee7.png" alt="" width={12} height={12} />
+                          </div>
+                          <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>{p.rr}</div>
                         </div>
-                        <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 10 }}>
-                          {p.rr}
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
+                          <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                            <img src="/92cd0612962d6caef7b755437547b544970a915c.png" alt="" width={12} height={12} />
+                          </div>
+                          <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>{p.wg}</div>
                         </div>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                          <img src="/92cd0612962d6caef7b755437547b544970a915c.png" alt="" width={12} height={12} />
-                        </div>
-                        <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 10 }}>
-                          {p.wg}
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
+                          <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                            <img src="/a9c67ec6b08617feea202bddb77ebc4ae147d1ff.png" alt="" width={12} height={12} />
+                          </div>
+                          <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 9 }}>{p.noise}</div>
                         </div>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                          <img src="/a9c67ec6b08617feea202bddb77ebc4ae147d1ff.png" alt="" width={12} height={12} />
-                        </div>
-                        <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 9 }}>
-                          {p.noise}
-                        </div>
+
+                      <div style={{ width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                        <img src={`/${p.img}`} alt={p.title} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
                       </div>
-                    </div>
 
-                    {/* Product Image */}
-                    <div style={{ width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={`/${p.img}`} alt={p.title} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
-                    </div>
+                      {p.brand && (
+                        <div style={{ width: "100%", height: 24, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+                          <img src={`/${p.brand}`} alt="" style={{ maxHeight: 24, objectFit: "contain" }} />
+                        </div>
+                      )}
 
-                    {/* Brand Banner */}
-                    {p.brand && (
-                      <div style={{ width: "100%", height: 24, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
-                        <img src={`/${p.brand}`} alt="" style={{ maxHeight: 24, objectFit: "contain" }} />
+                      <p style={{ fontSize: 13, color: "var(--color-textBase)", lineHeight: 1.4, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {p.title}
+                      </p>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 8 }}>
+                        <Stars count={p.stars} />
+                        <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
                       </div>
-                    )}
 
-                    {/* Title */}
-                    <p style={{ fontSize: 13, color: "var(--color-textBase)", lineHeight: 1.4, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                      {p.title}
-                    </p>
-
-                    {/* Stars */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 8 }}>
-                      <Stars count={p.stars} />
-                      <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
-                    </div>
-
-                    {/* Price */}
-                    <div>
-                      <span style={{ fontSize: 12, color: "var(--color-textSecondary)", textDecoration: "line-through" }}>R$ {p.origPrice}</span>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: "var(--color-primary)" }}>R$ {p.curPrice}</div>
-                      <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>ou 10x de R$ {p.installment}</span>
+                      <div>
+                        <span style={{ fontSize: 12, color: "var(--color-textSecondary)", textDecoration: "line-through" }}>R$ {p.origPrice}</span>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: "var(--color-primary)" }}>R$ {p.curPrice}</div>
+                        <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>ou 10x de R$ {p.installment}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 
-            {/* Arrow Right */}
-            <button
-              onClick={() => scrollRelated("right")}
-              style={{
-                position: "absolute", right: -16, top: "50%", transform: "translateY(-50%)", zIndex: 10,
-                width: 36, height: 36, borderRadius: "50%", background: "white", border: "1px solid #e0e0e0",
-                display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)", color: "var(--color-primary)",
-              }}
-              aria-label="Próximo"
-            >
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <button onClick={() => scrollRelated("right")} style={{ position: "absolute", right: -16, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: 36, height: 36, borderRadius: "50%", background: "white", border: "1px solid #e0e0e0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", color: "var(--color-primary)" }} aria-label="Proximo">
+              <ChevronRight />
             </button>
           </div>
         </div>
@@ -653,104 +851,99 @@ export default function ProductPage() {
       {/* ═══════════════════════════════════════════════════════════
           NEWSLETTER
           ═══════════════════════════════════════════════════════════ */}
-      <section style={{ background: "var(--color-primaryBlueSecondaryBase)", padding: "32px 50px" }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 24 }}>
-          <div>
-            <h3 style={{ fontSize: 18, fontWeight: 600, color: "var(--color-primaryPurpleBase)", margin: "0 0 4px" }}>
-              Assine nossa newsletter
-            </h3>
-            <p style={{ fontSize: 14, color: "var(--color-primaryPurpleBase)", opacity: 0.8, margin: 0 }}>
-              Receba ofertas exclusivas e novidades
-            </p>
-          </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input
-              placeholder="Seu nome"
-              style={{ padding: "10px 16px", borderRadius: 8, border: "none", fontSize: 14, minWidth: 180 }}
-              aria-label="Nome"
-            />
-            <input
-              placeholder="Seu e-mail"
-              type="email"
-              style={{ padding: "10px 16px", borderRadius: 8, border: "none", fontSize: 14, minWidth: 240 }}
-              aria-label="E-mail"
-            />
-            <button className="btn btn-primary" style={{ height: 40 }}>
-              Me inscrever
-            </button>
-          </div>
-        </div>
+      <section className="product_container_newsletter__ZmXX_" style={{ background: "var(--color-secondary)" }}>
+        <section className="newsletter_newsletter_container_home__4T9VZ">
+          <form className="flex flex-col desktop:flex-row h-full">
+            <div className="flex flex-col w-full h-full font-arial gap-[24px] items-center !bg-[var(--color-secondary)] !px-[16px] !py-[24px] desktop:!px-[100px] desktop:!py-[48px]">
+              <div className="flex flex-col gap-[4px]">
+                <h2 className="font-bold text-center !text-[24px] desktop:!text-[30px] leading-[32px] desktop:leading-[38px] !text-[var(--color-primary)]">
+                  Fique por dentro das acoes que acontecem na PNEUSTORE
+                </h2>
+              </div>
+              <div className="flex flex-col desktop:flex-row gap-[16px] w-full justify-center">
+                <div className="w-full flex flex-col">
+                  <input className="!border-inputGlobalBorder w-full bg-white border-[1px] !py-[4px] !px-[11px] rounded-md !text-[14px] placeholder-inputGlobalTextPlaceholder !h-[40px]" aria-label="Seu nome" placeholder="Seu nome" name="name" />
+                </div>
+                <div className="w-full flex flex-col">
+                  <input className="!border-inputGlobalBorder w-full bg-white border-[1px] !py-[4px] !px-[11px] rounded-md !text-[14px] placeholder-inputGlobalTextPlaceholder !h-[40px]" type="email" aria-label="Seu email" placeholder="E-mail" name="email" />
+                </div>
+                <button type="submit" className="!bg-[var(--color-primary)] !border-[var(--color-primary)] text-white !h-[40px] rounded-md !px-[32px] font-bold cursor-pointer border-none" style={{ minWidth: 140 }}>
+                  Me inscrever
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════════════════════ */}
-      <footer>
-        {/* Footer Top */}
-        <div style={{ background: "var(--color-primaryPurpleBase)", color: "white", padding: "40px 50px" }}>
-          <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-            <div style={{ marginBottom: 24 }}>
-              <img src="/reverseLogo.png" alt="PneuStore" style={{ height: 29, filter: "brightness(0) invert(1)" }} />
+      <footer id="footer-items">
+        <div className="flex flex-col text-white PSFooterWrapper_pneuStoreFooter__u2BfR">
+          {/* Footer Main */}
+          <div className="flex desktop:flex-wrap flex-col desktop:flex-row justify-between gap-[16px] !px-[16px] !py-[24px] desktop:!px-[100px] desktop:!py-[48px]" style={{ background: "var(--color-primary)" }}>
+            <img className="h-[29px] w-[213px]" alt="Pneustore Logo footer" src="/reverseLogo.png" style={{ filter: "brightness(0) invert(1)" }} />
+
+            <div className="flex flex-col gap-[16px]">
+              <span className="font-bold text-left text-[16px]">Institucional</span>
+              <div className="flex flex-col items-start gap-[8px]">
+                {["Garantia", "Politica de privacidade", "Trabalhe conosco", "Marcas", "Portal Renegocie"].map((item) => (
+                  <button key={item} className="text-[14px] text-left hover:underline cursor-pointer text-white" style={{ background: "none", border: "none", padding: 0 }}>{item}</button>
+                ))}
+              </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 32 }}>
-              {/* Col 1 */}
-              <div>
-                <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: "white" }}>Institucional</h4>
-                {["Garantia", "Política de privacidade", "Trabalhe conosco", "Marcas"].map((item) => (
-                  <button key={item} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.8)", fontSize: 13, cursor: "pointer", padding: "4px 0", width: "100%", textAlign: "left" }}>{item}</button>
+
+            <div className="flex flex-col gap-[16px]">
+              <span className="font-bold text-left text-[16px]">Ajuda</span>
+              <div className="flex flex-col items-start gap-[8px]">
+                {["Suporte PneuStore", "Perguntas frequentes", "Entrega", "Meus pedidos", "Informacoes tecnicas de pneus", "Trocas e devolucoes"].map((item) => (
+                  <button key={item} className="text-[14px] text-left hover:underline cursor-pointer text-white" style={{ background: "none", border: "none", padding: 0 }}>{item}</button>
                 ))}
               </div>
-              {/* Col 2 */}
-              <div>
-                <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: "white" }}>Ajuda</h4>
-                {["Suporte PneuStore", "Perguntas frequentes", "Entrega", "Meus pedidos", "Informações técnicas de pneus", "Trocas e devoluções"].map((item) => (
-                  <button key={item} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.8)", fontSize: 13, cursor: "pointer", padding: "4px 0", width: "100%", textAlign: "left" }}>{item}</button>
+            </div>
+
+            <div className="flex flex-col gap-[16px]">
+              <span className="font-bold text-left text-[16px]">Servico</span>
+              <div className="flex flex-col items-start gap-[8px]">
+                {["Seja um parceiro de servicos", "Montagem em nossos parceiros", "Protecao para seus pneus"].map((item) => (
+                  <button key={item} className="text-[14px] text-left hover:underline cursor-pointer text-white" style={{ background: "none", border: "none", padding: 0 }}>{item}</button>
                 ))}
               </div>
-              {/* Col 3 */}
-              <div>
-                <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: "white" }}>Serviço</h4>
-                {["Seja um parceiro de serviços", "Montagem em nossos parceiros", "Proteção para seus pneus"].map((item) => (
-                  <button key={item} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.8)", fontSize: 13, cursor: "pointer", padding: "4px 0", width: "100%", textAlign: "left" }}>{item}</button>
-                ))}
-              </div>
-              {/* Col 4 */}
-              <div>
-                <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: "white" }}>Central de relacionamento</h4>
-                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", margin: "0 0 8px" }}>(47) 3046-2551</p>
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: "0 0 12px" }}>(Ligações de qualquer origem)</p>
-                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", margin: "0 0 8px" }}>4000-2313</p>
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: 0 }}>Para capitais e regiões metropolitanas</p>
+            </div>
+
+            <div className="flex flex-col gap-[16px]">
+              <span className="font-bold text-left text-[16px]">Central de relacionamento</span>
+              <div className="flex flex-col items-start gap-[8px]">
+                <p className="text-[14px] text-left m-0">(47) 3046-2551</p>
+                <p className="text-[12px] text-left opacity-60 m-0">(Ligacoes de qualquer origem)</p>
+                <p className="text-[14px] text-left m-0">4000-2313</p>
+                <p className="text-[12px] text-left opacity-60 m-0">Para capitais e regioes metropolitanas</p>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Footer Middle: Trust Badges */}
-        <div style={{ background: "var(--color-primaryPurpleDark, #3e0075)", padding: "24px 50px" }}>
-          <div style={{ maxWidth: 1240, margin: "0 auto", display: "flex", justifyContent: "center", alignItems: "center", gap: 32, flexWrap: "wrap" }}>
-            <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: 1 }}>Segurança</p>
+          {/* Footer Bottom: Trust Badges */}
+          <div className="flex gap-[16px] desktop:gap-[64px] flex-wrap !px-[16px] desktop:!px-[100px] !py-[24px]" style={{ background: "var(--color-primaryPurpleDark, #3e0075)" }}>
+            <div className="hidden desktop:flex flex-col gap-[16px]">
+              <p className="text-[11px] opacity-70 uppercase tracking-wider m-0">Seguranca</p>
               <img src="/logoConfi.png" alt="Confi.eco" style={{ height: 48 }} />
             </div>
-            <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+            <div className="flex gap-[20px] items-center flex-wrap justify-center">
               <img src="/reclameAwardlogo.png" alt="Reclame AQUI" style={{ height: 48 }} />
               <img src="/complainHerelogo.png" alt="Bom" style={{ height: 48 }} />
               <img src="/clinteRecommendsLogo.png" alt="O Cliente Recomenda" style={{ height: 48 }} />
               <img src="/logoBsi.png" alt="BSI ISO 27001" style={{ height: 48 }} />
             </div>
-            <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: 1 }}>Certificado de Destinação Final</p>
+            <div className="flex flex-col gap-[16px]">
+              <p className="text-[11px] opacity-70 uppercase tracking-wider m-0">Certificado de Destinacao Final</p>
               <img src="/resetLogo.png" alt="Reset Descarte" style={{ height: 40 }} />
             </div>
           </div>
-        </div>
 
-        {/* Footer Social + Payment */}
-        <div style={{ background: "white", padding: "24px 50px", borderTop: "1px solid #e8e8e8" }}>
-          <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-            {/* Social */}
-            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 20 }}>
+          {/* Footer Payment */}
+          <div className="flex flex-col items-center gap-[8px] !px-[16px] !py-[24px] desktop:!px-[100px]" style={{ background: "var(--color-footerBottomBg, white)" }}>
+            <div className="flex gap-[24px] mb-[12px]">
               <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }} aria-label="Facebook">
                 <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" /></svg>
               </button>
@@ -761,21 +954,13 @@ export default function ProductPage() {
                 <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z" /><polygon points="9.75,15.02 15.5,11.75 9.75,8.48" fill="white" /></svg>
               </button>
             </div>
-
-            {/* Payment Methods */}
-            <div style={{ textAlign: "center" }}>
-              <img src="/paymentMethodsLogos.png" alt="Formas de pagamento" style={{ height: 22, marginBottom: 8 }} />
-              <p style={{ fontSize: 12, color: "var(--color-textSecondary)", margin: 0 }}>
-                Parcele suas compras usando seu cartão de crédito e pague em até 10x sem juros
-              </p>
-            </div>
-
-            {/* Copyright */}
-            <div style={{ textAlign: "center", marginTop: 16, paddingTop: 16, borderTop: "1px solid #e8e8e8" }}>
-              <p style={{ fontSize: 11, color: "var(--color-textSecondary)", margin: 0 }}>
-                2022 PneuStore. CPX Distribuidora S/A. Rodovia SC 486 - Antonio Heil, 800 - Bairro Itaipava - CEP 88316001 - Itajaí/SC. CNPJ: 10.158.356/0001-01.
-              </p>
-            </div>
+            <img src="/paymentMethodsLogos.png" alt="Formas de Pagamento" style={{ height: 22 }} />
+            <p className="text-[12px] text-center m-0" style={{ color: "var(--color-textSecondary)" }}>
+              Parcele suas compras usando seu cartao de credito e pague em ate 10x sem juros
+            </p>
+            <p className="text-[10px] text-center m-0 mt-[8px] pt-[8px]" style={{ color: "var(--color-textSecondary)", borderTop: "1px solid #e8e8e8", width: "100%" }}>
+              2022 PneuStore. CPX Distribuidora S/A. Rodovia SC 486 - Antonio Heil, 800 - Bairro Itaipava - CEP 88316001 - Itajai/SC. CNPJ: 10.158.356/0001-01.
+            </p>
           </div>
         </div>
       </footer>
