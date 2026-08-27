@@ -27,14 +27,9 @@ const product = {
   stars: 4.5,
   reviews: 13,
   images: [
-    { src: "ad3934dd692d3fc98e39.webp", srcset: "ad3934dd692d3fc98e39-9.webp 384w, ad3934dd692d3fc98e39-1.webp 640w, ad3934dd692d3fc98e39-8.webp 750w, ad3934dd692d3fc98e39-3.webp 828w, ad3934dd692d3fc98e39-2.webp 1080w, ad3934dd692d3fc98e39-4.webp 1200w, ad3934dd692d3fc98e39-5.webp 1920w, ad3934dd692d3fc98e39-6.webp 2048w, ad3934dd692d3fc98e39-7.webp 3840w" },
-    { src: "7511f693be07e9958cae.webp", srcset: "7511f693be07e9958cae-9.webp 384w, 7511f693be07e9958cae-4.webp 640w, 7511f693be07e9958cae-10.webp 750w, 7511f693be07e9958cae-7.webp 828w, 7511f693be07e9958cae.webp 1080w, 7511f693be07e9958cae-3.webp 1200w, 7511f693be07e9958cae-2.webp 1920w, 7511f693be07e9958cae-8.webp 2048w, 7511f693be07e9958cae-5.webp 3840w" },
-    { src: "ac18ab0ab5a16a74a0b9.webp", srcset: "ac18ab0ab5a16a74a0b9-1.webp 384w, ac18ab0ab5a16a74a0b9-2.webp 640w, ac18ab0ab5a16a74a0b9-3.webp 750w, ac18ab0ab5a16a74a0b9-4.webp 828w, ac18ab0ab5a16a74a0b9-5.webp 1080w, ac18ab0ab5a16a74a0b9-6.webp 1200w, ac18ab0ab5a16a74a0b9-7.webp 1920w, ac18ab0ab5a16a74a0b9-8.webp 2048w, ac18ab0ab5a16a74a0b9-9.webp 3840w" },
-  ],
-  thumbnails: [
-    "ad3934dd692d3fc98e39-10.webp",
-    "7511f693be07e9958cae-1.webp",
-    "ac18ab0ab5a16a74a0b9-8.webp",
+    "ad3934dd692d3fc98e39.webp",
+    "7511f693be07e9958cae.webp",
+    "ac18ab0ab5a16a74a0b9.webp",
   ],
   inmetro: {
     rollingResistance: "C",
@@ -135,7 +130,7 @@ export default function ProductPage() {
               <div style={{ display: "flex", gap: 12 }}>
                 {/* Vertical Thumbnails */}
                 <div className="product_thumbnails__SHRvn" style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
-                  {product.thumbnails.map((thumb, i) => (
+                  {product.images.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrentImage(i)}
@@ -147,7 +142,7 @@ export default function ProductPage() {
                       }}
                       aria-label={`Imagem ${i + 1}`}
                     >
-                      <img src={`${STATIC_BASE}/${thumb}?w=200&q=50`} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                      <img src={`${STATIC_BASE}/${img}?w=200&q=50`} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                     </button>
                   ))}
 
@@ -193,15 +188,7 @@ export default function ProductPage() {
                 <div className="product_main_carousel__zKHVJ" style={{ flex: 1, position: "relative" }}>
                   <div style={{ position: "relative", aspectRatio: "1/1", background: "#fafafa", borderRadius: 12, overflow: "hidden" }}>
                     <img
-                      src={`${STATIC_BASE}/${product.images[currentImage].src}?w=1080&q=50`}
-                      srcSet={product.images[currentImage].srcset
-                        .split(",")
-                        .map((entry) => {
-                          const [file, width] = entry.trim().split(/\s+/);
-                          return `${STATIC_BASE}/${file}?w=${width.replace("w", "")}&q=50 ${width}`;
-                        })
-                        .join(", ")}
-                      sizes="(max-width: 560px) 100vw, 480px"
+                      src={`${STATIC_BASE}/${product.images[currentImage]}?w=1080&q=50`}
                       alt={product.name}
                       fetchPriority="high"
                       style={{ position: "absolute", height: "100%", width: "100%", left: 0, top: 0, right: 0, bottom: 0, objectFit: "contain" }}
