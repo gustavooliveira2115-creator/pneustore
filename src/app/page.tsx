@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import {
   WrenchIcon,
   Stars,
 } from "@/components/icons";
+import { PRODUCT_SLUG } from "@/lib/slug";
 
 /* ═══════════════════════════════════════════════════════════════════
    DATA
@@ -260,23 +261,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ─── CATEGORY CARDS ─── */}
-        <section className="zebra-gray" style={{ padding: "32px 10%" }}>
-          <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-            <p style={{ fontSize: 24, fontWeight: 600, marginBottom: 16, textAlign: "center" }}>Navegue por categoria</p>
-            <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-              {categoryCards.map((cat) => (
-                <div key={cat.label} style={{ display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 100, maxWidth: 392, borderRadius: 6 }}>
-                  <img src={`/${cat.img2x}`} alt={cat.label} width={392} height={192} style={{ width: "100%", height: "auto", objectFit: "cover" }} />
-                  <span style={{ display: "flex", justifyContent: "center", alignItems: "center", fontSize: 16, fontWeight: 600, height: 32, color: "white", background: "var(--color-primary)" }}>
-                    {cat.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ─── PRODUCT CAROUSEL ─── */}
         <section className="zebra-white" style={{ padding: "32px 10%" }}>
           <div style={{ maxWidth: 1240, margin: "0 auto" }}>
@@ -295,7 +279,7 @@ export default function HomePage() {
               {products.map((p) => (
                 <div key={p.id} className="product-card" style={{ minWidth: 260, maxWidth: 280 }}>
                    {/* Image */}
-                   <Link href="/produto" style={{ textDecoration: "none", color: "inherit" }}>
+                      <Link href={`/produto/${PRODUCT_SLUG}`} style={{ textDecoration: "none", color: "inherit" }}>
                      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: 8, background: "#fafafa", cursor: "pointer" }}>
                        <img src={`/${p.img2x}`} alt={p.title} style={{ maxWidth: "85%", maxHeight: "85%", objectFit: "contain" }} />
                        {p.badge && (
@@ -319,7 +303,7 @@ export default function HomePage() {
                      <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
                    </div>
                    {/* Title */}
-                   <Link href="/produto" style={{ textDecoration: "none", color: "inherit" }}>
+                      <Link href={`/produto/${PRODUCT_SLUG}`} style={{ textDecoration: "none", color: "inherit" }}>
                      <p style={{ fontSize: 13, fontWeight: 600, color: "#4b4b4b", lineHeight: "1.4", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 54, cursor: "pointer" }}>
                        {p.title}
                      </p>
@@ -341,6 +325,23 @@ export default function HomePage() {
                       Comparar
                     </button>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── CATEGORY CARDS ─── */}
+        <section className="zebra-gray" style={{ padding: "32px 10%" }}>
+          <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+            <p style={{ fontSize: 24, fontWeight: 600, marginBottom: 16, textAlign: "center" }}>Navegue por categoria</p>
+            <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+              {categoryCards.map((cat) => (
+                <div key={cat.label} style={{ display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 100, maxWidth: 392, borderRadius: 6 }}>
+                  <img src={`/${cat.img2x}`} alt={cat.label} width={392} height={192} style={{ width: "100%", height: "auto", objectFit: "cover" }} />
+                  <span style={{ display: "flex", justifyContent: "center", alignItems: "center", fontSize: 16, fontWeight: 600, height: 32, color: "white", background: "var(--color-primary)" }}>
+                    {cat.label}
+                  </span>
                 </div>
               ))}
             </div>

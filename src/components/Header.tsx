@@ -1,531 +1,290 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  SearchIcon,
-  UserIcon,
-  CartIcon,
-  ChevronDown,
-  ChevronRight,
-  LocationPin,
-  HamburgerIcon,
-} from "./icons";
-
-const navLinks = [
-  { label: "Pneus", href: "#" },
-  { label: "Rodas", href: "#" },
-  { label: "Acessórios", href: "#" },
-  { label: "Oficinas parceiras", href: "#" },
-];
-
-const vehicleTabs = ["Carros", "Caminhão e ônibus", "Motos"];
-
-const carBrands = [
-  "BYRD","CHEVROLET","CITROEN","FIAT","FORD","HONDA","HYUNDAI","JAC","KIA",
-  "LAND ROVER","NISSAN","PEUGEOT","RENAULT","SSANGYONG","SUBARU","SUZUKI",
-  "TOYOTA","VOLKSWAGEN","VOLVO",
-];
-
 export default function Header() {
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [vehicleOpen, setVehicleOpen] = useState(false);
-  const [vehicleTab, setVehicleTab] = useState(0);
-  const [cookieOpen, setCookieOpen] = useState(true);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <div
-      className="pneustore-header"
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        background: "var(--color-primaryPurpleDarkest)",
-      }}
-    >
-      {/* Cookie Banner */}
-      {cookieOpen && (
-        <div
-          style={{
-            background: "var(--color-primaryPurpleBase)",
-            padding: "12px 16px",
-            textAlign: "center",
-            color: "white",
-            fontSize: 12,
-            position: "relative",
-          }}
-        >
-          <span style={{ fontSize: 12 }}>
-            Utilizamos cookies para melhorar sua experiência. Ao continuar
-            navegando, você concorda com a nossa{" "}
-            <a href="#" style={{ textDecoration: "underline" }}>
-              Política de Privacidade
-            </a>
-            .
-          </span>
-          <button
-            onClick={() => setCookieOpen(false)}
-            style={{
-              position: "absolute",
-              right: 20,
-              top: "50%",
-              transform: "translateY(-50%)",
-              background: "none",
-              border: "none",
-              color: "white",
-              fontSize: 18,
-              cursor: "pointer",
-              padding: 4,
-            }}
-            aria-label="Fechar aviso de cookies"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      <div
-        style={{
-          background: scrolled
-            ? "rgba(78,0,142,0.97)"
-            : "var(--color-primaryPurpleDarkest)",
-          transition: "background 0.3s",
-        }}
-      >
-        {/* Desktop Header */}
-        <div
-          className="hidden desktop:flex"
-          style={{
-            maxWidth: 1240,
-            margin: "0 auto",
-            padding: "16px 50px",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
-          <Link href="/" style={{ flexShrink: 0, lineHeight: 0 }}>
-            <img
-              src="/0e22de206c8bff4b6700ad14924492a518cca03a.png"
-              alt="Logo Pneustore"
-              style={{ height: 22 }}
-            />
-          </Link>
-
-          {/* Location */}
-          <button
-            style={{
-              background: "none",
-              border: "none",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              cursor: "pointer",
-              fontSize: 12,
-              whiteSpace: "nowrap",
-            }}
-          >
-            <LocationPin />
-            <span style={{ fontSize: 12 }}>
-              Informar <br /> local de entrega
-            </span>
-            <ChevronDown color="white" />
-          </button>
-
-          {/* Search Bar */}
-          <div
-            style={{
-              position: "relative",
-              flex: 1,
-              maxWidth: 600,
-            }}
-          >
-            <input
-              style={{
-                width: "100%",
-                height: 44,
-                background: "white",
-                borderRadius: "10px 10px 10px 10px",
-                border: "none",
-                outline: "none",
-                padding: "0 20px",
-                fontSize: 14,
-              }}
-              placeholder="O que estou buscando hoje?"
-              aria-label="Campo de busca"
-            />
-            <button
-              style={{
-                position: "absolute",
-                right: 0,
-                top: 0,
-                height: 44,
-                width: 60,
-                borderRadius: "0 10px 10px 0",
-                background: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "none",
-                cursor: "pointer",
-              }}
-              aria-label="Buscar"
-            >
-              <SearchIcon />
-            </button>
-          </div>
-
-          {/* User */}
-          <button
-            style={{
-              background: "none",
-              border: "none",
-              color: "white",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              whiteSpace: "nowrap",
-            }}
-          >
-            <UserIcon />
-            <span style={{ fontSize: 12 }}>Entrar ou<br />cadastrar</span>
-          </button>
-
-          {/* Cart */}
-          <button
-            style={{
-              background: "none",
-              border: "none",
-              color: "white",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <div style={{ position: "relative" }}>
-              <CartIcon />
-              <span
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -10,
-                  background: "var(--color-primaryBlueSecondaryBase)",
-                  borderRadius: "50%",
-                  padding: "2px 6px",
-                  fontSize: 11,
-                  color: "var(--color-primaryPurpleBase)",
-                  lineHeight: 1,
-                }}
-              >
-                0
-              </span>
-            </div>
-          </button>
-        </div>
-
-        {/* Desktop Nav */}
-        <div
-          className="hidden desktop:block"
-          style={{
-            background: "var(--color-primaryPurpleBase)",
-            borderTop: "1px solid rgba(255,255,255,0.2)",
-          }}
-        >
-          <div
-            style={{
-              maxWidth: 1240,
-              margin: "0 auto",
-              padding: "0 50px",
-              display: "flex",
-              gap: 8,
-            }}
-          >
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  color: "white",
-                  textDecoration: "none",
-                  padding: "12px 16px",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  position: "relative",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                }}
-              >
-                {link.label}
-                <ChevronDown color="white" />
-              </a>
-            ))}
-
-            {/* Vehicle Dropdown Trigger */}
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={() => setVehicleOpen(!vehicleOpen)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  color: "white",
-                  background: vehicleOpen ? "rgba(255,255,255,0.1)" : "transparent",
-                  border: "none",
-                  padding: "12px 16px",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!vehicleOpen) e.currentTarget.style.background = "transparent";
-                }}
-              >
-                Informações do seu veículo
-                <ChevronDown color="white" />
+    <div className="pneustore_header_header_container__ioqCn">
+      <div className="text-[14px]">
+        <div className="hidden desktop:flex flex-col">
+          <div className="flex justify-between items-center w-full !px-[20px] !py-[8px] h-[30px] text-[var(--color-primary)] bg-neutralBgLayout whitespace-nowrap text-xs">
+            <div className="flex h-full gap-[7px]">
+              <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors duration-150 hover:underline">
+                Quero revender
               </button>
-
-              {/* Vehicle Dropdown */}
-              {vehicleOpen && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    background: "white",
-                    color: "black",
-                    padding: 20,
-                    width: 600,
-                    zIndex: 200,
-                  }}
-                >
-                  {/* Tabs */}
-                  <div style={{ display: "flex", gap: 0, marginBottom: 16 }}>
-                    {vehicleTabs.map((tab, i) => (
-                      <button
-                        key={tab}
-                        onClick={() => setVehicleTab(i)}
-                        style={{
-                          flex: 1,
-                          padding: "12px 16px",
-                          background: vehicleTab === i ? "var(--color-primaryPurpleDarkest)" : "#eee",
-                          color: vehicleTab === i ? "white" : "#333",
-                          border: "none",
-                          cursor: "pointer",
-                          fontWeight: vehicleTab === i ? 600 : 400,
-                          fontSize: 14,
-                        }}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Brand Select */}
-                  <div
-                    style={{
-                      border: "1px solid #ddd",
-                      borderRadius: 8,
-                      padding: "12px 16px",
-                      marginBottom: 12,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <span style={{ color: "#666", fontSize: 14 }}>Marca</span>
-                    <ChevronDown color="#666" />
-                  </div>
-
-                  {/* Brand Grid */}
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(3, 1fr)",
-                      gap: "8px 24px",
-                    }}
-                  >
-                    {carBrands.map((brand) => (
-                      <a
-                        key={brand}
-                        href="#"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          padding: "8px 0",
-                          textDecoration: "none",
-                          color: "#333",
-                          fontSize: 14,
-                        }}
-                      >
-                        {brand}
-                        <ChevronRight />
-                      </a>
-                    ))}
-                  </div>
-
-                  {/* View All */}
-                  <div style={{ textAlign: "center", marginTop: 16 }}>
-                    <a
-                      href="#"
-                      style={{
-                        color: "var(--color-primaryBlueBase)",
-                        textDecoration: "underline",
-                        fontSize: 14,
-                      }}
-                    >
-                      ver todas as marcas
-                    </a>
-                  </div>
-                </div>
-              )}
+              <div className="flex !mx-[8px] border-1 border-dividerGlobalSplit h-full"></div>
+              <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors duration-150 hover:underline">
+                Blog
+              </button>
+              <div className="flex !mx-[8px] border-1 border-dividerGlobalSplit h-full"></div>
+            </div>
+            <div className="flex h-full gap-[7px]">
+              <div className="flex !mx-[8px] border-1 border-dividerGlobalSplit h-full"></div>
+              <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors duration-150 hover:underline">
+                Whatsapp (16) 99764-8401
+              </button>
+              <div className="flex !mx-[8px] border-1 border-dividerGlobalSplit h-full"></div>
+              <span className="flex items-center h-full px-[12px]">Televendas (47) 3046-2551</span>
             </div>
           </div>
-        </div>
-
-        {/* Mobile Header */}
-        <div
-          className="desktop:hidden"
-          style={{
-            padding: 16,
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-          }}
-        >
-          <img
-            src="/a9c181e7594016ab63d3.webp"
-            alt="Compre pneus com 5 anos de garantia"
-            style={{ width: "100%" }}
-          />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              color: "var(--color-primaryPurpleBase)",
-            }}
-          >
-            <button
-              style={{
-                background: "none",
-                border: "none",
-                color: "inherit",
-                cursor: "pointer",
-              }}
-              aria-label="Abrir menu"
-            >
-              <HamburgerIcon />
-            </button>
-            <Link href="/" style={{ lineHeight: 0 }}>
+          <div className="w-full flex justify-center">
+            <button type="button" className="block w-full max-w-[1240px] h-[58px] bg-transparent p-0 border-0 cursor-pointer">
               <img
-                src="/0e22de206c8bff4b6700ad14924492a518cca03a.png"
-                alt="logo"
-                style={{ height: 14 }}
+                src="https://static.verumcommerce.com.br/product/Pneustore/a9c181e7594016ab63d3.webp"
+                alt="Compre pneus com 5 anos de garantia de fábrica | 10% OFF pagando no PIX "
               />
-            </Link>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  cursor: "pointer",
-                }}
-                aria-label="Usuário"
-              >
-                <UserIcon />
+            </button>
+          </div>
+          <div className="w-full flex justify-center">
+            <div className="flex items-center justify-between w-full max-w-[1240px] !px-[50px] !py-[16px]">
+              <img className="h-[36px] w-auto object-contain cursor-pointer" src="/logo.png" alt="PneuStore" />
+              <div className="w-[40%] !mx-[25px] relative">
+                <div className="relative flex w-full items-center overflow-hidden rounded-md">
+                  <input
+                    className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:text-inputGlobalTextPlaceholder h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!"
+                    placeholder="O que está buscando hoje?"
+                    aria-label="campo de busca"
+                    defaultValue=""
+                  />
+                  <button
+                    className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]"
+                    aria-label="buscar"
+                  >
+                    <svg className="" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
+                      <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="flex gap-[16px] text-primaryPurpleBase whitespace-nowrap">
+                <button className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="user-badge">
+                  <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+                    <path
+                      d="M11.0003 11.9167C13.5316 11.9167 15.5837 9.86464 15.5837 7.33333C15.5837 4.80203 13.5316 2.75 11.0003 2.75C8.46902 2.75 6.41699 4.80203 6.41699 7.33333C6.41699 9.86464 8.46902 11.9167 11.0003 11.9167ZM11.0003 11.9167C12.9452 11.9167 14.8105 12.6893 16.1858 14.0646C17.561 15.4398 18.3337 17.3051 18.3337 19.25M11.0003 11.9167C9.0554 11.9167 7.19014 12.6893 5.81488 14.0646C4.43961 15.4398 3.66699 17.3051 3.66699 19.25"
+                      stroke="currentColor"
+                      strokeWidth="1.83333"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                  </svg>
+                  <span>Entrar</span>
+                </button>
+                <button className="btn btn-ghost flex cursor-pointer h-auto gap-[8px]" aria-label="cart-badge" role="button">
+                  <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 16">
+                    <path
+                      d="M0.866577 1.36719H2.19991L3.97324 9.64719C4.0383 9.95043 4.20702 10.2215 4.45038 10.4138C4.69375 10.606 4.99651 10.7074 5.30658 10.7005H11.8266C12.13 10.7 12.4242 10.596 12.6606 10.4057C12.897 10.2154 13.0613 9.95021 13.1266 9.65385L14.2266 4.70052H2.91324M5.50004 14.0005C5.50004 14.3687 5.20156 14.6672 4.83337 14.6672C4.46518 14.6672 4.16671 14.3687 4.16671 14.0005C4.16671 13.6323 4.46518 13.3338 4.83337 13.3338C5.20156 13.3338 5.50004 13.6323 5.50004 14.0005ZM12.8334 14.0005C12.8334 14.3687 12.5349 14.6672 12.1667 14.6672C11.7985 14.6672 11.5 14.3687 11.5 14.0005C11.5 13.6323 11.7985 13.3338 12.1667 13.3338C12.5349 13.3338 12.8334 13.6323 12.8334 14.0005Z"
+                      stroke="currentColor"
+                      strokeWidth="1.33"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                  </svg>
+                  <span className="bg-primaryBlueSecondaryBase rounded-full !px-[7px]">0</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col bg-primaryPurpleBase text-white">
+            <nav className="relative z-30 w-full bg-primaryPurpleBase text-white">
+              <div className="w-full flex justify-center">
+                <div className="flex h-[48px] w-full max-w-[1240px] items-center justify-between !px-[50px] gap-[32px]">
+                  <div className="flex gap-[16px]">
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        aria-controls="controls-Pneus"
+                        aria-expanded="false"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                      >
+                        Pneus
+                        <span className="transition-transform duration-200 ease-in-out">
+                          <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        aria-controls="controls-Acessórios"
+                        aria-expanded="false"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                      >
+                        Acessórios
+                        <span className="transition-transform duration-200 ease-in-out">
+                          <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        aria-controls="controls-Rodas"
+                        aria-expanded="false"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                      >
+                        Rodas
+                        <span className="transition-transform duration-200 ease-in-out">
+                          <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                        aria-controls="controls-Marcas"
+                        aria-expanded="false"
+                      >
+                        Marcas
+                        <span className="transition-transform duration-200 ease-in-out">
+                          <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                      >
+                        Promoções
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                      >
+                        Revenda
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                      >
+                        Seja um parceiro
+                      </button>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                      >
+                        Nossas lojas
+                      </button>
+                    </div>
+                  </div>
+                  <button className="btn btn-primary flex items-center justify-center text-white gap-[8px] bg-primaryPurpleDarkest !px-[15px] h-[32px] rounded-[8px] text-[14px] cursor-pointer whitespace-nowrap">
+                    <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+                      <path
+                        d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>
+                      <path
+                        d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>
+                    </svg>
+                    <span className="max-w-[150px] truncate" title="Insira seu CEP">
+                      Insira seu CEP
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+        <div className="flex desktop:hidden flex-col !p-[16px] !gap-[16px]">
+          <img
+            src="https://static.verumcommerce.com.br/product/Pneustore/a9c181e7594016ab63d3.webp"
+            alt="Compre pneus com 5 anos de garantia de fábrica | 10% OFF pagando no PIX "
+          />
+          <div className="flex items-center justify-between text-primaryPurpleBase">
+            <div>
+              <button className="btn btn-ghost h-auto" aria-label="Abrir menu">
+                <svg className="" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M3.33398 10H16.6673M3.33398 5H16.6673M3.33398 15H16.6673" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"></path>
+                </svg>
               </button>
-              <button
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  cursor: "pointer",
-                  display: "flex",
-                  gap: 4,
-                  alignItems: "center",
-                }}
-                aria-label="Carrinho"
-              >
-                <CartIcon />
-                <span
-                  style={{
-                    background: "var(--color-primaryBlueSecondaryBase)",
-                    borderRadius: "50%",
-                    padding: "2px 6px",
-                    fontSize: 11,
-                    color: "var(--color-primaryPurpleBase)",
-                  }}
-                >
-                  0
-                </span>
+            </div>
+            <img className="h-[24px] w-auto object-contain" src="/logo.png" alt="PneuStore" />
+            <div className="flex gap-[8px]">
+              <button className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="cart-user">
+                <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+                  <path
+                    d="M11.0003 11.9167C13.5316 11.9167 15.5837 9.86464 15.5837 7.33333C15.5837 4.80203 13.5316 2.75 11.0003 2.75C8.46902 2.75 6.41699 4.80203 6.41699 7.33333C6.41699 9.86464 8.46902 11.9167 11.0003 11.9167ZM11.0003 11.9167C12.9452 11.9167 14.8105 12.6893 16.1858 14.0646C17.561 15.4398 18.3337 17.3051 18.3337 19.25M11.0003 11.9167C9.0554 11.9167 7.19014 12.6893 5.81488 14.0646C4.43961 15.4398 3.66699 17.3051 3.66699 19.25"
+                    stroke="currentColor"
+                    strokeWidth="1.83333"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                </svg>
+              </button>
+              <button className="btn btn-ghost flex cursor-pointer h-auto gap-[4px]" aria-label="cart-badge" role="button">
+                <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 16">
+                  <path
+                    d="M0.866577 1.36719H2.19991L3.97324 9.64719C4.0383 9.95043 4.20702 10.2215 4.45038 10.4138C4.69375 10.606 4.99651 10.7074 5.30658 10.7005H11.8266C12.13 10.7 12.4242 10.596 12.6606 10.4057C12.897 10.2154 13.0613 9.95021 13.1266 9.65385L14.2266 4.70052H2.91324M5.50004 14.0005C5.50004 14.3687 5.20156 14.6672 4.83337 14.6672C4.46518 14.6672 4.16671 14.3687 4.16671 14.0005C4.16671 13.6323 4.46518 13.3338 4.83337 13.3338C5.20156 13.3338 5.50004 13.6323 5.50004 14.0005ZM12.8334 14.0005C12.8334 14.3687 12.5349 14.6672 12.1667 14.6672C11.7985 14.6672 11.5 14.3687 11.5 14.0005C11.5 13.6323 11.7985 13.3338 12.1667 13.3338C12.5349 13.3338 12.8334 13.6323 12.8334 14.0005Z"
+                    stroke="currentColor"
+                    strokeWidth="1.33"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                </svg>
+                <span className="bg-primaryBlueSecondaryBase rounded-full !px-[7px]">0</span>
               </button>
             </div>
           </div>
-          {/* Mobile Search */}
-          <div style={{ width: "100%", position: "relative" }}>
-            <div
-              style={{
-                display: "flex",
-                width: "100%",
-                alignItems: "center",
-                overflow: "hidden",
-                borderRadius: 10,
-              }}
-            >
+          <div className="w-[100%] relative">
+            <div className="relative flex w-full items-center overflow-hidden rounded-md">
               <input
-                style={{
-                  width: "100%",
-                  background: "#f4f4f4",
-                  outline: "none",
-                  border: "none",
-                  height: 50,
-                  borderRadius: "10px 0 0 10px",
-                  padding: "0 20px",
-                  fontSize: 14,
-                }}
-                placeholder="O que estou buscando hoje?"
+                className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:text-inputGlobalTextPlaceholder h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!"
+                placeholder="O que está buscando hoje?"
                 aria-label="campo de busca"
+                defaultValue=""
               />
               <button
-                style={{
-                  background: "#f4f4f4",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  border: "none",
-                  borderRadius: "0 10px 10px 0",
-                  height: 50,
-                  width: 60,
-                  cursor: "pointer",
-                }}
+                className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]"
                 aria-label="buscar"
               >
-                <SearchIcon />
+                <svg className="" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
+                  <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
+                </svg>
               </button>
+            </div>
+          </div>
+          <div className="flex flex-col bg-primaryPurpleBase text-white">
+            <div className="flex gap-[8px] z-30 !px-[15px] h-[32px] bg-primaryPurpleDarkest items-center justify-start">
+              <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+                <path
+                  d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+                <path
+                  d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+              </svg>
+              <span className="flex-1 min-w-0 truncate" title="Insira seu CEP">
+                Insira seu CEP
+              </span>
             </div>
           </div>
         </div>

@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-desktop: 1025px;
+  --color-primary: rgb(78, 0, 142);
+  --color-primaryHover: rgb(62, 0, 117);
+  --color-primaryPurpleBase: #4e008e;
+  --color-primaryPurpleDarkest: #320061;
+  --color-primaryBlueSecondaryBase: #68dcfa;
+  --color-neutralBgLayout: #f5f5f5;
+  --color-neutralWhite: #fff;
+  --color-dividerGlobalSplit: rgba(0, 0, 0, 0.06);
+  --color-inputGlobalBorder: #d9d9d9;
+  --color-inputGlobalTextPlaceholder: rgba(0, 0, 0, 0.45);
+  --color-header-bg: #FFFFFF;
+  --color-header-text: #4e008e;
+}
+
 /* Design Tokens / CSS Custom Properties */
 :root {
   --color-primary: rgb(78, 0, 142);
@@ -74,19 +90,10 @@ html, body {
   min-height: 100vh;
 }
 
-/* Utility: hidden on desktop, visible on mobile */
-@media (min-width: 1025px) {
-  .desktop\:hidden {
-    display: none !important;
-  }
-}
-@media (max-width: 1024px) {
-  .desktop\:flex {
-    display: none !important;
-  }
-  .desktop\:flex-col {
-    display: none !important;
-  }
+/* desktop: breakpoint is defined in @theme as 1025px — Tailwind generates responsive utilities */
+.border-1 {
+  border-width: 1px;
+  border-style: solid;
 }
 
 /* Button base */
