@@ -81,8 +81,8 @@ export const products: Record<string, Product> = {
     reviews: 24,
     images: [
       "9b5df45b1454befcdc9a.webp",
-      "9b5df45b1454befcdc9a.webp",
-      "9b5df45b1454befcdc9a.webp",
+      "f86c2079f5ea7de31cd4.webp",
+      "c67e730f1bd567c5e850.webp",
     ],
     inmetro: { rollingResistance: "C", wetGrip: "B", noise: "72 dB" },
     technical: [
