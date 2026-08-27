@@ -2,6 +2,9 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { WhatsAppIcon, ChevronLeft, ChevronRight, Stars, CartIcon } from "@/components/icons";
 
 /* ═══════════════════════════════════════════════════════════════════
    PRODUCT DATA
@@ -67,92 +70,12 @@ const qaQuestions = [
   },
 ];
 
-const bannerSlides = [
-  { img: "a9c181e7594016ab63d3.webp", alt: "Compre pneus com 5 anos de garantia de fabrica | 10% OFF pagando no PIX" },
-];
-
-/* ═══════════════════════════════════════════════════════════════════
-   SVG ICONS
-   ═══════════════════════════════════════════════════════════════════ */
-
-const SearchIcon = () => (
-  <svg width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
-    <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z" />
-  </svg>
-);
-
-const UserIcon = () => (
-  <svg width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
-    <path d="M11.0003 11.9167C13.5316 11.9167 15.5837 9.86464 15.5837 7.33333C15.5837 4.80203 13.5316 2.75 11.0003 2.75C8.46902 2.75 6.41699 4.80203 6.41699 7.33333C6.41699 9.86464 8.46902 11.9167 11.0003 11.9167ZM11.0003 11.9167C12.9452 11.9167 14.8105 12.6893 16.1858 14.0646C17.561 15.4398 18.3337 17.3051 18.3337 19.25M11.0003 11.9167C9.0554 11.9167 7.19014 12.6893 5.81488 14.0646C4.43961 15.4398 3.66699 17.3051 3.66699 19.25" stroke="currentColor" strokeWidth="1.83333" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const CartIcon = ({ size = 22 }: { size?: number }) => (
-  <svg width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-    <path d="M2.73303 2.7334H5.3997L8.94637 19.2934C9.07647 19.8999 9.41393 20.442 9.90065 20.8265C10.3874 21.2111 10.9929 21.4139 11.613 21.4H22.2797C22.8864 21.4083 23.4791 21.2064 23.9613 20.8301C24.4435 20.4538 24.7879 19.9258 24.9364 19.3334L27.4697 9.3334H7.13303M13.0664 28.0667C13.0664 28.7931 12.4794 29.3801 11.753 29.3801C11.0266 29.3801 10.4397 28.7931 10.4397 28.0667C10.4397 27.3403 11.0266 26.7534 11.753 26.7534C12.4794 26.7534 13.0664 27.3403 13.0664 28.0667ZM25.4397 28.0667C25.4397 28.7931 24.8527 29.3801 24.1264 29.3801C23.4 29.3801 22.813 28.7931 22.813 28.0667C22.813 27.3403 23.4 26.7534 24.1264 26.7534C24.8527 26.7534 25.4397 27.3403 25.4397 28.0667Z" stroke="currentColor" strokeWidth="2.13333" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const ChevronDown = ({ color = "white" }: { color?: string }) => (
-  <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-    <path d="M4 6L8 10L12 6" stroke={color} strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const LocationPin = () => (
-  <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
-    <path d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const ChevronLeft = () => (
-  <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round" /></svg>
-);
-
-const ChevronRight = () => (
-  <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round" /></svg>
-);
-
 const MinusIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor"><path d="M872 474H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h720c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z" /></svg>
 );
 
 const PlusIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor"><path d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8Z" /><path d="M192 474h672q8 0 8 8v60q0 8-8 8H160q-8 0-8-8v-60q0-8 8-8Z" /></svg>
-);
-
-const WhatsAppIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 32 32" fill="white">
-    <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.054 9.374L1.054 31.25l6.114-1.988A15.91 15.91 0 0016.004 32C24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.33 22.608c-.39 1.096-1.932 2.006-3.158 2.27-.836.18-1.93.322-5.626-1.21-4.734-1.962-7.778-6.79-8.012-7.104-.226-.314-1.896-2.52-1.896-4.808s1.2-3.41 1.628-3.874c.39-.42.92-.56 1.226-.56.302 0 .606.002.87.016.28.012.654-.106 1.014.774.39.96 1.336 3.25 1.452 3.486.116.236.194.51.038.824-.158.314-.236.51-.47.786-.236.276-.494.616-.706.826-.236.236-.48.49-.204.962.276.472 1.224 2.02 2.626 3.274 1.804 1.614 3.324 2.114 3.796 2.35.472.236.748.196 1.024-.118.276-.314 1.178-1.374 1.49-1.844.314-.472.628-.39 1.064-.234.436.156 2.772 1.308 3.246 1.544.472.236.788.354.906.55.118.196.118 1.14-.272 2.238z" />
-  </svg>
-);
-
-const StarIcon = ({ filled, half }: { filled: boolean; half?: boolean }) => (
-  <span style={{ color: filled || half ? "#f5a623" : "#ddd", fontSize: 14, position: "relative", display: "inline-block" }}>
-    {half ? (
-      <>
-        <span style={{ color: "#ddd" }}>&#9733;</span>
-        <span style={{ position: "absolute", left: 0, overflow: "hidden", width: "50%", color: "#f5a623" }}>&#9733;</span>
-      </>
-    ) : (
-      <span>&#9733;</span>
-    )}
-  </span>
-);
-
-const Stars = ({ count }: { count: number }) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    if (i <= Math.floor(count)) stars.push(<StarIcon key={i} filled />);
-    else if (i - 0.5 <= count) stars.push(<StarIcon key={i} filled half />);
-    else stars.push(<StarIcon key={i} filled={false} />);
-  }
-  return <span style={{ display: "inline-flex", gap: 1 }}>{stars}</span>;
-};
-
-const MenuIcon = () => (
-  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
 );
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -163,8 +86,6 @@ export default function ProductPage() {
   const [currentImage, setCurrentImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState(0);
-  const [cookieOpen, setCookieOpen] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const relatedScrollRef = useRef<HTMLDivElement>(null);
   const [qaPage, setQaPage] = useState(0);
 
@@ -174,17 +95,6 @@ export default function ProductPage() {
     relatedScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
   };
 
-  const navItems = [
-    { label: "Pneus", hasChevron: true },
-    { label: "Acessorios", hasChevron: true },
-    { label: "Rodas", hasChevron: true },
-    { label: "Marcas", hasChevron: false },
-    { label: "Promocoes", hasChevron: false },
-    { label: "Revenda", hasChevron: false },
-    { label: "Seja um parceiro", hasChevron: false },
-    { label: "Nossas lojas", hasChevron: false },
-  ];
-
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--color-background)" }}>
       {/* ═══════════════════════════════════════════════════════════
@@ -192,133 +102,7 @@ export default function ProductPage() {
           ═══════════════════════════════════════════════════════════ */}
       <a href="#main-content" className="skip-link">Pular para o conteudo principal</a>
 
-      {/* ═══════════════════════════════════════════════════════════
-          COOKIE BANNER
-          ═══════════════════════════════════════════════════════════ */}
-      {cookieOpen && (
-        <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#333", color: "white", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", zIndex: 100, flexWrap: "wrap", gap: 12 }}>
-          <p style={{ margin: 0, fontSize: 13, flex: 1 }}>
-            Utilizamos cookies para melhorar sua experiencia. Ao continuar navegando, voce concorda com nossaPolitica de Privacidade.
-          </p>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => setCookieOpen(false)} style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "var(--color-primary)", color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>Aceitar todos</button>
-            <button onClick={() => setCookieOpen(false)} style={{ padding: "6px 16px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.3)", background: "transparent", color: "white", cursor: "pointer", fontSize: 13 }}>Rejeitar</button>
-          </div>
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════
-          HEADER - DESKTOP
-          ═══════════════════════════════════════════════════════════ */}
-      <div id="header-items" className="pneustore_header_header_container__ioqCn">
-        <div className="text-[14px]">
-          {/* Desktop Header */}
-          <div className="hidden desktop:flex flex-col">
-            {/* Tier 1: Top utility bar */}
-            <div className="flex justify-between items-center w-full !px-[20px] !py-[8px] h-[30px] text-[var(--color-primary)] bg-neutralBgLayout whitespace-nowrap text-xs" style={{ fontFamily: "Arial, sans-serif" }}>
-              <div className="flex h-full gap-[7px]">
-                <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors hover:opacity-70">Quero revender</button>
-                <div className="flex !mx-[8px] border-l border-[var(--color-primary)] opacity-30 h-full"></div>
-                <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors hover:opacity-70">Blog</button>
-              </div>
-              <div className="flex h-full gap-[7px] items-center">
-                <button type="button" className="flex items-center h-full px-[12px] cursor-pointer transition-colors hover:opacity-70">Whatsapp (16) 99764-8401</button>
-                <span className="px-[12px]">Televendas (47) 3046-2551</span>
-              </div>
-            </div>
-
-            {/* Tier 2: Promo banner */}
-            <div className="w-full flex justify-center">
-              <button type="button" className="block w-full max-w-[1240px] h-[58px] bg-transparent p-0 border-0 cursor-pointer">
-                <img src={`/${bannerSlides[0].img}`} alt={bannerSlides[0].alt} style={{ width: "100%", height: 58, objectFit: "cover" }} />
-              </button>
-            </div>
-
-            {/* Tier 3: Logo + Search + Icons */}
-            <div className="w-full flex justify-center">
-              <div className="flex items-center justify-between w-full max-w-[1240px] !px-[50px] !py-[16px]">
-                <Link href="/">
-                  <img className="h-[30px] cursor-pointer" src="/reverseLogo.png" alt="Pneustore" style={{ height: 30, filter: "brightness(0) invert(1)" }} />
-                </Link>
-                <div className="w-[40%] !mx-[25px] relative">
-                  <div className="relative flex w-full items-center overflow-hidden rounded-md">
-                    <input className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:opacity-50 h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!" placeholder="O que esta buscando hoje?" style={{ fontFamily: "Arial, sans-serif" }} />
-                    <button className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]" aria-label="buscar">
-                      <SearchIcon />
-                    </button>
-                  </div>
-                </div>
-                <div className="flex gap-[16px] text-[var(--color-primary)] whitespace-nowrap">
-                  <button className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer items-center" style={{ color: "var(--color-primary)" }}>
-                    <UserIcon />
-                    <span className="text-[14px] font-semibold hidden lg:inline">Entrar</span>
-                  </button>
-                  <button className="btn btn-ghost flex cursor-pointer h-auto gap-[8px] items-center relative" style={{ color: "var(--color-primary)" }}>
-                    <CartIcon />
-                    <span className="absolute -top-2 -right-2 bg-[var(--color-primary)] text-white text-[10px] font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center">0</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ─── NAVIGATION BAR ─── */}
-          <div className="flex flex-col" style={{ background: "var(--color-primary)" }}>
-            <nav className="relative z-30 w-full" style={{ background: "var(--color-primary)", color: "white" }}>
-              <div className="w-full flex justify-center">
-                <div className="hidden desktop:flex h-[48px] w-full max-w-[1240px] items-center justify-between !px-[50px] gap-[32px]">
-                  <div className="flex gap-[16px]">
-                    {navItems.map((item) => (
-                      <div key={item.label} className="flex items-center">
-                        <button className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:opacity-80 rounded-[6px] !my-[10px] whitespace-nowrap text-white" style={{ background: "transparent", border: "none" }}>
-                          {item.label}
-                          {item.hasChevron && (
-                            <span className="transition-transform duration-200 ease-in-out"><ChevronDown /></span>
-                          )}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="flex items-center justify-center text-white gap-[8px] !px-[15px] h-[32px] rounded-[8px] text-[14px]" style={{ background: "rgba(0,0,0,0.2)", border: "none", cursor: "pointer" }}>
-                    <LocationPin />
-                    <span className="max-w-[150px] truncate">Insira seu CEP</span>
-                  </button>
-                </div>
-              </div>
-            </nav>
-          </div>
-        </div>
-
-        {/* ─── MOBILE HEADER ─── */}
-        <div className="flex desktop:hidden flex-col !p-[16px] !gap-[16px]">
-          <button type="button" className="block w-full h-[50px] bg-transparent p-0 border-0 cursor-pointer">
-            <img src={`/${bannerSlides[0].img}`} alt={bannerSlides[0].alt} style={{ width: "100%", height: 50, objectFit: "cover", borderRadius: 8 }} />
-          </button>
-          <div className="flex items-center justify-between" style={{ color: "var(--color-primary)" }}>
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }}><MenuIcon /></button>
-            <Link href="/"><img className="h-[14px]" src="/reverseLogo.png" alt="Pneustore" style={{ height: 14, filter: "brightness(0) invert(1)" }} /></Link>
-            <div className="flex gap-[8px]" style={{ color: "var(--color-primary)" }}>
-              <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }}><UserIcon /></button>
-              <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)", position: "relative" }}>
-                <CartIcon />
-                <span className="absolute -top-2 -right-2 bg-[var(--color-primary)] text-white text-[10px] font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center">0</span>
-              </button>
-            </div>
-          </div>
-          <div className="w-[100%] relative">
-            <div className="relative flex w-full items-center overflow-hidden rounded-md">
-              <input className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:opacity-50 h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!" placeholder="O que esta buscando hoje?" style={{ fontFamily: "Arial, sans-serif" }} />
-              <button className="flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]" aria-label="buscar"><SearchIcon /></button>
-            </div>
-          </div>
-          <div className="flex" style={{ background: "var(--color-primary)" }}>
-            <div className="flex gap-[8px] z-30 !px-[15px] h-[32px] items-center text-white text-[14px] w-full" style={{ background: "var(--color-primary)", opacity: 0.9 }}>
-              <LocationPin />
-              <span>Insira seu CEP</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header />
 
       {/* ═══════════════════════════════════════════════════════════
           BREADCRUMB
@@ -876,94 +660,7 @@ export default function ProductPage() {
         </section>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          FOOTER
-          ═══════════════════════════════════════════════════════════ */}
-      <footer id="footer-items">
-        <div className="flex flex-col text-white PSFooterWrapper_pneuStoreFooter__u2BfR">
-          {/* Footer Main */}
-          <div className="flex desktop:flex-wrap flex-col desktop:flex-row justify-between gap-[16px] !px-[16px] !py-[24px] desktop:!px-[100px] desktop:!py-[48px]" style={{ background: "var(--color-primary)" }}>
-            <img className="h-[29px] w-[213px]" alt="Pneustore Logo footer" src="/reverseLogo.png" style={{ filter: "brightness(0) invert(1)" }} />
-
-            <div className="flex flex-col gap-[16px]">
-              <span className="font-bold text-left text-[16px]">Institucional</span>
-              <div className="flex flex-col items-start gap-[8px]">
-                {["Garantia", "Politica de privacidade", "Trabalhe conosco", "Marcas", "Portal Renegocie"].map((item) => (
-                  <button key={item} className="text-[14px] text-left hover:underline cursor-pointer text-white" style={{ background: "none", border: "none", padding: 0 }}>{item}</button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-[16px]">
-              <span className="font-bold text-left text-[16px]">Ajuda</span>
-              <div className="flex flex-col items-start gap-[8px]">
-                {["Suporte PneuStore", "Perguntas frequentes", "Entrega", "Meus pedidos", "Informacoes tecnicas de pneus", "Trocas e devolucoes"].map((item) => (
-                  <button key={item} className="text-[14px] text-left hover:underline cursor-pointer text-white" style={{ background: "none", border: "none", padding: 0 }}>{item}</button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-[16px]">
-              <span className="font-bold text-left text-[16px]">Servico</span>
-              <div className="flex flex-col items-start gap-[8px]">
-                {["Seja um parceiro de servicos", "Montagem em nossos parceiros", "Protecao para seus pneus"].map((item) => (
-                  <button key={item} className="text-[14px] text-left hover:underline cursor-pointer text-white" style={{ background: "none", border: "none", padding: 0 }}>{item}</button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-[16px]">
-              <span className="font-bold text-left text-[16px]">Central de relacionamento</span>
-              <div className="flex flex-col items-start gap-[8px]">
-                <p className="text-[14px] text-left m-0">(47) 3046-2551</p>
-                <p className="text-[12px] text-left opacity-60 m-0">(Ligacoes de qualquer origem)</p>
-                <p className="text-[14px] text-left m-0">4000-2313</p>
-                <p className="text-[12px] text-left opacity-60 m-0">Para capitais e regioes metropolitanas</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Bottom: Trust Badges */}
-          <div className="flex gap-[16px] desktop:gap-[64px] flex-wrap !px-[16px] desktop:!px-[100px] !py-[24px]" style={{ background: "var(--color-primaryPurpleDark, #3e0075)" }}>
-            <div className="hidden desktop:flex flex-col gap-[16px]">
-              <p className="text-[11px] opacity-70 uppercase tracking-wider m-0">Seguranca</p>
-              <img src="/logoConfi.png" alt="Confi.eco" style={{ height: 48 }} />
-            </div>
-            <div className="flex gap-[20px] items-center flex-wrap justify-center">
-              <img src="/reclameAwardlogo.png" alt="Reclame AQUI" style={{ height: 48 }} />
-              <img src="/complainHerelogo.png" alt="Bom" style={{ height: 48 }} />
-              <img src="/clinteRecommendsLogo.png" alt="O Cliente Recomenda" style={{ height: 48 }} />
-              <img src="/logoBsi.png" alt="BSI ISO 27001" style={{ height: 48 }} />
-            </div>
-            <div className="flex flex-col gap-[16px]">
-              <p className="text-[11px] opacity-70 uppercase tracking-wider m-0">Certificado de Destinacao Final</p>
-              <img src="/resetLogo.png" alt="Reset Descarte" style={{ height: 40 }} />
-            </div>
-          </div>
-
-          {/* Footer Payment */}
-          <div className="flex flex-col items-center gap-[8px] !px-[16px] !py-[24px] desktop:!px-[100px]" style={{ background: "var(--color-footerBottomBg, white)" }}>
-            <div className="flex gap-[24px] mb-[12px]">
-              <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }} aria-label="Facebook">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" /></svg>
-              </button>
-              <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }} aria-label="Instagram">
-                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" /></svg>
-              </button>
-              <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)" }} aria-label="YouTube">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z" /><polygon points="9.75,15.02 15.5,11.75 9.75,8.48" fill="white" /></svg>
-              </button>
-            </div>
-            <img src="/paymentMethodsLogos.png" alt="Formas de Pagamento" style={{ height: 22 }} />
-            <p className="text-[12px] text-center m-0" style={{ color: "var(--color-textSecondary)" }}>
-              Parcele suas compras usando seu cartao de credito e pague em ate 10x sem juros
-            </p>
-            <p className="text-[10px] text-center m-0 mt-[8px] pt-[8px]" style={{ color: "var(--color-textSecondary)", borderTop: "1px solid #e8e8e8", width: "100%" }}>
-              2022 PneuStore. CPX Distribuidora S/A. Rodovia SC 486 - Antonio Heil, 800 - Bairro Itaipava - CEP 88316001 - Itajai/SC. CNPJ: 10.158.356/0001-01.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* ─── WHATSAPP FLOAT ─── */}
       <button
