@@ -7,6 +7,8 @@ import Footer from "@/components/Footer";
 import { WhatsAppIcon, ChevronLeft, ChevronRight, Stars, CartIcon } from "@/components/icons";
 import { PRODUCT_SLUG } from "@/lib/slug";
 
+const STATIC_BASE = "https://static.verumcommerce.com.br/product/Pneustore";
+
 /* ═══════════════════════════════════════════════════════════════════
    PRODUCT DATA
    ═══════════════════════════════════════════════════════════════════ */
@@ -145,7 +147,7 @@ export default function ProductPage() {
                       }}
                       aria-label={`Imagem ${i + 1}`}
                     >
-                      <img src={`/${thumb}`} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                      <img src={`${STATIC_BASE}/${thumb}?w=200&q=50`} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                     </button>
                   ))}
 
@@ -191,8 +193,15 @@ export default function ProductPage() {
                 <div className="product_main_carousel__zKHVJ" style={{ flex: 1, position: "relative" }}>
                   <div style={{ position: "relative", aspectRatio: "1/1", background: "#fafafa", borderRadius: 12, overflow: "hidden" }}>
                     <img
-                      src={`/${product.images[currentImage].src}`}
-                      srcSet={product.images[currentImage].srcset}
+                      src={`${STATIC_BASE}/${product.images[currentImage].src}?w=1080&q=50`}
+                      srcSet={product.images[currentImage].srcset
+                        .split(",")
+                        .map((entry) => {
+                          const [file, width] = entry.trim().split(/\s+/);
+                          return `${STATIC_BASE}/${file}?w=${width.replace("w", "")}&q=50 ${width}`;
+                        })
+                        .join(", ")}
+                      sizes="(max-width: 560px) 100vw, 480px"
                       alt={product.name}
                       fetchPriority="high"
                       style={{ position: "absolute", height: "100%", width: "100%", left: 0, top: 0, right: 0, bottom: 0, objectFit: "contain" }}
@@ -259,8 +268,8 @@ export default function ProductPage() {
             <div style={{ marginBottom: 12 }}>
               <img
                 src={`/${product.brandLogo}`}
-                srcSet={`${product.brandLogo} 1x, ${product.brandLogo2x} 2x`}
-                alt="icone marca"
+                srcSet={`/${product.brandLogo} 1x, /${product.brandLogo2x} 2x`}
+                alt={product.brand}
                 style={{ height: 40, objectFit: "contain" }}
               />
             </div>
