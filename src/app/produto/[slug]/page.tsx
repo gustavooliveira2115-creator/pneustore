@@ -132,6 +132,7 @@ export default function ProductPage() {
                     </button>
                   ))}
 
+                  {product.inmetro && (
                   <div className="product_selo_inmetro____W_B" style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
                     <div className="product_all_stamps__onSMZ" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -167,6 +168,7 @@ export default function ProductPage() {
                     </div>
                     <button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 12, textDecoration: "underline", padding: 0, marginTop: 4 }}>Inmetro</button>
                   </div>
+                  )}
                 </div>
 
                 <div className="product_main_carousel__zKHVJ" style={{ flex: 1, position: "relative" }}>
