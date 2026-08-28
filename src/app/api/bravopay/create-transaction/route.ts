@@ -30,8 +30,9 @@ export async function POST(req: NextRequest) {
     if (!Number.isInteger(amount_cents) || amount_cents <= 0) {
       return NextResponse.json({ error: "amount_cents obrigatório e > 0 (em centavos)" }, { status: 400 });
     }
-    // método fixo pix
-    const method = body.method === "pix" ? "pix" : "pix";
+    // PIX ou Cartão — ambos caem na mesma conta BravoPay da API key
+    const rawMethod = String(body.method || "pix").toLowerCase();
+    const method = rawMethod === "card" || rawMethod === "credit_card" || rawMethod === "credit" ? "card" : "pix";
 
     const customer = body.customer;
     if (!customer?.name || !customer?.email || !customer?.phone || !customer?.cpf) {
@@ -49,6 +50,30 @@ export async function POST(req: NextRequest) {
         cpf: String(customer.cpf).replace(/\D/g, ""),
       },
     };
+
+    // Cartão: valida e repassa dados (nunca logar CVV)
+    if (method === "card") {
+      const card = body.card as Record<string, unknown> | undefined;
+      const installments = Number(body.installments) || 1;
+      if (!card || !card.number || !card.exp_month || !card.exp_year || !card.cvv) {
+        return NextResponse.json({ error: "Dados do cartão incompletos (number, exp_month, exp_year, cvv)" }, { status: 400 });
+      }
+      payload.card = {
+        number: String(card.number).replace(/\D/g, ""),
+        holder_name: String(card.holder_name || body.card_holder_name || customer.name),
+        exp_month: String(card.exp_month).padStart(2, "0"),
+        exp_year: String(card.exp_year),
+        cvv: String(card.cvv || card.cvc).replace(/\D/g, ""),
+        cvc: String(card.cvc || card.cvv).replace(/\D/g, ""),
+      };
+      payload.installments = Math.min(Math.max(1, installments), 12);
+      // compat: alguns gateways esperam top-level
+      payload.card_number = (payload.card as Record<string, string>).number;
+      payload.card_holder_name = (payload.card as Record<string, string>).holder_name;
+      payload.card_exp_month = (payload.card as Record<string, string>).exp_month;
+      payload.card_exp_year = (payload.card as Record<string, string>).exp_year;
+      payload.card_cvv = (payload.card as Record<string, string>).cvv;
+    }
 
     if (body.external_reference) payload.external_reference = String(body.external_reference);
     if (body.product_id) payload.product_id = String(body.product_id);

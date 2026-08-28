@@ -7,6 +7,7 @@ import { Suspense } from "react";
 function ObrigadoInner() {
   const params = useSearchParams();
   const tx = params.get("tx");
+  const method = params.get("method") || "pix";
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F9F7FF", padding: 16 }}>
@@ -14,9 +15,9 @@ function ObrigadoInner() {
         <div style={{ fontSize: 56 }}>🎉</div>
         <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1a7f37", margin: "12px 0 8px" }}>Pagamento confirmado!</h1>
         <p style={{ color: "#555", fontSize: 14, lineHeight: 1.6 }}>
-          Seu pedido foi pago com sucesso via PIX BravoPay. Você receberá a confirmação no e-mail informado.
+          Seu pedido foi pago com sucesso via {method === "card" ? "Cartão de Crédito" : "PIX"} BravoPay. Você receberá a confirmação no e-mail informado.
           <br />
-          Obrigado por comprar na <b>PneuStore</b>!
+          Obrigado por comprar na <b>PneuStore</b>! Valor caiu no gateway da API cadastrada.
         </p>
 
         {tx && (
