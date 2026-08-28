@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Stars } from "@/components/icons";
 import { products } from "@/lib/products";
+
+const ITEMS_PER_PAGE = 20;
 
 const STATIC_BASE = "https://static.verumcommerce.com.br/product/Pneustore";
 
@@ -18,6 +20,7 @@ function TodosContent() {
 
   const [sortBy, setSortBy] = useState("relevance");
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const allProducts = useMemo(() => Object.values(products), []);
 
@@ -41,8 +44,29 @@ function TodosContent() {
     return list;
   }, [query, selectedBrand, sortBy, allProducts]);
 
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filtered.slice(start, start + ITEMS_PER_PAGE);
+  }, [filtered, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query, selectedBrand, sortBy]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [totalPages, currentPage]);
+
+  const goToPage = (page: number) => {
+    const p = Math.min(Math.max(1, page), totalPages);
+    setCurrentPage(p);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const clearSearch = () => {
     setSelectedBrand(null);
+    setCurrentPage(1);
     router.push("/todos");
   };
 
@@ -234,7 +258,7 @@ function TodosContent() {
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
-                {filtered.map((p) => (
+                {paginated.map((p) => (
                   <Link key={p.slug} href={`/produto/${p.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
                     <div style={{ background: "white", borderRadius: 12, border: "1px solid #f0f0f0", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "box-shadow 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)")} onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
                       <div style={{ position: "relative", aspectRatio: "1/1", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
@@ -273,8 +297,67 @@ function TodosContent() {
                 ))}
               </div>
 
-              <div style={{ marginTop: 24, display: "flex", justifyContent: "center", alignItems: "center", gap: 12, fontSize: 13, color: "var(--color-textSecondary)" }}>
-                <span>Exibindo {filtered.length} de {allProducts.length} produtos</span>
+              {/* Paginação — 20 por página */}
+              {totalPages > 1 && (
+                <div style={{ marginTop: 24, display: "flex", justifyContent: "center", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    aria-label="Página anterior"
+                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d9d9d9", background: currentPage === 1 ? "#f5f5f5" : "white", color: currentPage === 1 ? "#bfbfbf" : "var(--color-primary)", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 600 }}
+                  >
+                    ← Anterior
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((page) => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 2)
+                    .reduce((acc: (number | string)[], page, idx, arr) => {
+                      if (idx > 0 && typeof acc[acc.length - 1] === "number" && (page as number) - (acc[acc.length - 1] as number) > 1) acc.push("...");
+                      acc.push(page);
+                      return acc;
+                    }, [])
+                    .map((item, idx) =>
+                      item === "..." ? (
+                        <span key={`ellipsis-${idx}`} style={{ padding: "8px 4px", color: "var(--color-textSecondary)", fontSize: 13 }}>…</span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => goToPage(item as number)}
+                          aria-label={`Ir para página ${item}`}
+                          aria-current={currentPage === item ? "page" : undefined}
+                          style={{
+                            minWidth: 36,
+                            height: 36,
+                            borderRadius: 8,
+                            border: "1px solid",
+                            borderColor: currentPage === item ? "var(--color-primary)" : "#d9d9d9",
+                            background: currentPage === item ? "var(--color-primary)" : "white",
+                            color: currentPage === item ? "white" : "var(--color-textBase)",
+                            cursor: "pointer",
+                            fontSize: 13,
+                            fontWeight: currentPage === item ? 700 : 500,
+                          }}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+
+                  <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    aria-label="Próxima página"
+                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d9d9d9", background: currentPage === totalPages ? "#f5f5f5" : "white", color: currentPage === totalPages ? "#bfbfbf" : "var(--color-primary)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 600 }}
+                  >
+                    Próxima →
+                  </button>
+                </div>
+              )}
+
+              <div style={{ marginTop: 16, display: "flex", justifyContent: "center", alignItems: "center", gap: 12, fontSize: 13, color: "var(--color-textSecondary)", flexWrap: "wrap" }}>
+                <span>
+                  Exibindo {paginated.length} de {filtered.length} {filtered.length === 1 ? "produto" : "produtos"} {filtered.length !== allProducts.length ? `filtrados de ${allProducts.length}` : `de ${allProducts.length}`} • Página {currentPage} de {totalPages}
+                </span>
                 {query && <button onClick={clearSearch} style={{ color: "var(--color-primary)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", fontSize: 13 }}>Limpar busca</button>}
               </div>
             </>
