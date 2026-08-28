@@ -349,16 +349,16 @@ export default function ProductPage() {
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                   width: "100%", maxWidth: 300, height: 48,
-                  border: "1px solid var(--color-primary)", borderRadius: 8,
-                  background: "var(--color-primary)", color: "white",
+                  border: "1px solid #68DCFA", borderRadius: 8,
+                  background: "#68DCFA", color: "#4e008e",
                   fontSize: 16, fontWeight: 700, cursor: "pointer",
                   transition: "all 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-primaryHover)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-primary)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#5ac8e6"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "#68DCFA"; }}
               >
                 <CartIcon size={20} />
-                <span>Comprar com PIX</span>
+                <span>Comprar</span>
               </button>
             </div>
 
