@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState 
 import { QRCodeSVG } from "qrcode.react";
 import { BRAVOPAY_PRODUCT_ID } from "@/lib/bravopay-config";
 import { getUtmForApi, captureUtmOnLoad } from "@/lib/utm";
-import { onlyDigits, isValidCPF, isValidEmail, isValidPhone, formatCPF, formatPhone } from "@/lib/validators";
+import { onlyDigits, isValidEmail } from "@/lib/validators";
 
 // ── Tipos ────────────────────────────────────────────────────────────────
 export type CheckoutProduct = {
@@ -101,11 +101,9 @@ export function BravoCheckoutProvider({ children }: { children: React.ReactNode 
   const [state, setState] = useState<CheckoutState>({ step: "form" });
   const [method, setMethod] = useState<PaymentMethod>("pix");
 
-  // form fields comuns
+  // form fields comuns - apenas nome e e-mail (telefone e CPF removidos a pedido)
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [cpf, setCpf] = useState("");
   // cartão
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
@@ -196,8 +194,6 @@ export function BravoCheckoutProvider({ children }: { children: React.ReactNode 
     const errs: Record<string, string> = {};
     if (!name.trim() || name.trim().length < 3) errs.name = "Informe nome completo";
     if (!isValidEmail(email)) errs.email = "E-mail inválido";
-    if (!isValidPhone(phone)) errs.phone = "Telefone inválido (DDD + número)";
-    if (!isValidCPF(cpf)) errs.cpf = "CPF inválido";
 
     if (method === "card") {
       if (!luhnValid(cardNumber)) errs.cardNumber = "Número do cartão inválido";
@@ -216,11 +212,9 @@ export function BravoCheckoutProvider({ children }: { children: React.ReactNode 
 
     try {
       const utm = getUtmForApi();
-      const baseCustomer = {
+      const baseCustomer: Record<string, string> = {
         name: name.trim(),
         email: email.trim().toLowerCase(),
-        phone: onlyDigits(phone),
-        cpf: onlyDigits(cpf),
       };
 
       // payload comum
@@ -503,47 +497,6 @@ export function BravoCheckoutProvider({ children }: { children: React.ReactNode 
                     />
                     {errors.email && <span style={{ color: "#ff4d4f", fontSize: 12 }}>{errors.email}</span>}
                   </label>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                    <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600 }}>Telefone *</span>
-                      <input
-                        value={phone}
-                        onChange={(e) => setPhone(formatPhone(e.target.value))}
-                        placeholder="(11) 99999-9999"
-                        inputMode="numeric"
-                        autoComplete="tel"
-                        style={{
-                          height: 44,
-                          borderRadius: 10,
-                          border: `1px solid ${errors.phone ? "#ff4d4f" : "#d9d9d9"}`,
-                          padding: "0 12px",
-                          fontSize: 14,
-                          outline: "none",
-                        }}
-                      />
-                      {errors.phone && <span style={{ color: "#ff4d4f", fontSize: 12 }}>{errors.phone}</span>}
-                    </label>
-
-                    <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600 }}>CPF *</span>
-                      <input
-                        value={cpf}
-                        onChange={(e) => setCpf(formatCPF(e.target.value))}
-                        placeholder="000.000.000-00"
-                        inputMode="numeric"
-                        style={{
-                          height: 44,
-                          borderRadius: 10,
-                          border: `1px solid ${errors.cpf ? "#ff4d4f" : "#d9d9d9"}`,
-                          padding: "0 12px",
-                          fontSize: 14,
-                          outline: "none",
-                        }}
-                      />
-                      {errors.cpf && <span style={{ color: "#ff4d4f", fontSize: 12 }}>{errors.cpf}</span>}
-                    </label>
-                  </div>
 
                   {/* Campos cartão - só quando card */}
                   {method === "card" && (

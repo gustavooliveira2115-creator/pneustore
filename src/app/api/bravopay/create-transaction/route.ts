@@ -35,20 +35,24 @@ export async function POST(req: NextRequest) {
     const method = rawMethod === "card" || rawMethod === "credit_card" || rawMethod === "credit" ? "card" : "pix";
 
     const customer = body.customer;
-    if (!customer?.name || !customer?.email || !customer?.phone || !customer?.cpf) {
-      return NextResponse.json({ error: "customer {name,email,phone,cpf} obrigatório" }, { status: 400 });
+    if (!customer?.name || !customer?.email) {
+      return NextResponse.json({ error: "customer {name,email} obrigatório (telefone e CPF foram removidos do checkout)" }, { status: 400 });
     }
+
+    // Telefone e CPF são opcionais agora (removidos do checkout a pedido) — envia só se vier
+    // Se a BravoPay exigir, o gateway usará fallback interno ou o e-mail como identificação
+    const customerPayload: Record<string, string> = {
+      name: String(customer.name).trim(),
+      email: String(customer.email).trim().toLowerCase(),
+    };
+    if (customer.phone) customerPayload.phone = String(customer.phone).replace(/\D/g, "");
+    if (customer.cpf) customerPayload.cpf = String(customer.cpf).replace(/\D/g, "");
 
     // Monta payload para BravoPay — só campos permitidos
     const payload: Record<string, unknown> = {
       amount_cents,
       method,
-      customer: {
-        name: String(customer.name).trim(),
-        email: String(customer.email).trim().toLowerCase(),
-        phone: String(customer.phone).replace(/\D/g, ""),
-        cpf: String(customer.cpf).replace(/\D/g, ""),
-      },
+      customer: customerPayload,
     };
 
     // Cartão: valida e repassa dados (nunca logar CVV)
