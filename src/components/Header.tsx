@@ -1,6 +1,27 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 export default function Header() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [mobileQuery, setMobileQuery] = useState("");
+
+  const doSearch = (q: string) => {
+    const term = q.trim();
+    if (!term) {
+      router.push("/todos");
+      return;
+    }
+    router.push(`/todos?title=${encodeURIComponent(term)}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, q: string) => {
+    if (e.key === "Enter") doSearch(q);
+  };
+
   return (
     <div className="pneustore_header_header_container__ioqCn">
       <div className="text-[14px]">
@@ -35,17 +56,20 @@ export default function Header() {
           </div>
           <div className="w-full flex justify-center">
             <div className="flex items-center justify-between w-full max-w-[1240px] !px-[50px] !py-[16px]">
-              <img className="h-[36px] w-auto object-contain cursor-pointer" src="/logo.png" alt="PneuStore" />
+              <Link href="/"><img className="h-[36px] w-auto object-contain cursor-pointer" src="/logo.png" alt="PneuStore" /></Link>
               <div className="w-[40%] !mx-[25px] relative">
                 <div className="relative flex w-full items-center overflow-hidden rounded-md">
                   <input
                     className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:text-inputGlobalTextPlaceholder h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!"
                     placeholder="O que está buscando hoje?"
                     aria-label="campo de busca"
-                    defaultValue=""
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, query)}
                   />
                   <button
-                    className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]"
+                    onClick={() => doSearch(query)}
+                    className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px] hover:!bg-[#e8e8e8]"
                     aria-label="buscar"
                   >
                     <svg className="" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
@@ -219,7 +243,7 @@ export default function Header() {
                 </svg>
               </button>
             </div>
-            <img className="h-[24px] w-auto object-contain" src="/logo.png" alt="PneuStore" />
+            <Link href="/"><img className="h-[24px] w-auto object-contain" src="/logo.png" alt="PneuStore" /></Link>
             <div className="flex gap-[8px]">
               <button className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="cart-user">
                 <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
@@ -252,10 +276,13 @@ export default function Header() {
                 className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:text-inputGlobalTextPlaceholder h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!"
                 placeholder="O que está buscando hoje?"
                 aria-label="campo de busca"
-                defaultValue=""
+                value={mobileQuery}
+                onChange={(e) => setMobileQuery(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, mobileQuery)}
               />
               <button
-                className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px]"
+                onClick={() => doSearch(mobileQuery)}
+                className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px] hover:!bg-[#e8e8e8]"
                 aria-label="buscar"
               >
                 <svg className="" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
