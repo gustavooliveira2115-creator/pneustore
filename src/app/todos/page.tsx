@@ -7,6 +7,13 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Stars } from "@/components/icons";
 import { products } from "@/lib/products";
+import { useBravoCheckout } from "@/components/BravoPayCheckout";
+
+function brlToCents(v: string): number {
+  const digits = v.replace(/\./g, "").replace(",", "");
+  const n = parseInt(digits, 10);
+  return Number.isFinite(n) ? n : 0;
+}
 
 const ITEMS_PER_PAGE = 20;
 
@@ -15,6 +22,7 @@ const STATIC_BASE = "https://static.verumcommerce.com.br/product/Pneustore";
 function TodosContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { openCheckout } = useBravoCheckout();
   const rawQuery = searchParams.get("title") || searchParams.get("q") || searchParams.get("search") || searchParams.get("query") || "";
   const query = rawQuery.trim();
 
@@ -259,8 +267,8 @@ function TodosContent() {
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
                 {paginated.map((p) => (
-                  <Link key={p.slug} href={`/produto/${p.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
-                    <div style={{ background: "white", borderRadius: 12, border: "1px solid #f0f0f0", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "box-shadow 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)")} onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
+                  <div key={p.slug} style={{ background: "white", borderRadius: 12, border: "1px solid #f0f0f0", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", transition: "box-shadow 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)")} onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
+                    <Link href={`/produto/${p.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
                       <div style={{ position: "relative", aspectRatio: "1/1", background: "#fafafa", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
                         <img src={`${STATIC_BASE}/${p.images[0]}?w=400&q=75`} alt={p.name} style={{ maxWidth: "90%", maxHeight: "90%", objectFit: "contain" }} />
                         {p.inmetro && (
@@ -270,30 +278,40 @@ function TodosContent() {
                           </div>
                         )}
                       </div>
-                      <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-                        <div style={{ height: 20, display: "flex", alignItems: "center" }}>
-                          <img src={`/${p.brandLogo}`} alt={p.brand} style={{ maxHeight: 18, maxWidth: 80, objectFit: "contain" }} />
-                        </div>
-                        <h3 style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.4, color: "#1a1a1a", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 36, margin: 0 }}>{p.name}</h3>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <Stars count={p.stars} />
-                          <span style={{ fontSize: 11, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
-                          <span style={{ fontSize: 11, color: "var(--color-textSecondary)", marginLeft: "auto" }}>ID: {p.id}</span>
-                        </div>
-                        <div style={{ marginTop: "auto", paddingTop: 4 }}>
-                          <div style={{ fontSize: 11, color: "var(--color-textSecondary)", textDecoration: "line-through" }}>R$ {p.origPrice}</div>
-                          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                            <span style={{ fontSize: 18, fontWeight: 800, color: "var(--color-primary)" }}>R$ {p.pixPrice}</span>
-                            <span style={{ fontSize: 10, fontWeight: 700, background: "var(--color-primary)", color: "white", padding: "2px 6px", borderRadius: 4 }}>PIX</span>
-                          </div>
-                          <div style={{ fontSize: 11, color: "var(--color-textSecondary)" }}>ou 10x de R$ {p.installmentValue} sem juros</div>
-                        </div>
-                        <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                          <span style={{ flex: 1, textAlign: "center", padding: "6px", borderRadius: 6, background: "var(--color-primary)", color: "white", fontSize: 12, fontWeight: 600 }}>Comprar</span>
-                        </div>
+                    </Link>
+                    <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+                      <div style={{ height: 20, display: "flex", alignItems: "center" }}>
+                        <img src={`/${p.brandLogo}`} alt={p.brand} style={{ maxHeight: 18, maxWidth: 80, objectFit: "contain" }} />
                       </div>
+                      <Link href={`/produto/${p.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.4, color: "#1a1a1a", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 36, margin: 0 }}>{p.name}</h3>
+                      </Link>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <Stars count={p.stars} />
+                        <span style={{ fontSize: 11, color: "var(--color-textSecondary)" }}>({p.reviews})</span>
+                        <span style={{ fontSize: 11, color: "var(--color-textSecondary)", marginLeft: "auto" }}>ID: {p.id}</span>
+                      </div>
+                      <div style={{ marginTop: "auto", paddingTop: 4 }}>
+                        <div style={{ fontSize: 11, color: "var(--color-textSecondary)", textDecoration: "line-through" }}>R$ {p.origPrice}</div>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                          <span style={{ fontSize: 18, fontWeight: 800, color: "var(--color-primary)" }}>R$ {p.pixPrice}</span>
+                          <span style={{ fontSize: 10, fontWeight: 700, background: "var(--color-primary)", color: "white", padding: "2px 6px", borderRadius: 4 }}>PIX</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: "var(--color-textSecondary)" }}>ou 10x de R$ {p.installmentValue} sem juros</div>
+                      </div>
+                      <button
+                        onClick={() =>
+                          openCheckout({
+                            product: { name: p.name, amount_cents: brlToCents(p.pixPrice), slug: p.slug, id: p.id },
+                            quantity: 1,
+                          })
+                        }
+                        style={{ width: "100%", padding: "8px", borderRadius: 6, background: "var(--color-primary)", color: "white", fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer", marginTop: 4 }}
+                      >
+                        Comprar
+                      </button>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
 
