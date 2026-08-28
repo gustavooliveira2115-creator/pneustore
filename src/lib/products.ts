@@ -416,7 +416,7 @@ export const products: Record<string, Product> = {
     installmentCount: 10,
     stars: 4.6,
     reviews: 423,
-    images: ["fd3716aeb4ed63d2acb4.webp", "a1bf6d6206b7323eb5da.webp", "6e6db0c0a1f1b280f66d.webp"],
+    images: ["d11a349b8919f7dc283e.webp", "19ea696c7f3a7eba094a.webp", "76ac8136332f154d1896.webp"],
     inmetro: { rollingResistance: "E", wetGrip: "C", noise: "72 dB" },
     technical: [["Medida","175/70R14"],["Aro",'14"'],["Indice de carga","84T"],["Modelo","MH01"],["Resistencia a rolamento","E"],["Aderencia em pista molhada","C"],["Ruido externo","72 dB"]],
     aboutBrandTitle: "Sobre a marca Itaro",
