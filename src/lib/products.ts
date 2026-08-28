@@ -104,6 +104,46 @@ export const products: Record<string, Product> = {
     aboutProductText:
       "O PowerContact 2 foi projetado para oferecer ate 20% mais quilometragem com a tecnologia Eco Plus+, excelente economia de combustivel e conforto acustico com Conti Noise Cancelling. Banda assimétrica, sulcos profundos e composto SmartCompound garantem aderencia superior no seco e molhado, ideal para uso urbano e rodoviario.",
   },
+  "pneu-moto-maggion-aro-18-winner-90-90-18-57p-tt-traseiro-16001288": {
+    slug: "pneu-moto-maggion-aro-18-winner-90-90-18-57p-tt-traseiro-16001288",
+    aliases: ["pneu-moto-maggion-aro-18-winner-90-90-18-57p-tt-traseiro"],
+    name: "Pneu Moto Maggion Aro 18 Winner 90/90-18 57P TT - Traseiro",
+    id: "16001288",
+    brand: "Maggion",
+    brandLogo: "MAGGION.webp",
+    brandLogo2x: "MAGGION-1.webp",
+    origPrice: "183,23",
+    pixPrice: "164,90",
+    installmentTotal: "183,23",
+    installmentValue: "18,32",
+    installmentCount: 10,
+    stars: 4.8,
+    reviews: 206,
+    images: [
+      "410e0c51717b0e53b244.webp",
+      "2dbddeb24401f49f61a7.webp",
+      "95ef8ee55601ce7654ce.webp",
+    ],
+    inmetro: { rollingResistance: "E", wetGrip: "C", noise: "72 dB" },
+    technical: [
+      ["Medida", "90/90-18"],
+      ["Aro", '18"'],
+      ["Indice de carga", "57 (230 kg)"],
+      ["Indice de velocidade", "P (150 km/h)"],
+      ["Tipo", "TT (TubeType)"],
+      ["Posicao", "Traseiro"],
+      ["Modelo", "Winner"],
+      ["Uso", "Urbano"],
+      ["Resistencia a rolamento", "E"],
+      ["Aderencia em pista molhada", "C"],
+      ["Ruido externo", "72 dB"],
+    ],
+    aboutBrandTitle: "Sobre a marca Maggion",
+    aboutBrandText:
+      "A Maggion e uma das principais fabricantes de pneus para motos da America Latina, com fabrica no Brasil e mais de 80 anos de historia. Reconhecida pela durabilidade e custo-beneficio, a marca equipa motos de baixa e media cilindrada com compostos que equilibram aderencia, conforto e quilometragem para o uso urbano diario.",
+    aboutProductText:
+      "O Winner 90/90-18 57P TT foi desenvolvido para motos street de uso urbano, com sulcos direcionais que melhoram a evacuacao de agua e estabilidade em curvas. Carcaca reforçada e composto de alta durabilidade garantem segurança no dia a dia, seja no asfalto seco ou molhado, com excelente custo-beneficio para o motoboy e o dia a dia na cidade.",
+  },
 };
 
 // helper to resolve slug or alias
