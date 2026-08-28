@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { WhatsAppIcon, ChevronLeft, ChevronRight, Stars, CartIcon } from "@/components/icons";
-import { getProductBySlug } from "@/lib/products";
+import { getProductBySlug, products as allProductsMap } from "@/lib/products";
 import { useBravoCheckout } from "@/components/BravoPayCheckout";
 
 function brlToCents(v: string): number {
@@ -16,21 +16,6 @@ function brlToCents(v: string): number {
 }
 
 const STATIC_BASE = "https://static.verumcommerce.com.br/product/Pneustore";
-
-/* ═══════════════════════════════════════════════════════════════════
-   RELATED + Q&A (shared)
-   ═══════════════════════════════════════════════════════════════════ */
-
-const relatedProducts = [
-  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "bc833bd47d1eb07f3a43.webp", img2x: "bc833bd47d1eb07f3a43-1.webp", title: "Pneu Westlake Aro 17.5 CM986 215/75R17.5 135/133J 16 Lonas TL", origPrice: "799,89", curPrice: "719,90", installment: "79,99", stars: 4.5, reviews: 8, brand: "Westlake_banner_1.webp", rr: "D", wg: "C", noise: "72" },
-  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "ccdac76cd9248bd45280.webp", img2x: "ccdac76cd9248bd45280-1.webp", title: "Pneu Westlake Aro 17.5 CR960A 215/75R17.5 135/133J 16 Lonas TL", origPrice: "822,12", curPrice: "739,90", installment: "82,21", stars: 4, reviews: 5, brand: "Westlake_banner_1.webp", rr: "C", wg: "B", noise: "70" },
-  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "cc3ef30f33ac7c28018d.webp", img2x: "cc3ef30f33ac7c28018d-1.webp", title: "Pneu Westlake Aro 17.5 CM986 215/75R17.5 136/134K 18 Lonas TL", origPrice: "955,45", curPrice: "859,90", installment: "95,55", stars: 4.5, reviews: 3, brand: "Westlake_banner_1.webp", rr: "D", wg: "C", noise: "72" },
-  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "bfc10d0ef0e933bd9203.webp", img2x: "bfc10d0ef0e933bd9203-1.webp", title: "Pneu Westlake Aro 17.5 CR960A 215/75R17.5 136/134K 18 Lonas TL", origPrice: "933,23", curPrice: "839,90", installment: "93,32", stars: 4, reviews: 2, brand: "Westlake_banner_1.webp", rr: "C", wg: "B", noise: "70" },
-  { slug: "pneu-continental-aro-16-powercontact-2-195-55r16-87h-10120084", img: "b008510702b224d2c3f3.webp", img2x: "b008510702b224d2c3f3-1.webp", title: "Pneu Speedmax Aro 17.5 FACTORMAX-MD 215/75R17.5 135/133J 16 Lonas TL", origPrice: "666,56", curPrice: "599,90", installment: "66,66", stars: 5, reviews: 11, brand: "MINI-BANNER-SPEEDMAX-NOVO.png", rr: "C", wg: "C", noise: "71" },
-  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "d1a75f4fb5197084b466.webp", img2x: "d1a75f4fb5197084b466-1.webp", title: "Pneu Itaro Aro 17.5 IT01 215/75R17.5 136/134K 18 Lonas TL", origPrice: "622,12", curPrice: "559,90", installment: "62,21", stars: 4.5, reviews: 7, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "71" },
-  { slug: "pneu-itaro-aro-17-5-it01-215-75r17-5-135-133j-16-lonas-tl", img: "d4cb2e20d0accbce337b.webp", img2x: "d4cb2e20d0accbce337b-1.webp", title: "Pneu Itaro Aro 17.5 IT01 225/75R17.5 140/138M 18 Lonas TL", origPrice: "711,00", curPrice: "639,90", installment: "71,10", stars: 4, reviews: 4, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "72" },
-  { slug: "pneu-continental-aro-16-powercontact-2-195-55r16-87h-10120084", img: "e67f454502c229412897.webp", img2x: "e67f454502c229412897-1.webp", title: "Pneu Itaro Aro 17.5 IT01 225/75R17.5 135/133J 16 Lonas TL", origPrice: "688,78", curPrice: "619,90", installment: "68,88", stars: 4.5, reviews: 9, brand: "ITARO-2-1-.png", rr: "C", wg: "C", noise: "71" },
-];
 
 const qaQuestions = [
   {
@@ -75,6 +60,29 @@ export default function ProductPage() {
   const relatedScrollRef = useRef<HTMLDivElement>(null);
   const [qaPage, setQaPage] = useState(0);
   const { openCheckout } = useBravoCheckout();
+
+  // Distribui até 8 produtos do site na sessão "Confira outros produtos" (exclui o atual, espalhados)
+  const relatedProducts = useMemo(() => {
+    const all = Object.values(allProductsMap);
+    const others = all.filter((p) => p.slug !== product?.slug);
+    if (others.length <= 8) return others.slice(0, 8);
+    const idx = all.findIndex((p) => p.slug === product?.slug);
+    const step = Math.max(1, Math.floor(others.length / 8));
+    const result: typeof all = [];
+    let pos = idx >= 0 ? idx % others.length : 0;
+    for (let i = 0; i < 8; i++) {
+      pos = (pos + step) % others.length;
+      const candidate = others[pos];
+      if (!result.find((r) => r.slug === candidate.slug)) result.push(candidate);
+      else {
+        // se colidiu, pega próximo disponível
+        let k = 1;
+        while (result.find((r) => r.slug === others[(pos + k) % others.length].slug) && k < others.length) k++;
+        result.push(others[(pos + k) % others.length]);
+      }
+    }
+    return result.slice(0, 8);
+  }, [product?.slug]);
 
   useEffect(() => {
     setCurrentImage(0);
@@ -527,46 +535,46 @@ export default function ProductPage() {
             </button>
 
             <div ref={relatedScrollRef} style={{ display: "flex", gap: 16, overflowX: "auto", scrollBehavior: "smooth", scrollbarWidth: "none", msOverflowStyle: "none", padding: "4px 0" }} className="hide-scrollbar">
-              {relatedProducts.map((p, i) => (
-                <Link href={`/produto/${p.slug}`} key={i} style={{ textDecoration: "none", color: "inherit" }}>
+              {relatedProducts.map((p) => (
+                <Link href={`/produto/${p.slug}`} key={p.slug} style={{ textDecoration: "none", color: "inherit" }}>
                   <div style={{ minWidth: 260, maxWidth: 260, border: "1px solid #e8e8e8", borderRadius: 12, overflow: "hidden", background: "white", cursor: "pointer", transition: "box-shadow 0.2s", flexShrink: 0 }}
                     onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
                   >
                     <div style={{ padding: 16 }}>
-                      <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
-                          <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                            <img src="/858188e454f29bd80bfe9090e2d077acc45f5ee7.png" alt="" width={12} height={12} />
+                      {p.inmetro && (
+                        <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
+                            <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                              <img src="/858188e454f29bd80bfe9090e2d077acc45f5ee7.png" alt="" width={12} height={12} />
+                            </div>
+                            <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>{p.inmetro.rollingResistance}</div>
                           </div>
-                          <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#FFED00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>{p.rr}</div>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
-                          <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                            <img src="/92cd0612962d6caef7b755437547b544970a915c.png" alt="" width={12} height={12} />
+                          <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
+                            <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                              <img src="/92cd0612962d6caef7b755437547b544970a915c.png" alt="" width={12} height={12} />
+                            </div>
+                            <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>{p.inmetro.wetGrip}</div>
                           </div>
-                          <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "#C8D400", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>{p.wg}</div>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
-                          <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                            <img src="/a9c67ec6b08617feea202bddb77ebc4ae147d1ff.png" alt="" width={12} height={12} />
+                          <div style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700 }}>
+                            <div style={{ width: 18, height: 18, borderRadius: "4px 0 0 4px", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                              <img src="/a9c67ec6b08617feea202bddb77ebc4ae147d1ff.png" alt="" width={12} height={12} />
+                            </div>
+                            <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 9 }}>{p.inmetro.noise}</div>
                           </div>
-                          <div style={{ width: 18, height: 18, borderRadius: "0 4px 4px 0", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 9 }}>{p.noise}</div>
-                        </div>
-                      </div>
-
-                      <div style={{ width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                        <img src={`/${p.img}`} alt={p.title} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
-                      </div>
-
-                      {p.brand && (
-                        <div style={{ width: "100%", height: 24, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
-                          <img src={`/${p.brand}`} alt="" style={{ maxHeight: 24, objectFit: "contain" }} />
                         </div>
                       )}
 
+                      <div style={{ width: "100%", aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                        <img src={`${STATIC_BASE}/${p.images[0]}?w=400&q=75`} alt={p.name} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+                      </div>
+
+                      <div style={{ width: "100%", height: 24, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+                        <img src={`/${p.brandLogo}`} alt={p.brand} style={{ maxHeight: 24, objectFit: "contain" }} />
+                      </div>
+
                       <p style={{ fontSize: 13, color: "var(--color-textBase)", lineHeight: 1.4, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                        {p.title}
+                        {p.name}
                       </p>
 
                       <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 8 }}>
@@ -576,8 +584,8 @@ export default function ProductPage() {
 
                       <div>
                         <span style={{ fontSize: 12, color: "var(--color-textSecondary)", textDecoration: "line-through" }}>R$ {p.origPrice}</span>
-                        <div style={{ fontSize: 20, fontWeight: 700, color: "var(--color-primary)" }}>R$ {p.curPrice}</div>
-                        <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>ou 10x de R$ {p.installment}</span>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: "var(--color-primary)" }}>R$ {p.pixPrice}</div>
+                        <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>ou {p.installmentCount}x de R$ {p.installmentValue}</span>
                       </div>
                     </div>
                   </div>
