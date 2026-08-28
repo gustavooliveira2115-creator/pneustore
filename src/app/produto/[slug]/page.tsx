@@ -7,6 +7,13 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { WhatsAppIcon, ChevronLeft, ChevronRight, Stars, CartIcon } from "@/components/icons";
 import { getProductBySlug } from "@/lib/products";
+import { useBravoCheckout } from "@/components/BravoPayCheckout";
+
+function brlToCents(v: string): number {
+  const digits = v.replace(/\./g, "").replace(",", "");
+  const n = parseInt(digits, 10);
+  return Number.isFinite(n) ? n : 0;
+}
 
 const STATIC_BASE = "https://static.verumcommerce.com.br/product/Pneustore";
 
@@ -67,6 +74,7 @@ export default function ProductPage() {
   const [activeTab, setActiveTab] = useState(0);
   const relatedScrollRef = useRef<HTMLDivElement>(null);
   const [qaPage, setQaPage] = useState(0);
+  const { openCheckout } = useBravoCheckout();
 
   useEffect(() => {
     setCurrentImage(0);
@@ -327,19 +335,30 @@ export default function ProductPage() {
               </div>
 
               <button
+                onClick={() =>
+                  openCheckout({
+                    product: {
+                      name: product.name,
+                      amount_cents: brlToCents(product.pixPrice),
+                      slug: product.slug,
+                      id: product.id,
+                    },
+                    quantity,
+                  })
+                }
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                   width: "100%", maxWidth: 300, height: 48,
-                  border: "1px solid #d9d9d9", borderRadius: 8,
-                  background: "transparent", color: "var(--color-textBase)",
-                  fontSize: 16, fontWeight: 500, cursor: "pointer",
+                  border: "1px solid var(--color-primary)", borderRadius: 8,
+                  background: "var(--color-primary)", color: "white",
+                  fontSize: 16, fontWeight: 700, cursor: "pointer",
                   transition: "all 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--color-primary)"; e.currentTarget.style.color = "var(--color-primary)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#d9d9d9"; e.currentTarget.style.color = "var(--color-textBase)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-primaryHover)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-primary)"; }}
               >
                 <CartIcon size={20} />
-                <span>Comprar</span>
+                <span>Comprar com PIX</span>
               </button>
             </div>
 

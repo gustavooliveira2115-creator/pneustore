@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { BravoCheckoutProvider } from "@/components/BravoPayCheckout";
+import { UtmCapture } from "@/components/UtmCapture";
 
 export const metadata: Metadata = {
   title: "PneuStore | Frete Grátis em Pneus Selecionados - Aproveite",
@@ -14,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        {/* Captura UTM no primeiro acesso (salva em localStorage/cookie para enviar no PIX) */}
+        <UtmCapture />
+        <BravoCheckoutProvider>{children}</BravoCheckoutProvider>
+      </body>
     </html>
   );
 }

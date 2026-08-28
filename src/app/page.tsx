@@ -14,6 +14,14 @@ import {
   Stars,
 } from "@/components/icons";
 import { PRODUCT_SLUG } from "@/lib/slug";
+import { useBravoCheckout } from "@/components/BravoPayCheckout";
+
+/** Converte "398,93" ou "1.220,65" -> centavos (39893, 122065) */
+function brlToCents(v: string): number {
+  const digits = v.replace(/\./g, "").replace(",", "");
+  const n = parseInt(digits, 10);
+  return Number.isFinite(n) ? n : 0;
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    DATA
@@ -218,6 +226,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState(1);
   const [vehicleType, setVehicleType] = useState("carros");
   const productScrollRef = useRef<HTMLDivElement>(null);
+  const { openCheckout } = useBravoCheckout();
 
   /* Hero auto-play */
   useEffect(() => {
@@ -435,9 +444,22 @@ export default function HomePage() {
                   </div>
                   {/* CEP input */}
                   <input style={{ width: "100%", height: 32, border: "1px solid #d9d9d9", borderRadius: 6, padding: "0 10px", fontSize: 12 }} placeholder="Insira seu CEP" />
-                  {/* Buttons */}
+                  {/* Buttons — TODOS os botões Comprar integram BravoPay PIX */}
                   <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                    <button className="btn btn-primary" style={{ flex: 1, height: 36, fontSize: 13, fontWeight: 600, borderRadius: 8 }}>
+                    <button
+                      onClick={() =>
+                        openCheckout({
+                          product: {
+                            name: p.title,
+                            amount_cents: brlToCents(p.curPrice),
+                            slug: (p as any).slug || PRODUCT_SLUG,
+                          },
+                          quantity: 1,
+                        })
+                      }
+                      className="btn btn-primary"
+                      style={{ flex: 1, height: 36, fontSize: 13, fontWeight: 600, borderRadius: 8 }}
+                    >
                       Comprar
                     </button>
                     <button className="btn btn-outline" style={{ height: 36, fontSize: 12, padding: "0 12px" }}>
