@@ -200,37 +200,21 @@ function RastreioInner() {
   const progress = data ? ((stageIndex(data.stage) + 1) / STAGES.length) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-[#F8F5FF] text-zinc-900 selection:bg-[#4e008e]/20">
-      {/* Beautiful premium background — mesh + orbs + tire watermark */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        {/* Base */}
-        <div className="absolute inset-0 bg-[#F8F5FF]" />
-        {/* Hero purple block */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1600px] h-[640px] -translate-y-[120px] rounded-[60px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#4e008e] via-[#5b0fa8] to-[#3a0070]" />
-          {/* mesh orbs */}
-          <div className="absolute -top-20 -right-20 h-[520px] w-[720px] rounded-full opacity-[0.35] blur-[80px]" style={{ background: `radial-gradient(circle at 50% 50%, #68dcfa 0%, #8b5cf6 35%, transparent 70%)` }} />
-          <div className="absolute -bottom-32 -left-32 h-[480px] w-[560px] rounded-full opacity-[0.25] blur-[70px]" style={{ background: `radial-gradient(circle at 50% 50%, #a78bfa 0%, transparent 70%)` }} />
-          {/* subtle grid */}
-          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)`, backgroundSize: `40px 40px` }} />
-          {/* vertical tread lines */}
-          <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: `repeating-linear-gradient(90deg, #fff 0 1px, transparent 1px 22px)` }} />
-        </div>
-        {/* Large faint tire watermark on hero right */}
-        <div className="absolute top-[40px] right-[6%] hidden lg:block opacity-[0.06] rotate-12">
-          <svg width="420" height="420" viewBox="0 0 200 200" fill="none">
+    <div className="min-h-screen bg-[#F8F5FF] text-zinc-900 selection:bg-[#4e008e]/20 overflow-x-hidden" style={{ fontFamily: "Arial, sans-serif" }}>
+      {/* Background premium — absoluto, não fixed */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ height: "560px" }}>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#4e008e] via-[#5b0fa8] to-[#3a0070]" />
+        <div className="absolute -top-20 -right-20 h-[520px] w-[720px] rounded-full opacity-[0.35]" style={{ background: `radial-gradient(circle at 50% 50%, #68dcfa 0%, #8b5cf6 35%, transparent 70%)`, filter: "blur(80px)" }} />
+        <div className="absolute -bottom-32 -left-32 h-[480px] w-[560px] rounded-full opacity-[0.25]" style={{ background: `radial-gradient(circle at 50% 50%, #a78bfa 0%, transparent 70%)`, filter: "blur(70px)" }} />
+        <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)`, backgroundSize: `40px 40px` }} />
+        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: `repeating-linear-gradient(90deg, #fff 0 1px, transparent 1px 22px)` }} />
+        <div className="absolute top-[30px] right-[5%] hidden lg:block opacity-[0.07]">
+          <svg width="360" height="360" viewBox="0 0 200 200" fill="none">
             <circle cx="100" cy="100" r="78" stroke="white" strokeWidth="14" />
             <circle cx="100" cy="100" r="44" stroke="white" strokeWidth="8" />
             <circle cx="100" cy="100" r="12" fill="white" />
-            {Array.from({ length: 16 }).map((_, i) => (
-              <g key={i} transform={`rotate(${i * 22.5} 100 100)`}>
-                <rect x="98" y="18" width="4" height="18" rx="2" fill="white" />
-              </g>
-            ))}
           </svg>
         </div>
-        {/* bottom soft gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-[400px] bg-gradient-to-t from-white to-transparent opacity-60" />
       </div>
 
       {/* Header — PneuStore official white */}
@@ -239,8 +223,8 @@ function RastreioInner() {
           <div className="flex items-center gap-3">
             <a href="/" className="flex items-center gap-3">
               {/* Logo — vetor perfeito em alta resolução (crisp) — baseado exatamente na sua imagem */}
-              <img src="/pneustore-logo-perfect.svg" alt="PneuStore" className="hidden sm:block h-[34px] w-auto" />
-              <img src="/pneustore-logo-perfect.svg" alt="PneuStore" className="sm:hidden h-[30px] w-auto" />
+              <img src="/logo.png" alt="PneuStore" className="hidden sm:block h-[28px] w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).src = "/pneustore-logo-perfect.svg"; }} />
+              <img src="/logo.png" alt="PneuStore" className="sm:hidden h-[26px] w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).src = "/pneustore-logo-perfect.svg"; }} />
               <span className="hidden lg:inline-flex text-[10px] tracking-[0.14em] uppercase font-bold bg-[#4e008e] text-white px-2 py-1 rounded-full">Rastreio Oficial</span>
             </a>
           </div>
