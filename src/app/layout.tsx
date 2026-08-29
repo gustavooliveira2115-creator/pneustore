@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { BravoCheckoutProvider } from "@/components/BravoPayCheckout";
+import { CartProvider } from "@/components/CartContext";
 import { UtmCapture } from "@/components/UtmCapture";
 
 export const metadata: Metadata = {
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body>
         {/* Captura UTM no primeiro acesso (salva em localStorage/cookie para enviar no PIX) */}
         <UtmCapture />
-        <BravoCheckoutProvider>{children}</BravoCheckoutProvider>
+        <BravoCheckoutProvider>
+          <CartProvider>{children}</CartProvider>
+        </BravoCheckoutProvider>
       </body>
     </html>
   );

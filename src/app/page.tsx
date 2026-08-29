@@ -14,7 +14,7 @@ import {
   Stars,
 } from "@/components/icons";
 import { PRODUCT_SLUG } from "@/lib/slug";
-import { useBravoCheckout } from "@/components/BravoPayCheckout";
+import { useCart } from "@/components/CartContext";
 
 /** Converte "398,93" ou "1.220,65" -> centavos (39893, 122065) */
 function brlToCents(v: string): number {
@@ -227,7 +227,7 @@ export default function HomePage() {
   const [vehicleType, setVehicleType] = useState("carros");
   const productScrollRef = useRef<HTMLDivElement>(null);
   const heroTouchStartX = useRef<number | null>(null);
-  const { openCheckout } = useBravoCheckout();
+  const { addItem } = useCart();
 
   /* Hero auto-play */
   useEffect(() => {
@@ -472,18 +472,25 @@ export default function HomePage() {
                   </div>
                   {/* CEP input */}
                   <input style={{ width: "100%", height: 32, border: "1px solid #d9d9d9", borderRadius: 6, padding: "0 10px", fontSize: 12 }} placeholder="Insira seu CEP" />
-                  {/* Buttons — TODOS os botões Comprar integram BravoPay PIX */}
+                  {/* Buttons — Adiciona ao carrinho lateral */}
                   <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
                     <button
                       onClick={() =>
-                        openCheckout({
-                          product: {
-                            name: p.title,
-                            amount_cents: brlToCents(p.curPrice),
+                        addItem(
+                          {
                             slug: (p as any).slug || PRODUCT_SLUG,
+                            name: p.title,
+                            id: String(p.id),
+                            brand: p.brand,
+                            brandLogo: p.brand,
+                            image: p.img2x || p.img,
+                            curPrice: p.curPrice,
+                            origPrice: p.origPrice,
+                            priceCents: brlToCents(p.curPrice),
+                            origCents: brlToCents(p.origPrice),
                           },
-                          quantity: 1,
-                        })
+                          1
+                        )
                       }
                       className="btn btn-primary"
                       style={{ flex: 1, height: 36, fontSize: 13, fontWeight: 600, borderRadius: 8 }}
@@ -613,11 +620,11 @@ export default function HomePage() {
 
       {/* ─── WHATSAPP FLOAT ─── */}
       <a
-        href="https://wa.me/5521973005962"
+        href="https://wa.me/5511947710544"
         target="_blank"
         rel="noopener noreferrer"
         className="whatsapp-float"
-        aria-label="WhatsApp (21) 97300-5962"
+        aria-label="WhatsApp (11) 94771-0544"
       >
         <WhatsAppIcon />
       </a>

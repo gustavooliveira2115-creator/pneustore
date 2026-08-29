@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { WhatsAppIcon, ChevronLeft, ChevronRight, Stars, CartIcon } from "@/components/icons";
 import { getProductBySlug, products as allProductsMap } from "@/lib/products";
-import { useBravoCheckout } from "@/components/BravoPayCheckout";
+import { useCart } from "@/components/CartContext";
 
 function brlToCents(v: string): number {
   const digits = v.replace(/\./g, "").replace(",", "");
@@ -59,7 +59,7 @@ export default function ProductPage() {
   const [activeTab, setActiveTab] = useState(0);
   const relatedScrollRef = useRef<HTMLDivElement>(null);
   const [qaPage, setQaPage] = useState(0);
-  const { openCheckout } = useBravoCheckout();
+  const { addItem } = useCart();
 
   // Distribui até 8 produtos do site na sessão "Confira outros produtos" (exclui o atual, espalhados)
   const relatedProducts = useMemo(() => {
@@ -344,15 +344,21 @@ export default function ProductPage() {
 
               <button
                 onClick={() =>
-                  openCheckout({
-                    product: {
-                      name: product.name,
-                      amount_cents: brlToCents(product.pixPrice),
+                  addItem(
+                    {
                       slug: product.slug,
+                      name: product.name,
                       id: product.id,
+                      brand: product.brand,
+                      brandLogo: product.brandLogo,
+                      image: product.images[0],
+                      curPrice: product.pixPrice,
+                      origPrice: product.origPrice,
+                      priceCents: brlToCents(product.pixPrice),
+                      origCents: brlToCents(product.origPrice),
                     },
-                    quantity,
-                  })
+                    quantity
+                  )
                 }
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,

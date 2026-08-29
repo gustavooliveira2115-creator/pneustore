@@ -39,14 +39,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "customer {name,email} obrigatório (telefone e CPF foram removidos do checkout)" }, { status: 400 });
     }
 
-    // Telefone e CPF são opcionais agora (removidos do checkout a pedido) — envia só se vier
-    // Se a BravoPay exigir, o gateway usará fallback interno ou o e-mail como identificação
+    // Telefone e CPF são opcionais — compat com document/cpf/phone
     const customerPayload: Record<string, string> = {
       name: String(customer.name).trim(),
       email: String(customer.email).trim().toLowerCase(),
     };
-    if (customer.phone) customerPayload.phone = String(customer.phone).replace(/\D/g, "");
-    if (customer.cpf) customerPayload.cpf = String(customer.cpf).replace(/\D/g, "");
+    const phoneRaw = customer.phone ?? customer.telefone;
+    const docRaw = customer.cpf ?? customer.document ?? customer.cpfCnpj ?? customer.doc;
+    if (phoneRaw) customerPayload.phone = String(phoneRaw).replace(/\D/g, "");
+    if (docRaw) customerPayload.cpf = String(docRaw).replace(/\D/g, "");
 
     // Monta payload para BravoPay — só campos permitidos
     const payload: Record<string, unknown> = {
@@ -83,10 +84,19 @@ export async function POST(req: NextRequest) {
     if (body.product_id) payload.product_id = String(body.product_id);
     if (body.utm && typeof body.utm === "object") payload.utm = body.utm;
     if (body.split && typeof body.split === "object") payload.split = body.split;
+    if (body.metadata && typeof body.metadata === "object") payload.metadata = body.metadata;
+    if (body.description) payload.description = String(body.description).slice(0, 300);
+    // items é informativo, mas BravoPay aceita metadata; mantém compat
+    if (body.items && Array.isArray(body.items)) payload.metadata = { ...(payload.metadata as object ?? {}), items_summary: JSON.stringify(body.items).slice(0, 800) };
+    if (body.shipping && typeof body.shipping === "object") payload.metadata = { ...(payload.metadata as object ?? {}), shipping: JSON.stringify(body.shipping).slice(0, 800) };
+
+    // Idempotência: usa external_reference ou gera
+    const idempotencyKey = String(body.external_reference || `pneustore_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
 
     // Chama BravoPay
     const { res, json, status } = await bravoFetch("/transactions", {
       method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
       body: JSON.stringify(payload),
     });
 

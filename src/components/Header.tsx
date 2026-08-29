@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CepLocationModal from "./CepLocationModal";
+import { useCart } from "./CartContext";
 
 export default function Header() {
   const router = useRouter();
+  const { count: cartCount, openCart } = useCart();
   const [query, setQuery] = useState("");
   const [mobileQuery, setMobileQuery] = useState("");
   const [isCepModalOpen, setIsCepModalOpen] = useState(false);
@@ -84,12 +86,12 @@ export default function Header() {
               <div className="flex h-full gap-[7px]">
                 <div className="flex !mx-[8px] border-1 border-dividerGlobalSplit h-full"></div>
                 <a
-                  href="https://wa.me/5521973005962"
+                  href="https://wa.me/5511947710544"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center h-full px-[12px] cursor-pointer transition-colors duration-150 hover:underline"
                 >
-                  Whatsapp (21) 97300-5962
+                  Whatsapp (11) 94771-0544
                 </a>
               </div>
             </div>
@@ -138,7 +140,7 @@ export default function Header() {
                     </svg>
                     <span>Entrar</span>
                   </button>
-                  <button className="btn btn-ghost flex cursor-pointer h-auto gap-[8px]" aria-label="cart-badge" role="button">
+                  <button onClick={openCart} className="btn btn-ghost flex cursor-pointer h-auto gap-[8px] relative" aria-label="cart-badge" role="button">
                     <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 16">
                       <path
                         d="M0.866577 1.36719H2.19991L3.97324 9.64719C4.0383 9.95043 4.20702 10.2215 4.45038 10.4138C4.69375 10.606 4.99651 10.7074 5.30658 10.7005H11.8266C12.13 10.7 12.4242 10.596 12.6606 10.4057C12.897 10.2154 13.0613 9.95021 13.1266 9.65385L14.2266 4.70052H2.91324M5.50004 14.0005C5.50004 14.3687 5.20156 14.6672 4.83337 14.6672C4.46518 14.6672 4.16671 14.3687 4.16671 14.0005C4.16671 13.6323 4.46518 13.3338 4.83337 13.3338C5.20156 13.3338 5.50004 13.6323 5.50004 14.0005ZM12.8334 14.0005C12.8334 14.3687 12.5349 14.6672 12.1667 14.6672C11.7985 14.6672 11.5 14.3687 11.5 14.0005C11.5 13.6323 11.7985 13.3338 12.1667 13.3338C12.5349 13.3338 12.8334 13.6323 12.8334 14.0005Z"
@@ -148,7 +150,7 @@ export default function Header() {
                         strokeLinejoin="round"
                       ></path>
                     </svg>
-                    <span className="bg-primaryBlueSecondaryBase rounded-full !px-[7px]">0</span>
+                    <span className="bg-primaryBlueSecondaryBase rounded-full !px-[7px] min-w-[20px] text-center">{cartCount}</span>
                   </button>
                 </div>
               </div>
@@ -278,7 +280,7 @@ export default function Header() {
                     ></path>
                   </svg>
                 </button>
-                <button className="btn btn-ghost flex cursor-pointer h-auto gap-[4px]" aria-label="cart-badge" role="button">
+                <button onClick={openCart} className="btn btn-ghost flex cursor-pointer h-auto gap-[4px] relative" aria-label="cart-badge" role="button">
                   <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 16">
                     <path
                       d="M0.866577 1.36719H2.19991L3.97324 9.64719C4.0383 9.95043 4.20702 10.2215 4.45038 10.4138C4.69375 10.606 4.99651 10.7074 5.30658 10.7005H11.8266C12.13 10.7 12.4242 10.596 12.6606 10.4057C12.897 10.2154 13.0613 9.95021 13.1266 9.65385L14.2266 4.70052H2.91324M5.50004 14.0005C5.50004 14.3687 5.20156 14.6672 4.83337 14.6672C4.46518 14.6672 4.16671 14.3687 4.16671 14.0005C4.16671 13.6323 4.46518 13.3338 4.83337 13.3338C5.20156 13.3338 5.50004 13.6323 5.50004 14.0005ZM12.8334 14.0005C12.8334 14.3687 12.5349 14.6672 12.1667 14.6672C11.7985 14.6672 11.5 14.3687 11.5 14.0005C11.5 13.6323 11.7985 13.3338 12.1667 13.3338C12.5349 13.3338 12.8334 13.6323 12.8334 14.0005Z"
@@ -288,7 +290,7 @@ export default function Header() {
                       strokeLinejoin="round"
                     ></path>
                   </svg>
-                  <span className="bg-primaryBlueSecondaryBase rounded-full !px-[7px]">0</span>
+                  <span className="bg-primaryBlueSecondaryBase rounded-full !px-[7px] min-w-[20px] text-center">{cartCount}</span>
                 </button>
               </div>
             </div>
