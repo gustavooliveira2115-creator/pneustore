@@ -168,30 +168,6 @@ export default function Header() {
                         type="button"
                         className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                       >
-                        Promoções
-                      </button>
-                    </div>
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
-                      >
-                        Revenda
-                      </button>
-                    </div>
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
-                      >
-                        Seja um parceiro
-                      </button>
-                    </div>
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
-                      >
                         Nossas lojas
                       </button>
                     </div>
