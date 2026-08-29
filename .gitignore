@@ -11,3 +11,5 @@ tsconfig.tsbuildinfo
 # rastreio local store
 data/tracking.json
 
+.vercel
+.env*
