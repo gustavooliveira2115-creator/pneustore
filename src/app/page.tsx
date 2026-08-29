@@ -15,6 +15,7 @@ import {
 } from "@/components/icons";
 import { PRODUCT_SLUG } from "@/lib/slug";
 import { useCart } from "@/components/CartContext";
+import { useRouter } from "next/navigation";
 
 /** Converte "398,93" ou "1.220,65" -> centavos (39893, 122065) */
 function brlToCents(v: string): number {
@@ -221,6 +222,7 @@ const categoryCards = [
    ═══════════════════════════════════════════════════════════════════ */
 
 export default function HomePage() {
+  const router = useRouter();
   const [heroIndex, setHeroIndex] = useState(0);
   const [productScrollPos, setProductScrollPos] = useState(0);
   const [activeTab, setActiveTab] = useState(1);
@@ -228,6 +230,74 @@ export default function HomePage() {
   const productScrollRef = useRef<HTMLDivElement>(null);
   const heroTouchStartX = useRef<number | null>(null);
   const { addItem } = useCart();
+
+  // ─── Busca por Medida — extração dinâmica dos títulos ───
+  const [largura, setLargura] = useState("");
+  const [perfil, setPerfil] = useState("");
+  const [aro, setAro] = useState("");
+
+  function parseMedida(title: string): { largura: string; perfil: string; aro: string } | null {
+    // Padrão carro/caminhão: 195/55R16, 215/75R17.5, 265/65R17
+    const m1 = title.match(/(\d{3})\/(\d{2,3})R(\d+(?:\.\d+)?)/i);
+    if (m1) return { largura: m1[1], perfil: m1[2], aro: m1[3] };
+    // Moto: 90/90-18, 120/70R17
+    const m2 = title.match(/(\d{2,3})\/(\d{2,3})-(\d+(?:\.\d+)?)/);
+    if (m2) return { largura: m2[1], perfil: m2[2], aro: m2[3] };
+    // Bicicleta: 700X25
+    const m3 = title.match(/(\d{3})X(\d{2,3})/i);
+    if (m3) return { largura: m3[1], perfil: m3[2], aro: "700" };
+    return null;
+  }
+
+  const medidas = products.map((p) => parseMedida(p.title)).filter(Boolean) as { largura: string; perfil: string; aro: string }[];
+
+  const largurasUnicas = Array.from(new Set(medidas.map((m) => m.largura))).sort((a, b) => Number(a) - Number(b));
+  // Perfil e Aro filtrados em cadeia pela Largura (e Perfil para Aro)
+  const perfisDisponiveis = (() => {
+    let filtered = medidas;
+    if (largura) filtered = filtered.filter((m) => m.largura === largura);
+    return Array.from(new Set(filtered.map((m) => m.perfil))).sort((a, b) => Number(a) - Number(b));
+  })();
+  const arosDisponiveis = (() => {
+    let filtered = medidas;
+    if (largura) filtered = filtered.filter((m) => m.largura === largura);
+    if (perfil) filtered = filtered.filter((m) => m.perfil === perfil);
+    return Array.from(new Set(filtered.map((m) => m.aro))).sort((a, b) => Number(a) - Number(b));
+  })();
+
+  // Reseta dependentes quando pai muda e valor atual não existe mais
+  useEffect(() => {
+    if (largura && !medidas.some((m) => m.largura === largura && m.perfil === perfil)) {
+      // se perfil atual não pertence à nova largura, limpa perfil e aro
+      if (perfil && !perfisDisponiveis.includes(perfil)) {
+        setPerfil("");
+        setAro("");
+      }
+    }
+  }, [largura]);
+  useEffect(() => {
+    if (perfil && largura && !arosDisponiveis.includes(aro) && aro) {
+      setAro("");
+    }
+  }, [perfil, largura]);
+
+  const handleBuscarPneus = () => {
+    if (!largura && !perfil && !aro) return;
+    const params = new URLSearchParams();
+    if (largura) params.set("largura", largura);
+    if (perfil) params.set("perfil", perfil);
+    if (aro) params.set("aro", aro);
+    if (largura && perfil && aro) {
+      // medida combinada para busca textual fallback
+      params.set("medida", `${largura}/${perfil}R${aro}`);
+      params.set("q", `${largura}/${perfil}R${aro}`);
+    } else if (largura && perfil) {
+      params.set("q", `${largura}/${perfil}`);
+    } else if (largura) {
+      params.set("q", largura);
+    }
+    router.push(`/todos?${params.toString()}`);
+  };
 
   /* Hero auto-play */
   useEffect(() => {
@@ -326,35 +396,41 @@ export default function HomePage() {
 
         {/* ─── VEHICLE SEARCH PANEL ─── */}
         <section style={{ width: "100%", display: "flex", justifyContent: "center", padding: "24px 10%", background: "var(--color-neutralBgLayout)" }}>
-          <div style={{ maxWidth: 1240, width: "100%", background: "white", borderRadius: 8, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-            {/* Tabs */}
-            <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #f0f0f0" }}>
+          <div style={{ maxWidth: 1240, width: "100%", background: "white", borderRadius: 12, overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.07)", border: "1px solid #ececec" }}>
+            {/* Tabs — abas superiores estilizadas idêntica referência */}
+            <div style={{ display: "flex", gap: 0, background: "#f7f5ff", padding: "6px 6px 0 6px", borderBottom: "1px solid #f0f0f0" }}>
               {[
                 { id: 1, label: "Medida do pneu" },
                 { id: 2, label: "Veículo" },
                 { id: 3, label: "Placa" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  style={{
-                    flex: 1,
-                    padding: "12px 16px",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    border: "none",
-                    background: activeTab === tab.id ? "var(--color-primaryPurpleBase)" : "transparent",
-                    color: activeTab === tab.id ? "white" : "var(--color-primaryPurpleBase)",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
+              ].map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    aria-selected={isActive}
+                    role="tab"
+                    style={{
+                      flex: 1,
+                      padding: "12px 16px",
+                      fontSize: 14,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      border: "none",
+                      borderRadius: "8px 8px 0 0",
+                      background: isActive ? "#4c0082" : "transparent",
+                      color: isActive ? "white" : "#4c0082",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
             {/* Tab Content */}
-            <div style={{ padding: 16 }}>
+            <div style={{ padding: "18px 16px", background: "white" }}>
               {activeTab === 1 && (
                 <div>
                   {/* Vehicle type radio */}
@@ -373,8 +449,8 @@ export default function HomePage() {
                           borderRadius: 20,
                           fontSize: 13,
                           cursor: "pointer",
-                          border: `1px solid ${vehicleType === vt.key ? "var(--color-primaryPurpleBase)" : "#d9d9d9"}`,
-                          background: vehicleType === vt.key ? "var(--color-primaryPurpleBase)" : "white",
+                          border: `1px solid ${vehicleType === vt.key ? "#4c0082" : "#d9d9d9"}`,
+                          background: vehicleType === vt.key ? "#4c0082" : "white",
                           color: vehicleType === vt.key ? "white" : "var(--color-textBase)",
                           transition: "all 0.15s",
                         }}
@@ -383,20 +459,125 @@ export default function HomePage() {
                       </button>
                     ))}
                   </div>
-                  {/* Selects */}
+                  {/* Selects — Largura / Perfil / Aro dinâmicos + botão */}
                   <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
-                    {["Largura", "Perfil", "Aro"].map((label) => (
-                      <div key={label} style={{ flex: 1, minWidth: 150 }}>
-                        <label style={{ display: "block", fontSize: 12, color: "var(--color-textSecondary)", marginBottom: 4 }}>{label}</label>
-                        <select style={{ width: "100%", height: 40, border: "1px solid var(--color-inputGlobalBorder)", borderRadius: 6, padding: "0 12px", fontSize: 14, background: "white", color: "var(--color-textBase)" }}>
-                          <option>Selecione</option>
-                        </select>
-                      </div>
-                    ))}
-                    <button className="btn btn-primary" style={{ height: 40, padding: "0 24px", borderRadius: 8, fontSize: 14, fontWeight: 600, whiteSpace: "nowrap" }}>
+                    {/* Largura */}
+                    <div style={{ flex: 1, minWidth: 130 }}>
+                      <label htmlFor="sel-largura" style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#6b6b6b", marginBottom: 6, letterSpacing: 0.3, textTransform: "uppercase" }}>
+                        Largura
+                      </label>
+                      <select
+                        id="sel-largura"
+                        value={largura}
+                        onChange={(e) => setLargura(e.target.value)}
+                        style={{ width: "100%", height: 42, border: "1px solid #e0e0e0", borderRadius: 6, padding: "0 12px", fontSize: 14, background: "white", color: largura ? "#1a1a1a" : "#8c8c8c", outline: "none", cursor: "pointer" }}
+                      >
+                        <option value="">Largura</option>
+                        {largurasUnicas.map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* Perfil */}
+                    <div style={{ flex: 1, minWidth: 130 }}>
+                      <label htmlFor="sel-perfil" style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#6b6b6b", marginBottom: 6, letterSpacing: 0.3, textTransform: "uppercase" }}>
+                        Perfil
+                      </label>
+                      <select
+                        id="sel-perfil"
+                        value={perfil}
+                        onChange={(e) => setPerfil(e.target.value)}
+                        disabled={!largura && perfisDisponiveis.length === 0}
+                        style={{
+                          width: "100%",
+                          height: 42,
+                          border: "1px solid #e0e0e0",
+                          borderRadius: 6,
+                          padding: "0 12px",
+                          fontSize: 14,
+                          background: !largura ? "#fafafa" : "white",
+                          color: perfil ? "#1a1a1a" : "#8c8c8c",
+                          outline: "none",
+                          cursor: perfisDisponiveis.length ? "pointer" : "not-allowed",
+                          opacity: !largura && perfisDisponiveis.length === 0 ? 0.6 : 1,
+                        }}
+                      >
+                        <option value="">Perfil</option>
+                        {perfisDisponiveis.map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* Aro */}
+                    <div style={{ flex: 1, minWidth: 130 }}>
+                      <label htmlFor="sel-aro" style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#6b6b6b", marginBottom: 6, letterSpacing: 0.3, textTransform: "uppercase" }}>
+                        Aro
+                      </label>
+                      <select
+                        id="sel-aro"
+                        value={aro}
+                        onChange={(e) => setAro(e.target.value)}
+                        disabled={arosDisponiveis.length === 0}
+                        style={{
+                          width: "100%",
+                          height: 42,
+                          border: "1px solid #e0e0e0",
+                          borderRadius: 6,
+                          padding: "0 12px",
+                          fontSize: 14,
+                          background: arosDisponiveis.length ? "white" : "#fafafa",
+                          color: aro ? "#1a1a1a" : "#8c8c8c",
+                          outline: "none",
+                          cursor: arosDisponiveis.length ? "pointer" : "not-allowed",
+                        }}
+                      >
+                        <option value="">Aro</option>
+                        {arosDisponiveis.map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* Botão Buscar pneus — roxo padrão, alinhado na mesma linha */}
+                    <button
+                      onClick={handleBuscarPneus}
+                      disabled={!largura && !perfil && !aro}
+                      title={!largura && !perfil && !aro ? "Selecione ao menos uma medida" : `Buscar ${largura || ""}${perfil ? `/${perfil}` : ""}${aro ? `R${aro}` : ""}`.trim() || "Buscar pneus"}
+                      style={{
+                        height: 42,
+                        padding: "0 28px",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        fontWeight: 800,
+                        whiteSpace: "nowrap",
+                        background: !largura && !perfil && !aro ? "#d9d9d9" : "#4c0082",
+                        color: "white",
+                        border: "none",
+                        cursor: !largura && !perfil && !aro ? "not-allowed" : "pointer",
+                        minWidth: 160,
+                        letterSpacing: 0.2,
+                        opacity: !largura && !perfil && !aro ? 0.7 : 1,
+                      }}
+                    >
                       Buscar pneus
                     </button>
                   </div>
+                  {largura || perfil || aro ? (
+                    <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", fontSize: 12 }}>
+                      <span style={{ color: "#8c8c8c" }}>Filtro:</span>
+                      {largura && <span style={{ background: "#f6f5ff", border: "1px solid #e8e0ff", color: "#4c0082", padding: "3px 8px", borderRadius: 999, fontWeight: 700 }}>{largura}</span>}
+                      {perfil && <span style={{ background: "#f6f5ff", border: "1px solid #e8e0ff", color: "#4c0082", padding: "3px 8px", borderRadius: 999, fontWeight: 700 }}>{perfil}</span>}
+                      {aro && <span style={{ background: "#f6f5ff", border: "1px solid #e8e0ff", color: "#4c0082", padding: "3px 8px", borderRadius: 999, fontWeight: 700 }}>R{aro}</span>}
+                      <button onClick={() => { setLargura(""); setPerfil(""); setAro(""); }} style={{ background: "none", border: "none", color: "#4c0082", fontSize: 12, cursor: "pointer", textDecoration: "underline", marginLeft: 4 }}>
+                        Limpar
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               )}
               {activeTab === 2 && (
@@ -408,9 +589,9 @@ export default function HomePage() {
                 <div style={{ padding: "16px 0", display: "flex", gap: 12, alignItems: "flex-end" }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ display: "block", fontSize: 12, color: "var(--color-textSecondary)", marginBottom: 4 }}>Placa do veículo</label>
-                    <input style={{ width: "100%", height: 40, border: "1px solid var(--color-inputGlobalBorder)", borderRadius: 6, padding: "0 12px", fontSize: 14, textTransform: "uppercase" }} placeholder="ABC1D23" maxLength={7} />
+                    <input style={{ width: "100%", height: 40, border: "1px solid #e0e0e0", borderRadius: 6, padding: "0 12px", fontSize: 14, textTransform: "uppercase" }} placeholder="ABC1D23" maxLength={7} />
                   </div>
-                  <button className="btn btn-primary" style={{ height: 40, padding: "0 24px", borderRadius: 8, fontSize: 14, fontWeight: 600 }}>Buscar</button>
+                  <button className="btn btn-primary" style={{ height: 40, padding: "0 24px", borderRadius: 8, fontSize: 14, fontWeight: 600, background: "#4c0082", color: "white" }}>Buscar</button>
                 </div>
               )}
             </div>

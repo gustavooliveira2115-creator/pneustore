@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer style={{ display: "flex", flexDirection: "column", color: "white" }}>
@@ -25,11 +27,19 @@ export default function Footer() {
           <div>
             <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>Institucional</h4>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-              {["Garantia", "Política de privacidade", "Marcas"].map((item) => (
-                <li key={item}>
-                  <span style={{ fontSize: 14, opacity: 0.9, cursor: "pointer" }}>{item}</span>
-                </li>
-              ))}
+              <li>
+                <Link href="/politica-de-garantia" style={{ fontSize: 14, opacity: 0.9, cursor: "pointer", color: "inherit", textDecoration: "none" }}>
+                  Garantia
+                </Link>
+              </li>
+              <li>
+                <Link href="/politica-de-privacidade" style={{ fontSize: 14, opacity: 0.9, cursor: "pointer", color: "inherit", textDecoration: "none" }}>
+                  Política de privacidade
+                </Link>
+              </li>
+              <li>
+                <span style={{ fontSize: 14, opacity: 0.9, cursor: "pointer" }}>Marcas</span>
+              </li>
             </ul>
           </div>
 

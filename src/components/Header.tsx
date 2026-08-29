@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CepLocationModal from "./CepLocationModal";
+import LoginModal from "./LoginModal";
 import { useCart } from "./CartContext";
 
 export default function Header() {
@@ -12,6 +13,8 @@ export default function Header() {
   const [query, setQuery] = useState("");
   const [mobileQuery, setMobileQuery] = useState("");
   const [isCepModalOpen, setIsCepModalOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cepValue, setCepValue] = useState("");
   const [cepDisplay, setCepDisplay] = useState<string | null>(null);
 
@@ -128,7 +131,7 @@ export default function Header() {
                   </div>
                 </div>
                 <div className="flex gap-[16px] text-primaryPurpleBase whitespace-nowrap">
-                  <button className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="user-badge">
+                  <button onClick={() => setIsLoginOpen(true)} className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="Abrir login">
                     <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
                       <path
                         d="M11.0003 11.9167C13.5316 11.9167 15.5837 9.86464 15.5837 7.33333C15.5837 4.80203 13.5316 2.75 11.0003 2.75C8.46902 2.75 6.41699 4.80203 6.41699 7.33333C6.41699 9.86464 8.46902 11.9167 11.0003 11.9167ZM11.0003 11.9167C12.9452 11.9167 14.8105 12.6893 16.1858 14.0646C17.561 15.4398 18.3337 17.3051 18.3337 19.25M11.0003 11.9167C9.0554 11.9167 7.19014 12.6893 5.81488 14.0646C4.43961 15.4398 3.66699 17.3051 3.66699 19.25"
@@ -163,53 +166,33 @@ export default function Header() {
                       <div className="flex items-center">
                         <Link
                           href="/todos"
-                          className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                          className="btn btn-ghost !px-[15px] flex items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                         >
                           Pneus
-                          <span className="transition-transform duration-200 ease-in-out">
-                            <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                              <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
-                            </svg>
-                          </span>
                         </Link>
                       </div>
                       <div className="flex items-center">
                         <Link
                           href="/todos"
-                          className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                          className="btn btn-ghost !px-[15px] flex items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                         >
                           Acessórios
-                          <span className="transition-transform duration-200 ease-in-out">
-                            <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                              <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
-                            </svg>
-                          </span>
                         </Link>
                       </div>
                       <div className="flex items-center">
                         <Link
                           href="/todos"
-                          className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                          className="btn btn-ghost !px-[15px] flex items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                         >
                           Rodas
-                          <span className="transition-transform duration-200 ease-in-out">
-                            <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                              <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
-                            </svg>
-                          </span>
                         </Link>
                       </div>
                       <div className="flex items-center">
                         <Link
                           href="/todos"
-                          className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
+                          className="btn btn-ghost !px-[15px] flex items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                         >
                           Marcas
-                          <span className="transition-transform duration-200 ease-in-out">
-                            <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                              <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
-                            </svg>
-                          </span>
                         </Link>
                       </div>
                       <div className="flex items-center">
@@ -261,15 +244,27 @@ export default function Header() {
             />
             <div className="flex items-center justify-between text-primaryPurpleBase">
               <div>
-                <button className="btn btn-ghost h-auto" aria-label="Abrir menu">
-                  <svg className="" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M3.33398 10H16.6673M3.33398 5H16.6673M3.33398 15H16.6673" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"></path>
-                  </svg>
+                <button
+                  onClick={() => setIsMobileMenuOpen((v) => !v)}
+                  aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+                  aria-expanded={isMobileMenuOpen}
+                  aria-controls="mobile-nav-menu"
+                  className="btn btn-ghost h-auto"
+                >
+                  {isMobileMenuOpen ? (
+                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
+                      <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ) : (
+                    <svg className="" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M3.33398 10H16.6673M3.33398 5H16.6673M3.33398 15H16.6673" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"></path>
+                    </svg>
+                  )}
                 </button>
               </div>
               <Link href="/"><img className="h-[24px] w-auto object-contain" src="/logo.png" alt="PneuStore" /></Link>
               <div className="flex gap-[8px]">
-                <button className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="cart-user">
+                <button onClick={() => setIsLoginOpen(true)} className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="Abrir login">
                   <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
                     <path
                       d="M11.0003 11.9167C13.5316 11.9167 15.5837 9.86464 15.5837 7.33333C15.5837 4.80203 13.5316 2.75 11.0003 2.75C8.46902 2.75 6.41699 4.80203 6.41699 7.33333C6.41699 9.86464 8.46902 11.9167 11.0003 11.9167ZM11.0003 11.9167C12.9452 11.9167 14.8105 12.6893 16.1858 14.0646C17.561 15.4398 18.3337 17.3051 18.3337 19.25M11.0003 11.9167C9.0554 11.9167 7.19014 12.6893 5.81488 14.0646C4.43961 15.4398 3.66699 17.3051 3.66699 19.25"
@@ -343,6 +338,31 @@ export default function Header() {
                 </span>
               </button>
             </div>
+            {/* ── Mobile nav drawer — mostra Pneus/Acessórios/Rodas/Marcas quando hamburger aberto ── */}
+            {isMobileMenuOpen && (
+              <nav
+                id="mobile-nav-menu"
+                aria-label="Menu principal"
+                className="flex flex-col bg-primaryPurpleBase text-white border-t border-white/15 -mx-[16px] -mb-[16px] mt-2"
+              >
+                {[
+                  { label: "Pneus", href: "/todos" },
+                  { label: "Acessórios", href: "/todos" },
+                  { label: "Rodas", href: "/todos" },
+                  { label: "Marcas", href: "/todos" },
+                  { label: "Nossas lojas", href: "/nossas-lojas" },
+                ].map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="px-[20px] py-[14px] text-[14px] font-medium hover:bg-primaryPurpleDarkest border-b border-white/10 last:border-0 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
           </div>
         </div>
       </div>
@@ -353,6 +373,7 @@ export default function Header() {
         initialCep={cepValue}
         onConfirm={handleCepConfirm}
       />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </>
   );
 }

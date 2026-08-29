@@ -25,6 +25,20 @@ function TodosContent() {
   const { openCheckout } = useBravoCheckout();
   const rawQuery = searchParams.get("title") || searchParams.get("q") || searchParams.get("search") || searchParams.get("query") || "";
   const query = rawQuery.trim();
+  const larguraQ = (searchParams.get("largura") || "").trim();
+  const perfilQ = (searchParams.get("perfil") || "").trim();
+  const aroQ = (searchParams.get("aro") || "").trim();
+  const medidaQ = (searchParams.get("medida") || (larguraQ && perfilQ && aroQ ? `${larguraQ}/${perfilQ}R${aroQ}` : "")).trim();
+
+  function parseMedida(name: string): { largura: string; perfil: string; aro: string } | null {
+    const m1 = name.match(/(\d{3})\/(\d{2,3})R(\d+(?:\.\d+)?)/i);
+    if (m1) return { largura: m1[1], perfil: m1[2], aro: m1[3] };
+    const m2 = name.match(/(\d{2,3})\/(\d{2,3})-(\d+(?:\.\d+)?)/);
+    if (m2) return { largura: m2[1], perfil: m2[2], aro: m2[3] };
+    const m3 = name.match(/(\d{3})X(\d{2,3})/i);
+    if (m3) return { largura: m3[1], perfil: m3[2], aro: "700" };
+    return null;
+  }
 
   const [sortBy, setSortBy] = useState("relevance");
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
@@ -39,9 +53,33 @@ function TodosContent() {
 
   const filtered = useMemo(() => {
     let list = allProducts;
-    if (query) {
+    // Filtro por medida (largura/perfil/aro) vindo da busca por medidas da home
+    if (larguraQ || perfilQ || aroQ || medidaQ) {
+      list = list.filter((p) => {
+        const m = parseMedida(p.name);
+        if (!m) return false;
+        if (larguraQ && m.largura !== larguraQ) return false;
+        if (perfilQ && m.perfil !== perfilQ) return false;
+        if (aroQ && m.aro !== aroQ) return false;
+        if (medidaQ) {
+          const medidaNorm = medidaQ.replace(/\s+/g, "").toUpperCase();
+          const pNorm1 = `${m.largura}/${m.perfil}R${m.aro}`.toUpperCase();
+          const pNorm2 = `${m.largura}/${m.perfil}-${m.aro}`.toUpperCase();
+          if (!pNorm1.includes(medidaNorm) && !pNorm2.includes(medidaNorm) && !p.name.toLowerCase().includes(medidaQ.toLowerCase())) return false;
+        }
+        return true;
+      });
+    } else if (query) {
+      // Fallback: busca textual também entende "195/55R16" ou "195/55 R16"
       const q = query.toLowerCase();
-      list = list.filter((p) => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.id.includes(q));
+      const qNorm = q.replace(/\s+/g, "");
+      list = list.filter((p) => {
+        const m = parseMedida(p.name);
+        const medidaStr1 = m ? `${m.largura}/${m.perfil}R${m.aro}`.toLowerCase() : "";
+        const medidaStr2 = m ? `${m.largura}/${m.perfil}-${m.aro}`.toLowerCase() : "";
+        const medidaStr3 = m ? `${m.largura}/${m.perfil} R${m.aro}`.toLowerCase() : "";
+        return p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.id.includes(q) || (qNorm && (medidaStr1.includes(qNorm) || medidaStr2.includes(qNorm))) || medidaStr3.includes(q);
+      });
     }
     if (selectedBrand) {
       list = list.filter((p) => p.brand === selectedBrand);
@@ -50,7 +88,7 @@ function TodosContent() {
     if (sortBy === "price-desc") list = [...list].sort((a, b) => parseFloat(b.pixPrice.replace(/\./g, "").replace(",", ".")) - parseFloat(a.pixPrice.replace(/\./g, "").replace(",", ".")));
     if (sortBy === "name-asc") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     return list;
-  }, [query, selectedBrand, sortBy, allProducts]);
+  }, [query, selectedBrand, sortBy, allProducts, larguraQ, perfilQ, aroQ, medidaQ]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
   const paginated = useMemo(() => {
@@ -60,7 +98,7 @@ function TodosContent() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [query, selectedBrand, sortBy]);
+  }, [query, selectedBrand, sortBy, larguraQ, perfilQ, aroQ, medidaQ]);
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -78,6 +116,11 @@ function TodosContent() {
     router.push("/todos");
   };
 
+  const medidaAtiva = larguraQ || perfilQ || aroQ || medidaQ ? `${larguraQ || ""}${perfilQ ? `/${perfilQ}` : ""}${aroQ ? `R${aroQ}` : ""}`.replace(/^\//, "") : "";
+  const hasMedidaFilter = !!(larguraQ || perfilQ || aroQ || medidaQ);
+  const tituloBusca = medidaQ || (hasMedidaFilter ? medidaAtiva : query);
+  const isFiltered = !!(query || selectedBrand || hasMedidaFilter);
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f9f9f9" }}>
       <Header />
@@ -88,10 +131,10 @@ function TodosContent() {
           <Link href="/" style={{ color: "var(--color-primary)", textDecoration: "none" }}>Home</Link>
           <span style={{ margin: "0 8px", color: "#999" }}>/</span>
           <Link href="/todos" style={{ color: "var(--color-primary)", textDecoration: "none" }}>Todos</Link>
-          {query && (
+          {tituloBusca && (
             <>
               <span style={{ margin: "0 8px", color: "#999" }}>/</span>
-              <span style={{ color: "#666" }}>&quot;{query}&quot;</span>
+              <span style={{ color: "#666" }}>&quot;{tituloBusca}&quot;</span>
             </>
           )}
         </div>
@@ -103,10 +146,10 @@ function TodosContent() {
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
             <div>
               <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--color-textBase)", margin: 0 }}>
-                {query ? `Resultados para "${query}"` : "Todos os produtos"}
+                {tituloBusca ? `Resultados para "${tituloBusca}"` : "Todos os produtos"}
               </h1>
               <p style={{ fontSize: 14, color: "var(--color-textSecondary)", margin: "4px 0 0" }}>
-                {filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"} {query ? `para "${query}"` : ""} • {allProducts.length} no total
+                {filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"} {tituloBusca ? `para "${tituloBusca}"` : ""} • {allProducts.length} no total
               </p>
             </div>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
@@ -124,13 +167,18 @@ function TodosContent() {
             </div>
           </div>
 
-          {query && (
+          {isFiltered && (
             <div style={{ marginTop: 12, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ fontSize: 13, color: "var(--color-textSecondary)" }}>Filtros ativos:</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--color-primaryLightest)", color: "var(--color-primary)", padding: "4px 10px", borderRadius: 16, fontSize: 12, fontWeight: 600 }}>
-                Busca: &quot;{query}&quot;
-                <button onClick={clearSearch} style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 14, lineHeight: 1 }}>×</button>
-              </span>
+              {tituloBusca && (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--color-primaryLightest)", color: "var(--color-primary)", padding: "4px 10px", borderRadius: 16, fontSize: 12, fontWeight: 600 }}>
+                  {hasMedidaFilter ? `Medida: ${tituloBusca}` : `Busca: "${tituloBusca}"`}
+                  <button onClick={clearSearch} style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 14, lineHeight: 1 }}>×</button>
+                </span>
+              )}
+              {hasMedidaFilter && larguraQ && <span style={{ background: "#f6f5ff", border: "1px solid #e8e0ff", color: "#4c0082", padding: "3px 8px", borderRadius: 999, fontSize: 11, fontWeight: 700 }}>{larguraQ}</span>}
+              {hasMedidaFilter && perfilQ && <span style={{ background: "#f6f5ff", border: "1px solid #e8e0ff", color: "#4c0082", padding: "3px 8px", borderRadius: 999, fontSize: 11, fontWeight: 700 }}>{perfilQ}</span>}
+              {hasMedidaFilter && aroQ && <span style={{ background: "#f6f5ff", border: "1px solid #e8e0ff", color: "#4c0082", padding: "3px 8px", borderRadius: 999, fontSize: 11, fontWeight: 700 }}>R{aroQ}</span>}
               {selectedBrand && (
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--color-primaryLightest)", color: "var(--color-primary)", padding: "4px 10px", borderRadius: 16, fontSize: 12, fontWeight: 600 }}>
                   Marca: {selectedBrand}
@@ -148,7 +196,7 @@ function TodosContent() {
         <aside style={{ width: 260, flexShrink: 0, background: "white", borderRadius: 12, border: "1px solid #f0f0f0", overflow: "hidden", position: "sticky", top: 16 }} className="hidden md:block">
           <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Filtros</h2>
-            {(query || selectedBrand) && (
+            {isFiltered && (
               <button onClick={clearSearch} style={{ fontSize: 12, color: "var(--color-primary)", background: "none", border: "none", cursor: "pointer" }}>Limpar</button>
             )}
           </div>
@@ -211,8 +259,8 @@ function TodosContent() {
               </div>
               <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--color-textBase)", margin: "0 0 8px" }}>Nenhum produto encontrado</h2>
               <p style={{ fontSize: 14, color: "var(--color-textSecondary)", margin: "0 0 6px" }}>
-                Não encontramos resultados para <strong style={{ color: "var(--color-textBase)" }}>&quot;{query}&quot;</strong>
-                {selectedBrand ? ` na marca ${selectedBrand}` : ""}.
+                Não encontramos resultados para <strong style={{ color: "var(--color-textBase)" }}>&quot;{tituloBusca || query}&quot;</strong>
+                {selectedBrand ? ` na marca ${selectedBrand}` : ""} {hasMedidaFilter ? `— medida ${medidaAtiva}` : ""}.
               </p>
               <p style={{ fontSize: 13, color: "var(--color-textSecondary)", margin: "0 0 20px" }}>
                 Verifique se digitou corretamente, tente termos mais genéricos (ex: &quot;continental&quot;, &quot;195/55&quot;, &quot;moto&quot;) ou limpe os filtros.
@@ -376,7 +424,7 @@ function TodosContent() {
                 <span>
                   Exibindo {paginated.length} de {filtered.length} {filtered.length === 1 ? "produto" : "produtos"} {filtered.length !== allProducts.length ? `filtrados de ${allProducts.length}` : `de ${allProducts.length}`} • Página {currentPage} de {totalPages}
                 </span>
-                {query && <button onClick={clearSearch} style={{ color: "var(--color-primary)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", fontSize: 13 }}>Limpar busca</button>}
+                {isFiltered && <button onClick={clearSearch} style={{ color: "var(--color-primary)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", fontSize: 13 }}>Limpar busca</button>}
               </div>
             </>
           )}
