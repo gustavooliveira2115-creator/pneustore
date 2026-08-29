@@ -208,6 +208,90 @@ html, body {
   background: white;
 }
 
+/* Hero carousel — responsive fix for mobile (slides muito grandes / travando) */
+.hero-carousel {
+  touch-action: pan-y;
+}
+.hero-track {
+  align-items: stretch;
+}
+.hero-slide-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  /* Desktop banners são wide — limita altura pra não estourar */
+  max-height: min(42vw, 420px);
+}
+@media (max-width: 1024px) {
+  .hero-slide-img {
+    max-height: min(40vw, 340px);
+  }
+}
+@media (max-width: 640px) {
+  .hero-slide-img {
+    /* Mobile usa arte vertical dedicada — altura proporcional, não gigante */
+    max-height: min(78vw, 320px);
+    object-fit: cover;
+    object-position: center;
+  }
+  .hero-carousel .carousel-arrow {
+    width: 32px;
+    height: 32px;
+  }
+  .hero-carousel .carousel-arrow-left {
+    left: 8px;
+  }
+  .hero-carousel .carousel-arrow-right {
+    right: 8px;
+  }
+  .hero-carousel .carousel-dots {
+    bottom: 8px;
+    gap: 5px;
+  }
+  .hero-carousel .carousel-dot {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Produto PDP — gallery responsiva no mobile */
+@media (max-width: 768px) {
+  .product_container_product__Yi9Lf {
+    gap: 16px !important;
+  }
+  .product_product_left_column__BRpbr {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  /* thumbnails em linha abaixo do carrossel, com scroll horizontal */
+  .product_thumbnails__SHRvn {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+    order: 2;
+    width: 100%;
+  }
+  .product_thumbnails__SHRvn::-webkit-scrollbar {
+    display: none;
+  }
+  /* wrapper do gallery vira coluna: imagem em cima, thumbs embaixo */
+  .product_product_left_column__BRpbr > div > div:first-child {
+    flex-direction: column !important;
+  }
+  .product_main_carousel__zKHVJ {
+    order: 1;
+    width: 100% !important;
+  }
+  .product_main_carousel__zKHVJ > div:first-child {
+    max-height: min(92vw, 420px) !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+}
+
 /* Product Card */
 .product-card {
   background: white;

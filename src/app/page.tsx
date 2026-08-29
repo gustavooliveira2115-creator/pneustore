@@ -226,6 +226,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState(1);
   const [vehicleType, setVehicleType] = useState("carros");
   const productScrollRef = useRef<HTMLDivElement>(null);
+  const heroTouchStartX = useRef<number | null>(null);
   const { openCheckout } = useBravoCheckout();
 
   /* Hero auto-play */
@@ -234,6 +235,18 @@ export default function HomePage() {
       setHeroIndex((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
     return () => clearInterval(timer);
+  }, []);
+
+  const handleHeroTouchStart = useCallback((e: React.TouchEvent) => {
+    heroTouchStartX.current = e.touches[0].clientX;
+  }, []);
+  const handleHeroTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (heroTouchStartX.current === null) return;
+    const diff = heroTouchStartX.current - e.changedTouches[0].clientX;
+    const threshold = 50;
+    if (diff > threshold) setHeroIndex((prev) => (prev + 1) % heroSlides.length);
+    else if (diff < -threshold) setHeroIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    heroTouchStartX.current = null;
   }, []);
 
   const scrollProducts = useCallback((dir: "left" | "right") => {
@@ -254,22 +267,34 @@ export default function HomePage() {
       <main id="main-content" style={{ display: "flex", flexDirection: "column", minHeight: "100vh", paddingBottom: 55 }}>
 
         {/* ─── HERO CAROUSEL ─── */}
-        <section style={{ position: "relative", width: "100%", overflow: "hidden" }}>
-          <div style={{ display: "flex", transition: "transform 0.4s ease", transform: `translateX(-${heroIndex * 100}%)` }}>
+        <section className="hero-carousel" style={{ position: "relative", width: "100%", overflow: "hidden", background: "#f5f5f5" }}>
+          <div
+            className="hero-track"
+            onTouchStart={handleHeroTouchStart}
+            onTouchEnd={handleHeroTouchEnd}
+            style={{ display: "flex", transition: "transform 0.45s cubic-bezier(0.4,0,0.2,1)", transform: `translateX(-${heroIndex * 100}%)`, willChange: "transform" }}
+          >
             {heroSlides.map((slide, i) => (
-              <div key={i} style={{ minWidth: "100%", flexShrink: 0 }}>
-                <div style={{ position: "relative", width: "100%", height: "clamp(200px, 25vw, 400px)" }}>
+              <div key={i} style={{ minWidth: "100%", flexShrink: 0, display: "flex" }}>
+                <picture style={{ display: "block", width: "100%" }}>
+                  <source media="(max-width: 640px)" srcSet={`/${slide.mobile}`} />
+                  <source media="(max-width: 1024px)" srcSet={`/${slide.tablet}`} />
                   <img
                     src={`/${slide.desktop}`}
                     alt={slide.alt}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    draggable={false}
+                    className="hero-slide-img"
+                    style={{ width: "100%", height: "auto", display: "block", objectFit: "cover" }}
                   />
-                </div>
+                </picture>
               </div>
             ))}
           </div>
           {/* Arrows */}
           <button
+            type="button"
             className="carousel-arrow carousel-arrow-left"
             onClick={() => setHeroIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
             aria-label="Slide anterior"
@@ -277,6 +302,7 @@ export default function HomePage() {
             <ChevronLeft />
           </button>
           <button
+            type="button"
             className="carousel-arrow carousel-arrow-right"
             onClick={() => setHeroIndex((prev) => (prev + 1) % heroSlides.length)}
             aria-label="Próximo slide"
@@ -288,9 +314,11 @@ export default function HomePage() {
             {heroSlides.map((_, i) => (
               <button
                 key={i}
+                type="button"
                 className={`carousel-dot ${i === heroIndex ? "active" : ""}`}
                 onClick={() => setHeroIndex(i)}
-                aria-label={`Slide ${i + 1}`}
+                aria-label={`Ir para slide ${i + 1}`}
+                aria-current={i === heroIndex ? "true" : undefined}
               />
             ))}
           </div>
@@ -585,11 +613,11 @@ export default function HomePage() {
 
       {/* ─── WHATSAPP FLOAT ─── */}
       <a
-        href="https://wa.me/5516997648401"
+        href="https://wa.me/5521973005962"
         target="_blank"
         rel="noopener noreferrer"
         className="whatsapp-float"
-        aria-label="WhatsApp"
+        aria-label="WhatsApp (21) 97300-5962"
       >
         <WhatsAppIcon />
       </a>
