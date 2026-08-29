@@ -8,6 +8,15 @@ export default function Header() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [mobileQuery, setMobileQuery] = useState("");
+  const [cepOpen, setCepOpen] = useState(false);
+  const [cepValue, setCepValue] = useState("");
+  const [mobileCepOpen, setMobileCepOpen] = useState(false);
+  const [mobileCepValue, setMobileCepValue] = useState("");
+
+  const maskCep = (v: string) => {
+    const d = v.replace(/\D/g, "").slice(0, 8);
+    return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+  };
 
   const doSearch = (q: string) => {
     const term = q.trim();
@@ -172,27 +181,64 @@ export default function Header() {
                       </Link>
                     </div>
                   </div>
-                  <button className="btn btn-primary flex items-center justify-center text-white gap-[8px] bg-primaryPurpleDarkest !px-[15px] h-[32px] rounded-[8px] text-[14px] cursor-pointer whitespace-nowrap">
-                    <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
-                      <path
-                        d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                      <path
-                        d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                    </svg>
-                    <span className="max-w-[150px] truncate" title="Insira seu CEP">
-                      Insira seu CEP
-                    </span>
-                  </button>
+                  <div className="relative">
+                    <button
+                      onClick={() => setCepOpen((v) => !v)}
+                      aria-expanded={cepOpen}
+                      aria-haspopup="dialog"
+                      className="btn btn-primary flex items-center justify-center text-white gap-[8px] bg-primaryPurpleDarkest !px-[15px] h-[32px] rounded-[8px] text-[14px] cursor-pointer whitespace-nowrap hover:bg-[#3a006e] transition-colors"
+                    >
+                      <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+                        <path
+                          d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                        <path
+                          d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                      </svg>
+                      <span className="max-w-[150px] truncate" title={cepValue || "Insira seu CEP"}>
+                        {cepValue ? cepValue : "Insira seu CEP"}
+                      </span>
+                    </button>
+                    {cepOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-[340px] bg-white rounded-2xl shadow-2xl border border-zinc-200 p-4 z-50 text-zinc-900">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-bold text-[#4e008e]">Informe seu CEP</h4>
+                          <button
+                            onClick={() => setCepOpen(false)}
+                            aria-label="Fechar"
+                            className="w-7 h-7 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-500"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <p className="text-xs text-zinc-500 mb-3">Digite seu CEP para calcular frete e ver disponibilidade na sua região.</p>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4e008e]">
+                            <svg width="16" height="16" fill="none" viewBox="0 0 18 18"><path d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </span>
+                          <input
+                            value={cepValue}
+                            onChange={(e) => setCepValue(maskCep(e.target.value))}
+                            placeholder="00000-000"
+                            inputMode="numeric"
+                            maxLength={9}
+                            autoFocus
+                            className="w-full h-11 rounded-full border border-zinc-200 bg-zinc-50 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4e008e]/20 focus:border-[#4e008e] placeholder:text-zinc-400"
+                          />
+                        </div>
+                        <p className="text-[11px] text-zinc-400 mt-2">Apenas visual — nada acontece ao digitar.</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </nav>
@@ -260,7 +306,12 @@ export default function Header() {
             </div>
           </div>
           <div className="flex flex-col bg-primaryPurpleBase text-white">
-            <div className="flex gap-[8px] z-30 !px-[15px] h-[32px] bg-primaryPurpleDarkest items-center justify-start">
+            <button
+              onClick={() => setMobileCepOpen((v) => !v)}
+              aria-expanded={mobileCepOpen}
+              aria-haspopup="dialog"
+              className="flex gap-[8px] z-30 !px-[15px] h-[32px] bg-primaryPurpleDarkest items-center justify-start w-full text-left hover:bg-[#3a006e] transition-colors"
+            >
               <svg className="" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
                 <path
                   d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z"
@@ -277,10 +328,35 @@ export default function Header() {
                   strokeLinejoin="round"
                 ></path>
               </svg>
-              <span className="flex-1 min-w-0 truncate" title="Insira seu CEP">
-                Insira seu CEP
+              <span className="flex-1 min-w-0 truncate" title={mobileCepValue || "Insira seu CEP"}>
+                {mobileCepValue ? mobileCepValue : "Insira seu CEP"}
               </span>
-            </div>
+              <span className={`ml-auto transition-transform ${mobileCepOpen ? "rotate-180" : ""}`}>⌄</span>
+            </button>
+            {mobileCepOpen && (
+              <div className="bg-white text-zinc-900 mx-3 mb-3 mt-1 rounded-2xl shadow-lg border border-zinc-200 p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-bold text-[#4e008e]">Informe seu CEP</h4>
+                  <button onClick={() => setMobileCepOpen(false)} className="w-7 h-7 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-500">✕</button>
+                </div>
+                <p className="text-xs text-zinc-500 mb-3">Digite seu CEP para ver frete na sua região.</p>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4e008e]">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 18 18"><path d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </span>
+                  <input
+                    value={mobileCepValue}
+                    onChange={(e) => setMobileCepValue(maskCep(e.target.value))}
+                    placeholder="00000-000"
+                    inputMode="numeric"
+                    maxLength={9}
+                    autoFocus
+                    className="w-full h-11 rounded-full border border-zinc-200 bg-zinc-50 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4e008e]/20 focus:border-[#4e008e] placeholder:text-zinc-400"
+                  />
+                </div>
+                <p className="text-[11px] text-zinc-400 mt-2">Apenas visual — nada acontece ao digitar.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
