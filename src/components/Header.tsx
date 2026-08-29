@@ -164,12 +164,12 @@ export default function Header() {
                       </Link>
                     </div>
                     <div className="flex items-center">
-                      <button
-                        type="button"
+                      <Link
+                        href="/nossas-lojas"
                         className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                       >
                         Nossas lojas
-                      </button>
+                      </Link>
                     </div>
                   </div>
                   <button className="btn btn-primary flex items-center justify-center text-white gap-[8px] bg-primaryPurpleDarkest !px-[15px] h-[32px] rounded-[8px] text-[14px] cursor-pointer whitespace-nowrap">
