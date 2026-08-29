@@ -270,6 +270,26 @@ export default function CheckoutPage() {
         localStorage.setItem("last_tx", JSON.stringify(j));
         if (instalacao) localStorage.setItem("checkout_instalacao", "1");
         else localStorage.removeItem("checkout_instalacao");
+        // histórico para Meus Pedidos
+        try {
+          const histRaw = localStorage.getItem("pneustore_orders");
+          const hist = histRaw ? JSON.parse(histRaw) : [];
+          const tx = (j as any)?.transaction ?? j;
+          const entry = {
+            id: (tx as any)?.id || (j as any)?.id,
+            created_at: (tx as any)?.created_at || new Date().toISOString(),
+            amount_cents: (tx as any)?.amount_cents || totalCents + (instalacao ? INSTALACAO_CENTS : 0),
+            status: (tx as any)?.status || "PENDING",
+            method: "pix",
+            items: [...items.map((it) => ({ name: it.name, quantity: it.quantity, amount_cents: it.priceCents })), ...(instalacao ? [{ name: "Serviço de Instalação", quantity: 1, amount_cents: INSTALACAO_CENTS }] : [])],
+            external_reference: (tx as any)?.external_reference,
+            instalacao,
+          };
+          if (entry.id) {
+            const next = [entry, ...hist.filter((h: any) => h.id !== entry.id)].slice(0, 20);
+            localStorage.setItem("pneustore_orders", JSON.stringify(next));
+          }
+        } catch {}
       } catch {}
       // Novo fluxo: sempre vai para /pagamento para exibir QR Code PIX
       if (txId) {

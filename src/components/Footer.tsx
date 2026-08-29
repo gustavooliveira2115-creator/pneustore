@@ -38,7 +38,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <span style={{ fontSize: 14, opacity: 0.9, cursor: "pointer" }}>Marcas</span>
+                <Link href="/todos" style={{ fontSize: 14, opacity: 0.9, cursor: "pointer", color: "inherit", textDecoration: "none" }}>
+                  Marcas
+                </Link>
               </li>
             </ul>
           </div>
@@ -47,25 +49,26 @@ export default function Footer() {
           <div>
             <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>Ajuda</h4>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-              {["Perguntas frequentes", "Entrega", "Informações técnicas de pneus", "Trocas e devoluções"].map(
-                (item) => (
-                  <li key={item}>
-                    <span style={{ fontSize: 14, opacity: 0.9, cursor: "pointer" }}>{item}</span>
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
-
-          {/* Serviço */}
-          <div>
-            <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>Serviço</h4>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-              {["Montagem em nossos parceiros", "Proteção para seus pneus"].map((item) => (
-                <li key={item}>
-                  <span style={{ fontSize: 14, opacity: 0.9, cursor: "pointer" }}>{item}</span>
-                </li>
-              ))}
+              <li>
+                <Link href="/perguntas-frequentes" style={{ fontSize: 14, opacity: 0.9, color: "inherit", textDecoration: "none" }}>
+                  Perguntas frequentes
+                </Link>
+              </li>
+              <li>
+                <Link href="/meus-pedidos" style={{ fontSize: 14, opacity: 0.9, color: "inherit", textDecoration: "none" }}>
+                  Meus pedidos
+                </Link>
+              </li>
+              <li>
+                <Link href="/informacao-tecnica-pneus" style={{ fontSize: 14, opacity: 0.9, color: "inherit", textDecoration: "none" }}>
+                  Informações técnicas de pneus
+                </Link>
+              </li>
+              <li>
+                <Link href="/politica-de-troca-e-devolucao" style={{ fontSize: 14, opacity: 0.9, color: "inherit", textDecoration: "none" }}>
+                  Trocas e devoluções
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -73,12 +76,16 @@ export default function Footer() {
           <div>
             <h4 style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>Central de relacionamento</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14 }}>
-              <p>(47) 3046-2551</p>
-              <p style={{ fontSize: 12, opacity: 0.7 }}>Ligações de qualquer origem</p>
-              <p>4000-2313</p>
-              <p style={{ fontSize: 12, opacity: 0.7 }}>Para capitais e regiões metropolitanas</p>
-              <p>0800-602-2013</p>
-              <p style={{ fontSize: 12, opacity: 0.7 }}>Demais regiões</p>
+              <a
+                href="https://wa.me/5511947710544"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 16, fontWeight: 700, color: "white", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}
+              >
+                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#25D366", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>✆</span>
+                (11) 94771-0544
+              </a>
+              <p style={{ fontSize: 12, opacity: 0.7 }}>WhatsApp — atendimento de segunda a sábado</p>
             </div>
           </div>
         </div>
@@ -99,8 +106,12 @@ export default function Footer() {
         >
           {/* Avaliações */}
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-            <img src="/logoConfi.png" alt="Confi" style={{ height: 48, objectFit: "contain" }} />
-            <img src="/reclameAwardlogo.png" alt="Reclame Aqui" style={{ height: 48, objectFit: "contain" }} />
+            <a href="https://confi.com.vc/app/lojas-confiaveis?id=103829" target="_blank" rel="noopener noreferrer" aria-label="Confi - lojas confiáveis">
+              <img src="/logoConfi.png" alt="Confi" style={{ height: 48, objectFit: "contain" }} />
+            </a>
+            <a href="https://www.reclameaqui.com.br/empresa/pneustore/" target="_blank" rel="noopener noreferrer" aria-label="Reclame Aqui - PneuStore">
+              <img src="/reclameAwardlogo.png" alt="Reclame Aqui" style={{ height: 48, objectFit: "contain" }} />
+            </a>
             <img src="/complainHerelogo.png" alt="Reclame Aqui Bom" style={{ height: 48, objectFit: "contain" }} />
             <img src="/logoBsi.png" alt="BSI" style={{ height: 48, objectFit: "contain" }} />
             <img
@@ -108,7 +119,9 @@ export default function Footer() {
               alt="O Cliente Recomenda"
               style={{ height: 48, objectFit: "contain" }}
             />
-            <img src="/resetLogo.png" alt="Reset Descarte" style={{ height: 48, objectFit: "contain" }} />
+            <a href="https://resetdescarte.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Reset Descarte">
+              <img src="/resetLogo.png" alt="Reset Descarte" style={{ height: 48, objectFit: "contain" }} />
+            </a>
           </div>
           {/* Social Media */}
           <div style={{ display: "flex", gap: 12 }}>
@@ -215,7 +228,7 @@ export default function Footer() {
           <img
             src="/paymentMethodsLogos.png"
             alt="Formas de Pagamento"
-            style={{ height: 40, width: "auto", objectFit: "contain" }}
+            style={{ height: 20, width: "auto", objectFit: "contain" }}
           />
           <p style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>
             Parcele suas compras usando seu cartão de crédito e pague em até 10x sem juros
