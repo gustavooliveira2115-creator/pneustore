@@ -222,7 +222,7 @@ export default function Header() {
                         </div>
                         <p className="text-xs text-zinc-500 mb-3">Digite seu CEP para calcular frete e ver disponibilidade na sua região.</p>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4e008e]">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4e008e] pointer-events-none">
                             <svg width="16" height="16" fill="none" viewBox="0 0 18 18"><path d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </span>
                           <input
@@ -232,10 +232,9 @@ export default function Header() {
                             inputMode="numeric"
                             maxLength={9}
                             autoFocus
-                            className="w-full h-11 rounded-full border border-zinc-200 bg-zinc-50 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4e008e]/20 focus:border-[#4e008e] placeholder:text-zinc-400"
+                            className="w-full h-11 rounded-full border border-zinc-200 bg-zinc-50 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4e008e]/20 focus:border-[#4e008e] placeholder:text-zinc-400"
                           />
                         </div>
-                        <p className="text-[11px] text-zinc-400 mt-2">Apenas visual — nada acontece ao digitar.</p>
                       </div>
                     )}
                   </div>
@@ -341,7 +340,7 @@ export default function Header() {
                 </div>
                 <p className="text-xs text-zinc-500 mb-3">Digite seu CEP para ver frete na sua região.</p>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4e008e]">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4e008e] pointer-events-none">
                     <svg width="16" height="16" fill="none" viewBox="0 0 18 18"><path d="M15 7.5C15 12 9 16.5 9 16.5C9 16.5 3 12 3 7.5C3 5.9087 3.63214 4.38258 4.75736 3.25736C5.88258 2.13214 7.4087 1.5 9 1.5C10.5913 1.5 12.1174 2.13214 13.2426 3.25736C14.3679 4.38258 15 5.9087 15 7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </span>
                   <input
@@ -351,10 +350,9 @@ export default function Header() {
                     inputMode="numeric"
                     maxLength={9}
                     autoFocus
-                    className="w-full h-11 rounded-full border border-zinc-200 bg-zinc-50 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4e008e]/20 focus:border-[#4e008e] placeholder:text-zinc-400"
+                    className="w-full h-11 rounded-full border border-zinc-200 bg-zinc-50 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4e008e]/20 focus:border-[#4e008e] placeholder:text-zinc-400"
                   />
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-2">Apenas visual — nada acontece ao digitar.</p>
               </div>
             )}
           </div>
