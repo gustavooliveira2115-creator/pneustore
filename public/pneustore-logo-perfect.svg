@@ -1,0 +1,14 @@
+<svg width="260" height="40" viewBox="0 0 260 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- PneuStore logo — vector exact, purple #4E008E -->
+<g fill="#4E008E">
+  <!-- Bottom pill -->
+  <rect x="3" y="16.5" width="46" height="12.2" rx="6.1"/>
+  <!-- Top pill -->
+  <rect x="19" y="6.5" width="46" height="12.2" rx="6.1"/>
+  <!-- White gap -->
+  <rect x="17.5" y="16.5" width="30" height="5.2" rx="2.6" fill="white"/>
+</g>
+<text x="74" y="26.5" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26.5" letter-spacing="-0.4" fill="#4E008E">
+  <tspan font-weight="800">Pneu</tspan><tspan font-weight="300" letter-spacing="-0.2">Store</tspan>
+</text>
+</svg>
