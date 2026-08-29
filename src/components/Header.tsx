@@ -112,10 +112,8 @@ export default function Header() {
                 <div className="flex h-[48px] w-full max-w-[1240px] items-center justify-between !px-[50px] gap-[32px]">
                   <div className="flex gap-[16px]">
                     <div className="flex items-center">
-                      <button
-                        type="button"
-                        aria-controls="controls-Pneus"
-                        aria-expanded="false"
+                      <Link
+                        href="/todos"
                         className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                       >
                         Pneus
@@ -124,13 +122,11 @@ export default function Header() {
                             <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                         </span>
-                      </button>
+                      </Link>
                     </div>
                     <div className="flex items-center">
-                      <button
-                        type="button"
-                        aria-controls="controls-Acessórios"
-                        aria-expanded="false"
+                      <Link
+                        href="/todos"
                         className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                       >
                         Acessórios
@@ -139,13 +135,11 @@ export default function Header() {
                             <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                         </span>
-                      </button>
+                      </Link>
                     </div>
                     <div className="flex items-center">
-                      <button
-                        type="button"
-                        aria-controls="controls-Rodas"
-                        aria-expanded="false"
+                      <Link
+                        href="/todos"
                         className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
                       >
                         Rodas
@@ -154,14 +148,12 @@ export default function Header() {
                             <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                         </span>
-                      </button>
+                      </Link>
                     </div>
                     <div className="flex items-center">
-                      <button
-                        type="button"
+                      <Link
+                        href="/todos"
                         className="btn btn-ghost !px-[15px] flex gap-[8px] items-center h-[32px] text-[14px] cursor-pointer hover:bg-primaryPurpleDarkest rounded-[6px] !my-[10px] whitespace-nowrap"
-                        aria-controls="controls-Marcas"
-                        aria-expanded="false"
                       >
                         Marcas
                         <span className="transition-transform duration-200 ease-in-out">
@@ -169,7 +161,7 @@ export default function Header() {
                             <path d="M4 6L8 10L12 6" stroke="white" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                         </span>
-                      </button>
+                      </Link>
                     </div>
                     <div className="flex items-center">
                       <button
