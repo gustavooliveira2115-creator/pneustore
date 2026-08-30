@@ -9,7 +9,7 @@ export function getApiKeyOrThrow(): string {
   const key = process.env.BRAVOPAY_API_KEY?.trim();
   if (!key) {
     throw new Error(
-      "BRAVOPAY_API_KEY não configurada. Defina em .env.local: BRAVOPAY_API_KEY=bp_live_xxx"
+      "BRAVOPAY_API_KEY não configurada. Local: defina em .env.local (BRAVOPAY_API_KEY=bp_live_xxx). Vercel: Project > Settings > Environment Variables > adicione BRAVOPAY_API_KEY em Production + Preview + Development e faça Redeploy."
     );
   }
   return key;

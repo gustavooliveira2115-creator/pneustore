@@ -117,6 +117,14 @@ export async function POST(req: NextRequest) {
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Erro interno";
     const isKeyMissing = msg.includes("BRAVOPAY_API_KEY");
-    return NextResponse.json({ error: msg, hint: isKeyMissing ? "Configure BRAVOPAY_API_KEY em .env.local" : undefined }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: msg,
+        hint: isKeyMissing
+          ? "Configure BRAVOPAY_API_KEY: local em .env.local | Vercel em Settings > Environment Variables (Production + Preview + Development) e faça Redeploy (envs só entram no build)"
+          : undefined,
+      },
+      { status: 500 }
+    );
   }
 }

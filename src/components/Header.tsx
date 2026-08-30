@@ -109,27 +109,8 @@ export default function Header() {
             <div className="w-full flex justify-center">
               <div className="flex items-center justify-between w-full max-w-[1240px] !px-[50px] !py-[16px]">
                 <Link href="/"><img className="h-[36px] w-auto object-contain cursor-pointer" src="/logo.png" alt="PneuStore" /></Link>
-                <div className="w-[40%] !mx-[25px] relative">
-                  <div className="relative flex w-full items-center overflow-hidden rounded-md">
-                    <input
-                      className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:text-inputGlobalTextPlaceholder h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!"
-                      placeholder="O que está buscando hoje?"
-                      aria-label="campo de busca"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, query)}
-                    />
-                    <button
-                      onClick={() => doSearch(query)}
-                      className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px] hover:!bg-[#e8e8e8]"
-                      aria-label="buscar"
-                    >
-                      <svg className="" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
-                        <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+                {/* campo de busca removido a pedido — manter layout entre logo e ações */}
+                <div className="flex-1" aria-hidden="true" />
                 <div className="flex gap-[16px] text-primaryPurpleBase whitespace-nowrap">
                   <button onClick={() => setIsLoginOpen(true)} className="btn btn-ghost h-auto flex gap-[8px] cursor-pointer" role="button" aria-label="Abrir login">
                     <svg className="" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
@@ -289,27 +270,7 @@ export default function Header() {
                 </button>
               </div>
             </div>
-            <div className="w-[100%] relative">
-              <div className="relative flex w-full items-center overflow-hidden rounded-md">
-                <input
-                  className="w-full bg-[#f4f4f4] focus:outline-none border border-none placeholder:text-[14px] placeholder:text-inputGlobalTextPlaceholder h-[50px] rounded-l-[50px] pl-5! pr-4! py-2!"
-                  placeholder="O que está buscando hoje?"
-                  aria-label="campo de busca"
-                  value={mobileQuery}
-                  onChange={(e) => setMobileQuery(e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(e, mobileQuery)}
-                />
-                <button
-                  onClick={() => doSearch(mobileQuery)}
-                  className="btn btn-ghost flex !bg-[#f4f4f4] justify-center items-center border-none rounded-none rounded-r-[50px] h-[50px] w-[60px] hover:!bg-[#e8e8e8]"
-                  aria-label="buscar"
-                >
-                  <svg className="" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
-                    <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
+            {/* campo de busca mobile removido a pedido */}
             <div className="flex flex-col bg-primaryPurpleBase text-white">
               <button
                 onClick={() => setIsCepModalOpen(true)}
