@@ -651,8 +651,6 @@ export default function HomePage() {
                     <p style={{ fontSize: 18, fontWeight: 700, color: "var(--color-primary)" }}>R$ {p.curPrice}</p>
                     <p style={{ fontSize: 11, color: "#2e7d32", fontWeight: 700 }}>PIX com até 40% OFF</p>
                   </div>
-                  {/* CEP input */}
-                  <input style={{ width: "100%", height: 32, border: "1px solid #d9d9d9", borderRadius: 6, padding: "0 10px", fontSize: 12 }} placeholder="Insira seu CEP" />
                   {/* Buttons — Adiciona ao carrinho lateral */}
                   <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
                     <button
