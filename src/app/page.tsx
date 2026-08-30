@@ -678,9 +678,6 @@ export default function HomePage() {
                     >
                       Comprar
                     </button>
-                    <button className="btn btn-outline" style={{ height: 36, fontSize: 12, padding: "0 12px" }}>
-                      Comparar
-                    </button>
                   </div>
                 </div>
               ))}

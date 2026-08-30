@@ -373,11 +373,6 @@ export default function ProductPage() {
                 <span>Comprar</span>
               </button>
             </div>
-
-            <button style={{ background: "none", border: "1px solid #d9d9d9", borderRadius: 8, padding: "8px 16px", fontSize: 13, color: "var(--color-textSecondary)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-              Comparar produto
-            </button>
           </div>
         </div>
 
