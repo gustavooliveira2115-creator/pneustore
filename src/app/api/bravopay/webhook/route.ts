@@ -41,22 +41,9 @@ export async function POST(req: NextRequest) {
         const updated = updateOrder(order.id, { status: newStatus as any, bravopayTxId: txId || order.bravopayTxId } as any);
         if (updated) {
           console.log(`[webhook] Pedido ${updated.id} atualizado para ${newStatus}`);
-          // dispara webhooks para automações (ActiveCampaign, RD, Utmify, Z-API etc)
+          // dispara webhooks para automações (ActiveCampaign, RD, Utmify, Z-API etc) - sem e-mail automático (rastreio manual)
           const hookEvent = newStatus === "paid" ? "order.paid" : "order.updated";
           dispatchWebhook(hookEvent as any, { order: updated, transaction: tx, event }).catch(() => {});
-
-          // Se pago, envia e-mail de rastreio atualizado se houver trackingCode
-          if (newStatus === "paid" && updated.trackingCode) {
-            try {
-              const { sendEmail, trackingEmailHtml } = await import("@/lib/email");
-              const link = `${process.env.NEXT_PUBLIC_BASE_URL || "https://pneustore-lyart.vercel.app"}/rastreio?code=${encodeURIComponent(updated.trackingCode)}`;
-              await sendEmail({
-                to: updated.customerEmail,
-                subject: `Pagamento confirmado — pedido ${updated.trackingCode}`,
-                html: trackingEmailHtml({ name: updated.customerName.split(" ")[0] || "cliente", code: updated.trackingCode, link, productName: updated.items[0]?.name || "seu pedido" }),
-              });
-            } catch (e) { console.warn("[webhook] email pós-pago falhou", e); }
-          }
         }
       } else if (!order && (statusRaw === "PAID" || event === "transaction.paid")) {
         console.warn(`[webhook] Transação paga sem pedido vinculado: ref=${ref} tx=${txId}`);

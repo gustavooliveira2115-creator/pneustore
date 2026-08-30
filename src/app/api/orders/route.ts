@@ -3,7 +3,6 @@ import { listOrders, getOrder, createOrder, updateOrder } from "@/lib/order-stor
 import { upsertCustomer, getCustomerByEmail } from "@/lib/customer-store";
 import { dispatchWebhook } from "@/lib/webhook";
 import { createTracking, generateInitialCode, buildInitialEvents } from "@/lib/tracking-store";
-import { sendEmail, trackingEmailHtml, carrierEmailHtml } from "@/lib/email";
 import { hashEmail } from "@/lib/crypto";
 import { isValidEmail, onlyDigits } from "@/lib/validators";
 
@@ -105,20 +104,8 @@ export async function POST(req: NextRequest) {
       console.warn("[orders] tracking create failed", e);
     }
 
-    // webhooks
+    // webhooks - rastreio manual pela empresa, não envia e-mail automático (solicitado pelo cliente)
     dispatchWebhook("order.created", { order, customer: cust }).catch(() => {});
-
-    // e-mail de rastreio (mock se sem RESEND_API_KEY)
-    try {
-      const link = `${process.env.NEXT_PUBLIC_BASE_URL || "https://pneustore-lyart.vercel.app"}/rastreio?code=${encodeURIComponent(order.trackingCode || order.id)}`;
-      await sendEmail({
-        to: email,
-        subject: `Pedido confirmado — código ${order.trackingCode || order.id}`,
-        html: trackingEmailHtml({ name: order.customerName.split(" ")[0] || "cliente", code: order.trackingCode || order.id, link, productName: items[0]?.name || "seu pedido" }),
-      });
-    } catch (e) {
-      console.warn("[orders] email failed", e);
-    }
 
     return NextResponse.json({ ok: true, order });
   } catch (e: any) {
@@ -140,19 +127,9 @@ export async function PATCH(req: NextRequest) {
     const updated = updateOrder(id, patch);
     if (!updated) return NextResponse.json({ error: "falha ao atualizar" }, { status: 500 });
 
-    // se mudou para shipped/paid, dispara webhook e e-mail
+    // se mudou para shipped/paid, dispara webhook apenas (sem e-mail automático - rastreio manual)
     if (status === "shipped" || status === "paid") {
       dispatchWebhook(status === "paid" ? "order.paid" : "order.updated", { order: updated }).catch(() => {});
-      if (carrierCode && updated.customerEmail) {
-        try {
-          const link = `${process.env.NEXT_PUBLIC_BASE_URL || "https://pneustore-lyart.vercel.app"}/rastreio?code=${encodeURIComponent(carrierCode)}`;
-          await sendEmail({
-            to: updated.customerEmail,
-            subject: `Seu pedido saiu para transporte — ${carrierCode}`,
-            html: carrierEmailHtml({ name: updated.customerName.split(" ")[0] || "cliente", code: updated.trackingCode || updated.id, carrierCode, link }),
-          });
-        } catch {}
-      }
     } else {
       dispatchWebhook("order.updated", { order: updated }).catch(() => {});
     }
