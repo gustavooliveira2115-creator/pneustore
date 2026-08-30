@@ -725,7 +725,7 @@ function CheckoutHeader({ step }: { step: string }) {
                 <input
                   value={cupom}
                   onChange={(e) => setCupom(e.target.value.toUpperCase())}
-                  placeholder="Cupom (VOUDEROXO, ACELERA)"
+                  placeholder=""
                   disabled={!!cupomAplicado}
                   style={{ flex: 1, height: 40, border: "1px solid #d9d9d9", borderRadius: 8, padding: "0 12px", fontSize: 13, outline: "none", background: cupomAplicado ? "#f6f5ff" : "white", textTransform: "uppercase" }}
                 />
@@ -746,7 +746,6 @@ function CheckoutHeader({ step }: { step: string }) {
                 )}
               </div>
               {cupomMsg && <p style={{ fontSize: 11, color: cupomAplicado ? "#2e7d32" : "#a8071a", marginTop: 6, fontWeight: cupomAplicado ? 700 : 400 }}>{cupomMsg}</p>}
-              {!cupomAplicado && <p style={{ fontSize: 10, color: "#999", marginTop: 4 }}>Dica: use VOUDEROXO ou ACELERA para 10% OFF</p>}
 
               {payError && <div style={{ marginTop: 12, background: "#fff1f0", border: "1px solid #ffa39e", color: "#a8071a", borderRadius: 8, padding: "8px 10px", fontSize: 12 }}>{payError}</div>}
 
