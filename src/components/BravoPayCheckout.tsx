@@ -434,7 +434,7 @@ export function BravoCheckoutProvider({ children }: { children: React.ReactNode 
                         gap: 6,
                       }}
                     >
-                      <span style={{ fontSize: 16 }}>◈</span> PIX (10% OFF)
+                      <span style={{ fontSize: 16 }}>◈</span> PIX (40% OFF)
                     </button>
                     <button
                       type="button"

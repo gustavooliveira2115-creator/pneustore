@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getOrderByExternalRef, updateOrder, listOrders } from "@/lib/order-store";
+import { dispatchWebhook } from "@/lib/webhook";
 
 /**
  * POST /api/bravopay/webhook
@@ -7,14 +9,6 @@ import { NextRequest, NextResponse } from "next/server";
  *   https://SEU_DOMINIO/api/bravopay/webhook
  *
  * Eventos: transaction.created | transaction.paid | transaction.refunded | transaction.chargeback
- *
- * IMPORTANTE (produção):
- *  - Não confie só no polling do front. Confirme venda aqui.
- *  - Valide assinatura se a BravoPay enviar header de webhook (ex: X-Signature).
- *    Se não houver assinatura, valide pelo menos consultando a transação na API antes de liberar entrega.
- *  - Responda 200 rápido; faça processamento pesado em fila/job.
- *
- * Este handler já loga e revalida via API quando possível.
  */
 
 export async function POST(req: NextRequest) {
@@ -25,34 +19,66 @@ export async function POST(req: NextRequest) {
     const event: string = payload.event ?? payload.type ?? "unknown";
     const tx = payload.transaction ?? payload.data ?? payload;
 
-    // Log estruturado — aparece em Vercel Logs
-    console.log("[BravoPay webhook]", JSON.stringify({ event, txId: tx?.id, amount_cents: tx?.amount_cents, status: tx?.status }));
+    console.log("[BravoPay webhook]", JSON.stringify({ event, txId: tx?.id, external_reference: tx?.external_reference, amount_cents: tx?.amount_cents, status: tx?.status }));
 
-    // Exemplo: quando PAID, você deve:
-    //  1) (opcional) revalidar: GET /api/v1/transactions/{id} com sua API key
-    //  2) liberar pedido no seu banco/ERP (criar order PAID, enviar e-mail, etc.)
-    //  3) registrar utm da venda se precisar
-    if (event === "transaction.paid" || tx?.status === "PAID") {
-      // TODO: implemente sua lógica de baixa de pedido aqui.
-      // Ex:
-      // await db.order.update({ where: { external_reference: tx.external_reference }, data: { status: "PAID", paid_at: new Date() }})
-      // await sendEmail(...)
+    // Tenta vincular a um pedido nosso via external_reference ou bravopayTxId
+    const ref = tx?.external_reference as string | undefined;
+    const txId = tx?.id as string | undefined;
+    const statusRaw = (tx?.status || "").toUpperCase();
 
-      // Revalidação server-side (se tiver API key configurada):
-      //  const key = process.env.BRAVOPAY_API_KEY;
-      //  if (key && tx?.id) {
-      //    const r = await fetch(`https://bravopay.club/api/v1/transactions/${tx.id}`, { headers: { Authorization: `Bearer ${key}` }});
-      //    const fresh = await r.json();
-      //    if (fresh.status !== "PAID") console.warn("Divergência de status webhook vs API", fresh);
-      //  }
+    // Mapeia status BravoPay para nosso status
+    const mapStatus: Record<string, string> = { PAID: "paid", APPROVED: "paid", CONFIRMED: "paid", PENDING: "pending", EXPIRED: "expired", FAILED: "canceled", CANCELED: "canceled", REFUNDED: "canceled", CHARGEBACK: "canceled" };
+    const newStatus = mapStatus[statusRaw];
+
+    if (ref || txId) {
+      // procura por externalReference ou bravopayTxId
+      let order = ref ? getOrderByExternalRef(ref) : null;
+      if (!order && txId) {
+        const all = listOrders();
+        order = all.find((o) => o.bravopayTxId === txId || o.externalReference === ref) || null;
+      }
+      if (order && newStatus) {
+        const updated = updateOrder(order.id, { status: newStatus as any, bravopayTxId: txId || order.bravopayTxId } as any);
+        if (updated) {
+          console.log(`[webhook] Pedido ${updated.id} atualizado para ${newStatus}`);
+          // dispara webhooks para automações (ActiveCampaign, RD, Utmify, Z-API etc)
+          const hookEvent = newStatus === "paid" ? "order.paid" : "order.updated";
+          dispatchWebhook(hookEvent as any, { order: updated, transaction: tx, event }).catch(() => {});
+
+          // Se pago, envia e-mail de rastreio atualizado se houver trackingCode
+          if (newStatus === "paid" && updated.trackingCode) {
+            try {
+              const { sendEmail, trackingEmailHtml } = await import("@/lib/email");
+              const link = `${process.env.NEXT_PUBLIC_BASE_URL || "https://pneustore-lyart.vercel.app"}/rastreio?code=${encodeURIComponent(updated.trackingCode)}`;
+              await sendEmail({
+                to: updated.customerEmail,
+                subject: `Pagamento confirmado — pedido ${updated.trackingCode}`,
+                html: trackingEmailHtml({ name: updated.customerName.split(" ")[0] || "cliente", code: updated.trackingCode, link, productName: updated.items[0]?.name || "seu pedido" }),
+              });
+            } catch (e) { console.warn("[webhook] email pós-pago falhou", e); }
+          }
+        }
+      } else if (!order && (statusRaw === "PAID" || event === "transaction.paid")) {
+        console.warn(`[webhook] Transação paga sem pedido vinculado: ref=${ref} tx=${txId}`);
+      }
     }
 
-    // Sempre responda 200 para a BravoPay não re-tentar indefinidamente (quando você já processou)
+    if (event === "transaction.paid" || statusRaw === "PAID") {
+      // revalidação opcional via API quando houver chave
+      const key = process.env.BRAVOPAY_API_KEY;
+      if (key && txId) {
+        try {
+          const r = await fetch(`https://bravopay.club/api/v1/transactions/${txId}`, { headers: { Authorization: `Bearer ${key}` } });
+          const fresh = await r.json().catch(() => null);
+          if (fresh && fresh.status && String(fresh.status).toUpperCase() !== "PAID") console.warn("Divergência webhook vs API", fresh);
+        } catch {}
+      }
+    }
+
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Erro webhook";
     console.error("[BravoPay webhook error]", msg);
-    // Em erro transitório, pode retornar 500 para BravoPay re-tentar
     return NextResponse.json({ received: false, error: msg }, { status: 500 });
   }
 }

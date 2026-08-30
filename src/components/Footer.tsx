@@ -231,7 +231,7 @@ export default function Footer() {
             style={{ height: 20, width: "auto", objectFit: "contain" }}
           />
           <p style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>
-            Parcele suas compras usando seu cartão de crédito e pague em até 10x sem juros
+            Pague com PIX com até 40% OFF — aprovação imediata e compra 100% segura
           </p>
           <p style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>
             © 2022 PneuStore. CPX Distribuidora S/A. Rodovia SC 486 - Antonio Heil, 800 - Bairro Itaipava - CEP

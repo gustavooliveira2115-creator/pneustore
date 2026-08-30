@@ -295,12 +295,10 @@ export default function ProductPage() {
               </div>
 
               <div className="product_in_installments__mpOM0">
-                <p style={{ margin: "4px 0", fontSize: 14, color: "var(--color-textSecondary)" }}>
-                  ou R$&nbsp;{product.installmentTotal} em ate {product.installmentCount}x de R$&nbsp;{product.installmentValue} sem juros.
+                <p style={{ margin: "4px 0", fontSize: 13, color: "#2e7d32", fontWeight: 700 }}>
+                  PIX com até 40% OFF — pagamento 100% seguro
                 </p>
-                <button style={{ background: "none", border: "none", color: "var(--color-primary)", cursor: "pointer", fontSize: 13, textDecoration: "underline", padding: 0 }}>
-                  <span>Veja mais formas de pagamento</span>
-                </button>
+                <p style={{ margin: "2px 0", fontSize: 12, color: "#666" }}>Somente PIX • Aprovação imediata</p>
               </div>
             </div>
 
@@ -591,7 +589,7 @@ export default function ProductPage() {
                       <div>
                         <span style={{ fontSize: 12, color: "var(--color-textSecondary)", textDecoration: "line-through" }}>R$ {p.origPrice}</span>
                         <div style={{ fontSize: 20, fontWeight: 700, color: "var(--color-primary)" }}>R$ {p.pixPrice}</div>
-                        <span style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>ou {p.installmentCount}x de R$ {p.installmentValue}</span>
+                        <span style={{ fontSize: 11, color: "#2e7d32", fontWeight: 700 }}>PIX 40% OFF</span>
                       </div>
                     </div>
                   </div>

@@ -240,8 +240,7 @@ function TodosContent() {
           <div style={{ padding: "16px" }}>
             <h3 style={{ fontSize: 13, fontWeight: 700, margin: "0 0 10px", textTransform: "uppercase", letterSpacing: 0.5 }}>Preço</h3>
             <div style={{ fontSize: 12, color: "var(--color-textSecondary)", lineHeight: 1.6 }}>
-              <div>PIX com até 10% OFF</div>
-              <div>Parcelamento em até 10x sem juros</div>
+              <div>PIX com até 30% OFF</div>
               <div style={{ marginTop: 8, padding: "8px", background: "#fafafa", borderRadius: 6, border: "1px solid #f0f0f0" }}>
                 <div style={{ fontWeight: 600, color: "var(--color-textBase)" }}>Dica:</div>
                 <div>Digite o nome, marca ou medida (ex: 195/55R16) na busca acima.</div>
@@ -345,7 +344,6 @@ function TodosContent() {
                           <span style={{ fontSize: 18, fontWeight: 800, color: "var(--color-primary)" }}>R$ {p.pixPrice}</span>
                           <span style={{ fontSize: 10, fontWeight: 700, background: "var(--color-primary)", color: "white", padding: "2px 6px", borderRadius: 4 }}>PIX</span>
                         </div>
-                        <div style={{ fontSize: 11, color: "var(--color-textSecondary)" }}>ou 10x de R$ {p.installmentValue} sem juros</div>
                       </div>
                       <button
                         onClick={() =>

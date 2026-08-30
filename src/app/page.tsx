@@ -30,7 +30,7 @@ function brlToCents(v: string): number {
 
 const heroSlides = [
   { mobile: "b9e70e93a47b74dcb59f.webp", desktop: "09a9d3da3c2695bf066a.webp", tablet: "d62b0a74db6a9d86b117.webp", alt: "Pangea Inter" },
-  { mobile: "07781405c13fa20255c8.webp", desktop: "331a42bc32f9fe915463.webp", tablet: "f73eee7f376272beb325.webp", alt: "PIX 10 E 10X" },
+  { mobile: "desconto-pix-galvao.png", desktop: "desconto-pix-galvao.png", tablet: "desconto-pix-galvao.png", alt: "PIX 40% OFF Galvão" },
   { mobile: "49f67d43a3cd22049ea7.webp", desktop: "44049c8776f5ae4d429c.webp", tablet: "c999858ea34ecd2e29ef.webp", alt: "PAGALEVE" },
   { mobile: "74ab501bd3312d6262a3.webp", desktop: "172d7dd86976dafeca24.webp", tablet: "b6538c4a348841a8f3f3.webp", alt: "ITARO" },
   { mobile: "d6e5cf27f3c2813992ae.webp", desktop: "13ac61d37400c39268d9.webp", tablet: "83e0075c29163e5c25fa.webp", alt: "Promoção até 2000OFF" },
@@ -645,11 +645,11 @@ export default function HomePage() {
                        {p.title}
                      </p>
                    </Link>
-                  {/* Prices */}
+                  {/* Prices - PIX only */}
                   <div>
                     <p style={{ fontSize: 12, color: "#8c8c8c", textDecoration: "line-through" }}>R$ {p.origPrice}</p>
                     <p style={{ fontSize: 18, fontWeight: 700, color: "var(--color-primary)" }}>R$ {p.curPrice}</p>
-                    <p style={{ fontSize: 12, color: "var(--color-textSecondary)" }}>ou 10x de R$ {p.installment}</p>
+                    <p style={{ fontSize: 11, color: "#2e7d32", fontWeight: 700 }}>PIX com até 40% OFF</p>
                   </div>
                   {/* CEP input */}
                   <input style={{ width: "100%", height: 32, border: "1px solid #d9d9d9", borderRadius: 6, padding: "0 10px", fontSize: 12 }} placeholder="Insira seu CEP" />

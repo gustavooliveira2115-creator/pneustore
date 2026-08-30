@@ -102,7 +102,7 @@ export default function Header() {
               <button type="button" className="block w-full max-w-[1240px] h-[58px] bg-transparent p-0 border-0 cursor-pointer">
                 <img
                   src="https://static.verumcommerce.com.br/product/Pneustore/a9c181e7594016ab63d3.webp"
-                  alt="Compre pneus com 5 anos de garantia de fábrica | 10% OFF pagando no PIX "
+                  alt="Compre pneus com 5 anos de garantia de fábrica | 40% OFF pagando no PIX "
                 />
               </button>
             </div>
@@ -221,7 +221,7 @@ export default function Header() {
           <div className="flex desktop:hidden flex-col !p-[16px] !gap-[16px]">
             <img
               src="https://static.verumcommerce.com.br/product/Pneustore/a9c181e7594016ab63d3.webp"
-              alt="Compre pneus com 5 anos de garantia de fábrica | 10% OFF pagando no PIX "
+              alt="Compre pneus com 5 anos de garantia de fábrica | 40% OFF pagando no PIX "
             />
             <div className="flex items-center justify-between text-primaryPurpleBase">
               <div>

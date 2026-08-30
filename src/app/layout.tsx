@@ -7,7 +7,7 @@ import { UtmCapture } from "@/components/UtmCapture";
 export const metadata: Metadata = {
   title: "PneuStore | Frete Grátis em Pneus Selecionados - Aproveite",
   description:
-    "Pneus com qualidade e preço baixo é Aqui na PneuStore. Até 18% OFF no Pix ✓ Parcelas até 10X ✓ Compra segura e entrega garantida ✓ Compre Online Aqui!",
+    "Pneus com qualidade e preço baixo é Aqui na PneuStore. Até 40% OFF no Pix ✓ Compra segura e entrega garantida ✓ Compre Online Aqui!",
 };
 
 export default function RootLayout({

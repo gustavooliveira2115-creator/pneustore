@@ -253,7 +253,7 @@ function SideCart() {
               <span className="text-sm text-[#666]">Total</span>
               <span className="text-[20px] font-extrabold text-[#4e008e]">{formatBRL(totalCents)}</span>
             </div>
-            <p className="text-[12px] text-[#888] -mt-2">em até 10x de {(totalCents / 10 / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} sem juros</p>
+            <p className="text-[11px] text-[#2e7d32] -mt-2 font-bold">PIX com 40% OFF • Somente PIX</p>
             {origTotalCents > totalCents && (
               <p className="text-[12px] text-[#2e7d32]">Economia de {formatBRL(discountCents)} no PIX</p>
             )}

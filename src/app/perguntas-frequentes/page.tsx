@@ -23,7 +23,7 @@ const categories: Category[] = [
     title: "Pagamentos",
     icon: "💳",
     faqs: [
-      { q: "Quais formas de pagamento aceitam?", a: "PIX (10% OFF e aprovação imediata via BravoPay), cartão em até 10x sem juros e boleto em campanhas selecionadas. Todo pagamento é processado em ambiente seguro." },
+      { q: "Quais formas de pagamento aceitam?", a: "PIX com até 40% OFF e aprovação imediata via BravoPay. Oferecemos apenas PIX — pagamento 100% seguro e sem parcelamento." },
       { q: "O pagamento no PIX gera QR Code?", a: "Sim. Ao finalizar no checkout você é levado para /pagamento com QR Code e Pix Copia e Cola, vinculado à sua chave BravoPay. O status atualiza a cada 3 segundos." },
       { q: "Posso usar cupom?", a: "Sim. Aplique o cupom no resumo do checkout. Se inválido ou expirado, avisamos em vermelho." },
       { q: "Quando meu pagamento é confirmado?", a: "No PIX a confirmação é em segundos/minutos. No cartão, após captura e antifraude. Você vê o status em Meus pedidos." },

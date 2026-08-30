@@ -8,8 +8,9 @@ node_modules/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
-# rastreio local store
-data/tracking.json
+# local stores (LGPD - não versionar dados de clientes)
+data/
+!data/.gitkeep
 
 .vercel
 .env*

@@ -59,12 +59,15 @@ export default function CheckoutPage() {
   const [endereco, setEndereco] = useState<Endereco | null>(null);
   const [cupom, setCupom] = useState("");
   const [cupomMsg, setCupomMsg] = useState<string | null>(null);
+  const [cupomAplicado, setCupomAplicado] = useState<string | null>(null);
+  const [cupomDescontoCents, setCupomDescontoCents] = useState(0);
   const [identErrors, setIdentErrors] = useState<Record<string, string>>({});
   const [endErrors, setEndErrors] = useState<Record<string, string>>({});
   const [payLoading, setPayLoading] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
   const INSTALACAO_CENTS = 5000;
   const [instalacao, setInstalacao] = useState(false);
+  const COUPONS: Record<string, number> = { VOUDEROXO: 0.1, ACELERA: 0.1 };
 
   // form states for identification modal
   const [tipo, setTipo] = useState<"PF" | "PJ">("PF");
@@ -88,6 +91,7 @@ export default function CheckoutPage() {
   const [endEstado, setEndEstado] = useState("");
   const [endCidade, setEndCidade] = useState("");
 
+  const [lgpdConsent, setLgpdConsent] = useState(false);
   // hydrate cliente/endereco from localStorage + check cart
   useEffect(() => {
     try {
@@ -100,6 +104,7 @@ export default function CheckoutPage() {
         setCpf(c.cpf ? maskCPF(c.cpf) : "");
         setTelefone(c.telefone ? maskPhone(c.telefone) : "");
         setTipo(c.tipo || "PF");
+        if (c.lgpdConsent) setLgpdConsent(true);
       }
       const eRaw = localStorage.getItem("checkout_endereco");
       if (eRaw) {
@@ -116,6 +121,13 @@ export default function CheckoutPage() {
         setEndBairro(e.bairro || "");
         setEndEstado(e.estado || "");
         setEndCidade(e.cidade || "");
+      }
+      const cupRaw = localStorage.getItem("checkout_cupom");
+      if (cupRaw && COUPONS[cupRaw.toUpperCase()]) {
+        const code = cupRaw.toUpperCase();
+        setCupom(code);
+        setCupomAplicado(code);
+        setCupomMsg(`Cupom ${code} aplicado! -10%`);
       }
       // if already have both, go to resumo
       if (cRaw && eRaw) setStep("resumo");
@@ -150,15 +162,48 @@ export default function CheckoutPage() {
     if (!isValidCPF(cpf)) errs.cpf = "CPF inválido";
     const phoneDigits = onlyDigits(telefone);
     if (phoneDigits.length < 10 || phoneDigits.length > 11) errs.telefone = "Telefone inválido";
+    if (!lgpdConsent) errs.lgpd = "Você precisa aceitar a Política de Privacidade";
     if (Object.keys(errs).length) {
       setIdentErrors(errs);
       return;
     }
     setIdentErrors({});
-    const c: Cliente = { tipo, email: email.trim().toLowerCase(), promoEmail, nome: nome.trim(), cpf: maskCPF(cpf), telefone: maskPhone(telefone), promoWhatsapp };
-    setCliente(c);
+    const c: Cliente & { lgpdConsent?: boolean; lgpdConsentAt?: string } = { tipo, email: email.trim().toLowerCase(), promoEmail, nome: nome.trim(), cpf: maskCPF(cpf), telefone: maskPhone(telefone), promoWhatsapp, lgpdConsent: true, lgpdConsentAt: new Date().toISOString() };
+    setCliente(c as Cliente);
     try {
       localStorage.setItem("checkout_cliente", JSON.stringify(c));
+    } catch {}
+    // Captura preventiva / carrinho abandonado — dispara para CRM/webhook
+    try {
+      const cartSnap = { items: items.map((it) => ({ slug: it.slug, name: it.name, quantity: it.quantity, priceCents: it.priceCents, id: it.id })), totalCents };
+      fetch("/api/customers/abandoned", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cliente: { ...c, lgpdConsent: true },
+          endereco: endereco || null,
+          cart: cartSnap,
+          coupon: cupomAplicado || null,
+          lgpdConsent: true,
+          utm: (() => { try { return JSON.parse(localStorage.getItem("utm_params") || "null"); } catch { return null; } })(),
+        }),
+      }).catch(() => {});
+      // também salva/atualiza tabela customers isoladamente para busca rápida
+      fetch("/api/customers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: c.nome,
+          email: c.email,
+          telefone: onlyDigits(c.telefone),
+          cpf: onlyDigits(c.cpf),
+          promoEmail: c.promoEmail,
+          promoWhatsapp: c.promoWhatsapp,
+          tipo: c.tipo,
+          lgpdConsent: true,
+          cartSnapshot: cartSnap,
+        }),
+      }).catch(() => {});
     } catch {}
     setStep("endereco");
   };
@@ -198,15 +243,83 @@ export default function CheckoutPage() {
       localStorage.setItem("pneustore_cep", e.cep);
       localStorage.setItem("pneustore_logradouro", e.rua);
     } catch {}
+    // Atualiza abandoned com endereço completo para CRM
+    try {
+      const cartSnap2 = { items: items.map((it) => ({ slug: it.slug, name: it.name, quantity: it.quantity, priceCents: it.priceCents, id: it.id })), totalCents };
+      const cli = cliente || JSON.parse(localStorage.getItem("checkout_cliente") || "null");
+      if (cli) {
+        fetch("/api/customers/abandoned", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cliente: cli,
+            endereco: e,
+            cart: cartSnap2,
+            coupon: cupomAplicado || null,
+            lgpdConsent: true,
+            utm: (() => { try { return JSON.parse(localStorage.getItem("utm_params") || "null"); } catch { return null; } })(),
+          }),
+        }).catch(() => {});
+      }
+      // também atualiza customers com endereço
+      if (cli?.email) {
+        fetch("/api/customers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: cli.nome,
+            email: cli.email,
+            telefone: onlyDigits(cli.telefone || ""),
+            cpf: onlyDigits(cli.cpf || ""),
+            cep: onlyDigits(e.cep),
+            rua: e.rua,
+            numero: e.numero,
+            complemento: e.complemento,
+            bairro: e.bairro,
+            cidade: e.cidade,
+            estado: e.estado,
+            referencia: e.referencia,
+            nomeLocal: e.nomeLocal,
+            destinatario: e.destinatario,
+            promoEmail: cli.promoEmail,
+            promoWhatsapp: cli.promoWhatsapp,
+            lgpdConsent: true,
+            cartSnapshot: cartSnap2,
+          }),
+        }).catch(() => {});
+      }
+    } catch {}
     setStep("resumo");
   };
 
   const handleCupom = () => {
-    if (!cupom.trim()) {
+    const code = cupom.trim().toUpperCase();
+    if (!code) {
       setCupomMsg("Digite um cupom");
       return;
     }
-    setCupomMsg("Cupom inválido ou expirado");
+    const pct = COUPONS[code];
+    if (!pct) {
+      setCupomMsg("Cupom inválido ou expirado");
+      setCupomAplicado(null);
+      setCupomDescontoCents(0);
+      return;
+    }
+    // calcula 10% sobre total atual (produtos + instalação)
+    const base = totalCents + (instalacao ? INSTALACAO_CENTS : 0);
+    const desconto = Math.round(base * pct);
+    setCupomAplicado(code);
+    setCupomDescontoCents(desconto);
+    setCupomMsg(`Cupom ${code} aplicado! -10%`);
+    try { localStorage.setItem("checkout_cupom", code); } catch {}
+  };
+
+  const handleRemoverCupom = () => {
+    setCupom("");
+    setCupomAplicado(null);
+    setCupomDescontoCents(0);
+    setCupomMsg(null);
+    try { localStorage.removeItem("checkout_cupom"); } catch {}
   };
 
   const handleContinuarPagamento = async () => {
@@ -226,7 +339,9 @@ export default function CheckoutPage() {
     setPayError(null);
     try {
       const utm = getUtmForApi();
-      const amountToPay = totalCents + (instalacao ? INSTALACAO_CENTS : 0);
+      const baseAmount = totalCents + (instalacao ? INSTALACAO_CENTS : 0);
+      const descontoCupom = cupomAplicado && COUPONS[cupomAplicado] ? Math.round(baseAmount * COUPONS[cupomAplicado]) : 0;
+      const amountToPay = Math.max(100, baseAmount - descontoCupom); // mínimo R$1,00
       const itemsPayload = [
         ...items.map((it) => ({ name: it.name, quantity: it.quantity, amount_cents: it.priceCents })),
         ...(instalacao ? [{ name: "Serviço de Instalação - Montagem + Balanceamento", quantity: 1, amount_cents: INSTALACAO_CENTS }] : []),
@@ -278,18 +393,53 @@ export default function CheckoutPage() {
           const entry = {
             id: (tx as any)?.id || (j as any)?.id,
             created_at: (tx as any)?.created_at || new Date().toISOString(),
-            amount_cents: (tx as any)?.amount_cents || totalCents + (instalacao ? INSTALACAO_CENTS : 0),
+            amount_cents: (tx as any)?.amount_cents || amountToPay,
             status: (tx as any)?.status || "PENDING",
             method: "pix",
             items: [...items.map((it) => ({ name: it.name, quantity: it.quantity, amount_cents: it.priceCents })), ...(instalacao ? [{ name: "Serviço de Instalação", quantity: 1, amount_cents: INSTALACAO_CENTS }] : [])],
-            external_reference: (tx as any)?.external_reference,
+            external_reference: (tx as any)?.external_reference || payload.external_reference,
             instalacao,
+            coupon: cupomAplicado || null,
           };
           if (entry.id) {
             const next = [entry, ...hist.filter((h: any) => h.id !== entry.id)].slice(0, 20);
             localStorage.setItem("pneustore_orders", JSON.stringify(next));
           }
         } catch {}
+        // persiste pedido no servidor (geração de tracking + webhook + e-mail)
+        fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer: {
+              name: cliente.nome,
+              email: cliente.email,
+              document: onlyDigits(cliente.cpf),
+              phone: onlyDigits(cliente.telefone),
+              promoEmail: cliente.promoEmail,
+              promoWhatsapp: cliente.promoWhatsapp,
+              lgpdConsent: true,
+            },
+            shipping: {
+              street: endereco.rua,
+              number: endereco.numero,
+              complement: endereco.complemento,
+              neighborhood: endereco.bairro,
+              city: endereco.cidade,
+              state: endereco.estado,
+              zipcode: onlyDigits(endereco.cep),
+            },
+            items: itemsPayload,
+            amountCents: amountToPay,
+            coupon: cupomAplicado || null,
+            discountCents: descontoCupom,
+            instalacao,
+            externalReference: payload.external_reference,
+            bravopayTxId: txId,
+            utm: utm || null,
+            method: "pix",
+          }),
+        }).catch(() => {});
       } catch {}
       // Novo fluxo: sempre vai para /pagamento para exibir QR Code PIX
       if (txId) {
@@ -306,7 +456,10 @@ export default function CheckoutPage() {
 
   const isCartEmpty = items.length === 0;
   const frete = 0; // estimado grátis para resumo (pode ser dinâmico futuro)
-  const totalComFrete = totalCents + frete + (instalacao ? INSTALACAO_CENTS : 0);
+  const subtotalComInstalacao = totalCents + frete + (instalacao ? INSTALACAO_CENTS : 0);
+  // recalcular desconto do cupom se instalado mudar
+  const cupomDescontoAtual = cupomAplicado && COUPONS[cupomAplicado] ? Math.round(subtotalComInstalacao * COUPONS[cupomAplicado]) : cupomDescontoCents;
+  const totalComFrete = Math.max(0, subtotalComInstalacao - cupomDescontoAtual);
 
 function CheckoutHeader({ step }: { step: string }) {
   const steps = [
@@ -553,30 +706,47 @@ function CheckoutHeader({ step }: { step: string }) {
                     <span style={{ fontWeight: 700 }}>+ {(INSTALACAO_CENTS / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
                   </div>
                 )}
+                {cupomAplicado && cupomDescontoAtual > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "#2e7d32" }}>
+                    <span>Cupom {cupomAplicado} (-10%)</span>
+                    <span style={{ fontWeight: 700 }}>- {(cupomDescontoAtual / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
+                  </div>
+                )}
                 <div style={{ height: 1, background: "#eee", margin: "8px 0" }} />
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontWeight: 800, fontSize: 15 }}>Total no PIX</span>
                   <span style={{ fontWeight: 800, fontSize: 20, color: "#4e008e" }}>{(totalComFrete / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
                 </div>
-                <p style={{ fontSize: 11, color: "#888", textAlign: "right", marginTop: -4 }}>ou 10x de {(totalComFrete / 10 / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} sem juros</p>
+                <p style={{ fontSize: 11, color: "#2e7d32", textAlign: "right", marginTop: -4, fontWeight: 700 }}>PIX com 40% OFF • Somente PIX</p>
               </div>
 
               {/* Cupom */}
               <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
                 <input
                   value={cupom}
-                  onChange={(e) => setCupom(e.target.value)}
-                  placeholder="Cupom de desconto"
-                  style={{ flex: 1, height: 40, border: "1px solid #d9d9d9", borderRadius: 8, padding: "0 12px", fontSize: 13, outline: "none" }}
+                  onChange={(e) => setCupom(e.target.value.toUpperCase())}
+                  placeholder="Cupom (VOUDEROXO, ACELERA)"
+                  disabled={!!cupomAplicado}
+                  style={{ flex: 1, height: 40, border: "1px solid #d9d9d9", borderRadius: 8, padding: "0 12px", fontSize: 13, outline: "none", background: cupomAplicado ? "#f6f5ff" : "white", textTransform: "uppercase" }}
                 />
-                <button
-                  onClick={handleCupom}
-                  style={{ height: 40, padding: "0 16px", borderRadius: 8, border: "1px solid #4e008e", background: "white", color: "#4e008e", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
-                >
-                  Enviar
-                </button>
+                {!cupomAplicado ? (
+                  <button
+                    onClick={handleCupom}
+                    style={{ height: 40, padding: "0 16px", borderRadius: 8, border: "1px solid #4e008e", background: "white", color: "#4e008e", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                  >
+                    Enviar
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleRemoverCupom}
+                    style={{ height: 40, padding: "0 16px", borderRadius: 8, border: "1px solid #d9d9d9", background: "#f5f5f5", color: "#666", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                  >
+                    Remover
+                  </button>
+                )}
               </div>
-              {cupomMsg && <p style={{ fontSize: 11, color: "#a8071a", marginTop: 6 }}>{cupomMsg}</p>}
+              {cupomMsg && <p style={{ fontSize: 11, color: cupomAplicado ? "#2e7d32" : "#a8071a", marginTop: 6, fontWeight: cupomAplicado ? 700 : 400 }}>{cupomMsg}</p>}
+              {!cupomAplicado && <p style={{ fontSize: 10, color: "#999", marginTop: 4 }}>Dica: use VOUDEROXO ou ACELERA para 10% OFF</p>}
 
               {payError && <div style={{ marginTop: 12, background: "#fff1f0", border: "1px solid #ffa39e", color: "#a8071a", borderRadius: 8, padding: "8px 10px", fontSize: 12 }}>{payError}</div>}
 
@@ -665,6 +835,14 @@ function CheckoutHeader({ step }: { step: string }) {
               <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, cursor: "pointer" }}>
                 <input type="checkbox" checked={promoWhatsapp} onChange={(e) => setPromoWhatsapp(e.target.checked)} /> Receber promoções e notificações via WhatsApp
               </label>
+
+              <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 11, cursor: "pointer", lineHeight: 1.4, background: "#f6f5ff", border: "1px solid #e8e0ff", borderRadius: 8, padding: "10px 12px" }}>
+                <input type="checkbox" checked={lgpdConsent} onChange={(e) => setLgpdConsent(e.target.checked)} style={{ marginTop: 2, accentColor: "#4e008e" }} />
+                <span>
+                  Li e aceito a <a href="/politica-de-privacidade" target="_blank" rel="noopener noreferrer" style={{ color: "#4e008e", textDecoration: "underline", fontWeight: 700 }}>Política de Privacidade</a> e autorizo o uso dos meus dados para processamento do pedido, rastreio e comunicações conforme a LGPD. *
+                </span>
+              </label>
+              {identErrors.lgpd && <span style={{ color: "#ff4d4f", fontSize: 11 }}>{identErrors.lgpd}</span>}
 
               <button onClick={handleIdentSubmit} style={{ width: "100%", height: 44, borderRadius: 8, background: "#4e008e", color: "white", border: "none", fontWeight: 700, fontSize: 14, cursor: "pointer", marginTop: 4 }}>
                 Continuar para o endereço
