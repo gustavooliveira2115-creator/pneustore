@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Stars } from "@/components/icons";
 import { products } from "@/lib/products";
-import { useBravoCheckout } from "@/components/BravoPayCheckout";
+import { useCart } from "@/components/CartContext";
 
 function brlToCents(v: string): number {
   const digits = v.replace(/\./g, "").replace(",", "");
@@ -22,7 +22,7 @@ const STATIC_BASE = "https://static.verumcommerce.com.br/product/Pneustore";
 function TodosContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { openCheckout } = useBravoCheckout();
+  const { addItem } = useCart();
   const rawQuery = searchParams.get("title") || searchParams.get("q") || searchParams.get("search") || searchParams.get("query") || "";
   const query = rawQuery.trim();
   const larguraQ = (searchParams.get("largura") || "").trim();
@@ -346,12 +346,24 @@ function TodosContent() {
                         </div>
                       </div>
                       <button
-                        onClick={() =>
-                          openCheckout({
-                            product: { name: p.name, amount_cents: brlToCents(p.pixPrice), slug: p.slug, id: p.id },
-                            quantity: 1,
-                          })
-                        }
+                        onClick={() => {
+                          addItem(
+                            {
+                              slug: p.slug,
+                              name: p.name,
+                              id: p.id,
+                              brand: p.brand,
+                              brandLogo: p.brandLogo,
+                              image: p.images[0],
+                              curPrice: p.pixPrice,
+                              origPrice: p.origPrice,
+                              priceCents: brlToCents(p.pixPrice),
+                              origCents: brlToCents(p.origPrice),
+                            },
+                            1
+                          );
+                          router.push("/checkout");
+                        }}
                         style={{ width: "100%", padding: "8px", borderRadius: 6, background: "var(--color-primary)", color: "white", fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer", marginTop: 4 }}
                       >
                         Comprar
