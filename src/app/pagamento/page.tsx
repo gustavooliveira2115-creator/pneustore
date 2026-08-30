@@ -166,7 +166,7 @@ function PagamentoInner() {
             <span style={{ width: 32, height: 32, borderRadius: 8, background: "#e8f5e9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>◈</span>
             Pague com PIX
           </h1>
-          <p style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>Escaneie o QR Code ou copie o código para pagar no seu banco. Pagamento vinculado à sua chave BravoPay.</p>
+          <p style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>Escaneie o QR Code ou copie o código para pagar no seu banco.</p>
 
           {loading ? (
             <div style={{ padding: 40, textAlign: "center", color: "#888" }}>Carregando QR Code...</div>
@@ -254,10 +254,7 @@ function PagamentoInner() {
                     Já paguei — verificar agora
                   </button>
 
-                  <p style={{ fontSize: 11, color: "#999", textAlign: "center", marginTop: 12, lineHeight: 1.4 }}>
-                    Pagamento processado pela <b>BravoPay</b> (https://bravopay.club/api/v1) com sua chave <code>BRAVOPAY_API_KEY</code> da Vercel.<br />
-                    Status atualiza automaticamente a cada 3 segundos.
-                  </p>
+
                 </>
               )}
             </>
