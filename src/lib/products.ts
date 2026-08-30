@@ -3020,29 +3020,6 @@ export const products: Record<string, Product> = {
     aboutBrandText: "Criado exclusivamente para validar a integracao BravoPay (PIX e Cartao) com valor baixo e sem impacto no caixa. O pagamento e o QR Code sao reais e caem na conta configurada em BRAVOPAY_API_KEY.",
     aboutProductText: "Use este produto para testar o fluxo completo: checkout -> gerar PIX/Cartao -> pagar -> polling em /pagamento -> redirecionamento para /obrigado. Apos o teste, o pedido fica em Meus Pedidos com ID TESTE-5-REAIS. Pode excluir o produto de src/lib/products.ts quando nao precisar mais.",
   },
-  // TESTE PAGAMENTO R$ 1,00 — produto solicitado para validacao minima
-  "produto-teste-1-real": {
-    slug: "produto-teste-1-real",
-    aliases: ["teste-1-real", "produto-teste-1-real-pagamento", "teste-pagamento-1-real"],
-    name: "Produto Teste — Pagamento R$ 1,00",
-    id: "TESTE-1-REAL",
-    brand: "PneuStore",
-    brandLogo: "ITARO-2-1-.png",
-    brandLogo2x: "ITARO-2-1--1.png",
-    origPrice: "1,00",
-    pixPrice: "1,00",
-    installmentTotal: "1,00",
-    installmentValue: "1,00",
-    installmentCount: 1,
-    stars: 5,
-    reviews: 1,
-    images: ["fcb80e3152b94780bbeb.webp"],
-    inmetro: null,
-    technical: [["Tipo","Produto de teste"],["Valor","R$ 1,00"],["Gateway","BravoPay PIX/Cartao"],["Uso","Validar integracao com custo minimo"]],
-    aboutBrandTitle: "Sobre este produto de teste R$ 1,00",
-    aboutBrandText: "Produto de teste de R$ 1,00 criado a pedido para validar PIX e Cartao com o menor valor possivel. Pagamento real via BravoPay, cai na conta da BRAVOPAY_API_KEY configurada na Vercel.",
-    aboutProductText: "Ideal para testar sem risco: gere o QR Code PIX ou pague no cartao por R$ 1,00 e acompanhe o fluxo em /pagamento ate /obrigado. ID TESTE-1-REAL.",
-  },
 };
 
 export function getProductBySlug(slug: string): Product | undefined {
