@@ -54,7 +54,7 @@ type Endereco = {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalCents, origTotalCents, discountCents } = useCart();
-  const [step, setStep] = useState<"identificacao" | "endereco" | "resumo">("identificacao");
+  const [step, setStep] = useState<"identificacao" | "endereco" | "resumo">("endereco");
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [endereco, setEndereco] = useState<Endereco | null>(null);
   const [cupom, setCupom] = useState("");
@@ -68,6 +68,7 @@ export default function CheckoutPage() {
   const INSTALACAO_CENTS = 5000;
   const [instalacao, setInstalacao] = useState(false);
   const COUPONS: Record<string, number> = { VOUDEROXO: 0.1, ACELERA: 0.1 };
+  const [identDismissed, setIdentDismissed] = useState(false);
 
   // form states for identification modal
   const [tipo, setTipo] = useState<"PF" | "PJ">("PF");
@@ -129,8 +130,10 @@ export default function CheckoutPage() {
         setCupomAplicado(code);
         setCupomMsg(`Cupom ${code} aplicado! -10%`);
       }
-      // if already have both, go to resumo
-      if (cRaw && eRaw) setStep("resumo");
+      // Novo fluxo: endereço é obrigatório antes de finalizar; identificação fica para depois do pagamento
+      // Se já tem endereço, vai para resumo (mesmo sem cliente). Se não tem endereço, fica em endereco.
+      if (eRaw) setStep("resumo");
+      else setStep("endereco");
     } catch {}
   }, []);
 
@@ -205,7 +208,11 @@ export default function CheckoutPage() {
         }),
       }).catch(() => {});
     } catch {}
-    setStep("endereco");
+    // Novo fluxo: identificação é preenchida APÓS finalizar endereço/compra.
+    // Se já tem endereço, volta para resumo para liberar o pagamento.
+    const hasEndereco = !!endereco || !!localStorage.getItem("checkout_endereco");
+    if (hasEndereco) setStep("resumo");
+    else setStep("endereco");
   };
 
   const handleEnderecoConfirm = () => {
@@ -323,13 +330,28 @@ export default function CheckoutPage() {
   };
 
   const handleContinuarPagamento = async () => {
-    if (!cliente) {
-      setStep("identificacao");
-      return;
-    }
     if (!endereco) {
       setStep("endereco");
       return;
+    }
+    // Identificação deferida: só solicita após finalização. Se não tem cliente e ainda não dispensou, abre modal.
+    // Se dispensou, permite pagar com dados mínimos do endereço e coleta identificação pós-compra (obrigado/pagamento).
+    let clienteEfetivo: Cliente | null = cliente;
+    if (!cliente) {
+      if (!identDismissed) {
+        setStep("identificacao");
+        return;
+      }
+      // Sintético a partir do endereço para viabilizar PIX sem travar conversão
+      clienteEfetivo = {
+        tipo: "PF",
+        nome: endereco.destinatario || endereco.nomeLocal || "Cliente PneuStore",
+        email: `pedido_${Date.now()}_${onlyDigits(endereco.cep).slice(0,4)}@placeholder.pneustore.local`,
+        cpf: "",
+        telefone: "",
+        promoEmail: false,
+        promoWhatsapp: false,
+      } as Cliente;
     }
     if (items.length === 0) {
       setPayError("Seu carrinho está vazio");
@@ -350,10 +372,10 @@ export default function CheckoutPage() {
         amount_cents: amountToPay,
         method: "pix",
         customer: {
-          name: cliente.nome,
-          email: cliente.email,
-          document: onlyDigits(cliente.cpf),
-          phone: "+55" + onlyDigits(cliente.telefone),
+          name: clienteEfetivo!.nome,
+          email: clienteEfetivo!.email,
+          document: onlyDigits(clienteEfetivo!.cpf || ""),
+          phone: clienteEfetivo!.telefone ? "+55" + onlyDigits(clienteEfetivo!.telefone) : "",
         },
         shipping: {
           street: endereco.rua,
@@ -412,12 +434,12 @@ export default function CheckoutPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             customer: {
-              name: cliente.nome,
-              email: cliente.email,
-              document: onlyDigits(cliente.cpf),
-              phone: onlyDigits(cliente.telefone),
-              promoEmail: cliente.promoEmail,
-              promoWhatsapp: cliente.promoWhatsapp,
+              name: clienteEfetivo!.nome,
+              email: clienteEfetivo!.email,
+              document: onlyDigits(clienteEfetivo!.cpf || ""),
+              phone: onlyDigits(clienteEfetivo!.telefone || ""),
+              promoEmail: (clienteEfetivo as any).promoEmail ?? false,
+              promoWhatsapp: (clienteEfetivo as any).promoWhatsapp ?? false,
               lgpdConsent: true,
             },
             shipping: {
@@ -573,8 +595,8 @@ function CheckoutHeader({ step }: { step: string }) {
           <>
             {/* Coluna esquerda */}
             <div style={{ flex: "1 1 700px", minWidth: 320, display: "flex", flexDirection: "column", gap: 16 }}>
-              {/* Bloco Endereço de entrega */}
-              {endereco && cliente ? (
+              {/* Bloco Endereço de entrega - agora só endereço é obrigatório antes de finalizar */}
+              {endereco ? (
                 <div style={{ background: "white", borderRadius: 12, padding: 16, border: "1px solid #eee", display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                   <div style={{ flex: "1 1 260px" }}>
                     <h3 style={{ fontSize: 14, fontWeight: 800, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
@@ -590,26 +612,38 @@ function CheckoutHeader({ step }: { step: string }) {
                       {endereco.referencia ? <><br />Ref: {endereco.referencia}</> : null}
                     </p>
                     <button onClick={() => setStep("endereco")} style={{ marginTop: 8, background: "none", border: "none", color: "#4e008e", fontSize: 12, fontWeight: 700, cursor: "pointer", textDecoration: "underline" }}>
-                      Alterar
+                      Alterar endereço
                     </button>
                   </div>
-                  <div style={{ flex: "1 1 220px", background: "#fafafa", borderRadius: 8, padding: 12, border: "1px solid #eee" }}>
-                    <p style={{ fontSize: 13, fontWeight: 700 }}>Olá, {cliente.nome.split(" ")[0]}</p>
-                    <p style={{ fontSize: 12, color: "#555", marginTop: 4, lineHeight: 1.6 }}>
-                      {cliente.telefone}
-                      <br />
-                      {cliente.email}
-                      <br />
-                      CPF: {cliente.cpf}
-                    </p>
-                    <button onClick={() => setStep("identificacao")} style={{ marginTop: 8, background: "none", border: "none", color: "#4e008e", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
-                      Alterar dados
-                    </button>
-                  </div>
+                  {cliente ? (
+                    <div style={{ flex: "1 1 220px", background: "#fafafa", borderRadius: 8, padding: 12, border: "1px solid #eee" }}>
+                      <p style={{ fontSize: 13, fontWeight: 700 }}>Olá, {cliente.nome.split(" ")[0]}</p>
+                      <p style={{ fontSize: 12, color: "#555", marginTop: 4, lineHeight: 1.6 }}>
+                        {cliente.telefone}
+                        <br />
+                        {cliente.email}
+                        <br />
+                        CPF: {cliente.cpf}
+                      </p>
+                      <button onClick={() => setStep("identificacao")} style={{ marginTop: 8, background: "none", border: "none", color: "#4e008e", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
+                        Alterar identificação
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ flex: "1 1 220px", background: "#fffbe6", borderRadius: 8, padding: 12, border: "1px solid #ffe58f" }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#8c6d00" }}>Identificação pendente</p>
+                      <p style={{ fontSize: 11, color: "#8c6d00", marginTop: 4, lineHeight: 1.5 }}>
+                        Será solicitada após finalizar a compra, antes do envio. Necessária para nota fiscal.
+                      </p>
+                      <button onClick={() => setStep("identificacao")} style={{ marginTop: 8, background: "#4e008e", border: "none", color: "white", fontSize: 12, fontWeight: 700, cursor: "pointer", borderRadius: 999, padding: "6px 12px" }}>
+                        Preencher agora (opcional)
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div style={{ background: "white", borderRadius: 12, padding: 16, border: "1px dashed #ccc", textAlign: "center", color: "#888", fontSize: 13 }}>
-                  Complete identificação e endereço para ver o resumo
+                  Preencha o endereço de entrega para continuar — <b style={{ color: "#4e008e" }}>identificação será solicitada apenas após a compra ser finalizada</b>
                 </div>
               )}
 
@@ -783,13 +817,16 @@ function CheckoutHeader({ step }: { step: string }) {
 
       <Footer />
 
-      {/* MODAL IDENTIFICAÇÃO */}
+      {/* MODAL IDENTIFICAÇÃO - agora só após compra finalizada (após endereço + clicar em CONTINUAR) */}
       {step === "identificacao" && !isCartEmpty && (
         <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div onClick={() => router.push("/")} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }} />
+          <div onClick={() => setStep("resumo")} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }} />
           <div style={{ position: "relative", width: "100%", maxWidth: 520, maxHeight: "90dvh", overflowY: "auto", background: "white", borderRadius: 12, padding: 20, boxShadow: "0 16px 40px rgba(0,0,0,0.22)" }}>
-            <button onClick={() => router.push("/")} aria-label="Fechar" style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "1px solid #e5e5e5", background: "white", cursor: "pointer" }}>✕</button>
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Identificação</h3>
+            <button onClick={() => setStep("resumo")} aria-label="Fechar" style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "1px solid #e5e5e5", background: "white", cursor: "pointer" }}>✕</button>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4 }}>Identificação</h3>
+            <p style={{ fontSize: 12, color: "#666", marginBottom: 16, background: "#fffbe6", border: "1px solid #ffe58f", borderRadius: 8, padding: "8px 10px" }}>
+              Preencha após finalizar a compra — necessário para nota fiscal e entrega. Antes de finalizar, apenas endereço é solicitado.
+            </p>
 
             <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
@@ -844,20 +881,32 @@ function CheckoutHeader({ step }: { step: string }) {
               {identErrors.lgpd && <span style={{ color: "#ff4d4f", fontSize: 11 }}>{identErrors.lgpd}</span>}
 
               <button onClick={handleIdentSubmit} style={{ width: "100%", height: 44, borderRadius: 8, background: "#4e008e", color: "white", border: "none", fontWeight: 700, fontSize: 14, cursor: "pointer", marginTop: 4 }}>
-                Continuar para o endereço
+                Salvar e continuar para pagamento
+              </button>
+              <button
+                onClick={() => {
+                  setIdentDismissed(true);
+                  setStep("resumo");
+                  // avisa usuário que poderá preencher após pagar
+                  setPayError(null);
+                }}
+                style={{ width: "100%", height: 40, borderRadius: 8, background: "white", color: "#555", border: "1px solid #ccc", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+              >
+                Preencher depois (após pagamento)
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL ENDEREÇO */}
+      {/* MODAL ENDEREÇO - único obrigatório antes de finalizar */}
       {step === "endereco" && (
         <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div onClick={() => setStep("identificacao")} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }} />
+          <div onClick={() => (endereco ? setStep("resumo") : router.push("/"))} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }} />
           <div style={{ position: "relative", width: "100%", maxWidth: 560, maxHeight: "90dvh", overflowY: "auto", background: "white", borderRadius: 12, padding: 20, boxShadow: "0 16px 40px rgba(0,0,0,0.22)" }}>
-            <button onClick={() => setStep("identificacao")} aria-label="Fechar" style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "1px solid #e5e5e5", background: "white", cursor: "pointer" }}>✕</button>
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Adicionar endereço</h3>
+            <button onClick={() => (endereco ? setStep("resumo") : router.push("/"))} aria-label="Fechar" style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "1px solid #e5e5e5", background: "white", cursor: "pointer" }}>✕</button>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4 }}>Adicionar endereço</h3>
+            <p style={{ fontSize: 12, color: "#666", marginBottom: 16 }}>Apenas endereço é necessário antes de finalizar. Identificação será solicitada após a compra.</p>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -928,7 +977,7 @@ function CheckoutHeader({ step }: { step: string }) {
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 20 }}>
-              <button onClick={() => setStep("resumo")} style={{ height: 40, padding: "0 20px", borderRadius: 8, border: "1px solid #ccc", background: "white", color: "#555", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
+              <button onClick={() => (endereco ? setStep("resumo") : router.push("/"))} style={{ height: 40, padding: "0 20px", borderRadius: 8, border: "1px solid #ccc", background: "white", color: "#555", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
                 Cancelar
               </button>
               <button onClick={handleEnderecoConfirm} style={{ height: 40, padding: "0 24px", borderRadius: 8, border: "none", background: "#4e008e", color: "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
